@@ -23,7 +23,7 @@ body:
     id: codesample
     attributes:
       label: Code
-      description: Include a reproducible, code sample. Do not use bacticks to format.
+      description: Include a reproducible, code sample. Do not use bacticks to format
       render: javascript
       placeholder: |
         Use the code that produces the problem 
