@@ -29,8 +29,8 @@ body:
         Use the code that produces the problem 
 
   - type: textarea
-id: context
-attributes:
-  label: Additional context
-  description: |
-	  Add any other context about the problem here.
+    id: context
+    attributes:
+      label: Additional context
+      description: |
+	      Add any other context about the problem here.
