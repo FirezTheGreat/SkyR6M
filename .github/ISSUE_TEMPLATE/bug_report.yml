@@ -1,5 +1,5 @@
 name: Bug report
-about: Report incorrect or unexpected behavior of code
+description: Report incorrect or unexpected behavior of code
 labels: [bug, need repro]
 assignees: 'FirezTheGreat'
 body:
@@ -24,7 +24,7 @@ body:
     attributes:
       label: Code
       description: Include a reproducible, code sample. Do not use bacticks to format
-      render: javascript
+      render: TypeScript
       placeholder: |
         Use the code that produces the problem 
 
@@ -32,5 +32,4 @@ body:
     id: context
     attributes:
       label: Additional context
-      description: |
-        Add any other context about the problem here.
+      description: Add any other context about the problem here.
