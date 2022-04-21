@@ -4,9 +4,6 @@ about: Report incorrect or unexpected behavior of code
 title: ''
 labels: bug
 assignees: FirezTheGreat
-
----
-
 body:
    - type: textarea
       id: description
@@ -30,4 +27,4 @@ body:
       description: Include a reproducible, code sample. Do not use backticks to format
       render: javascript
       placeholder: |
-         Use the precise code sample that triggers the issue
+         Use the precise code sample that triggers the issue.
