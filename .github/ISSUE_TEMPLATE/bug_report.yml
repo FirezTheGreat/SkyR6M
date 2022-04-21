@@ -3,7 +3,7 @@ about: Report incorrect or unexpected behavior of code
 labels: [bug, need repro]
 assignees: 'FirezTheGreat'
 body:
-	- type: textarea
+  - type: textarea
 	  id: description
     attributes:
       label: Issue
