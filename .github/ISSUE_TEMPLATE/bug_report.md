@@ -1,11 +1,8 @@
 
 name: Bug report
-about: Report incorrect or unexpected behavior of code
-title: ''
-labels: bug
+description: Report incorrect or unexpected behavior of code
+labels: [bug]
 assignees: FirezTheGreat
-
----
 body:
    - type: textarea
       id: description
@@ -30,4 +27,3 @@ body:
       render: javascript
       placeholder: |
          Use the precise code sample that triggers the issue.
----
