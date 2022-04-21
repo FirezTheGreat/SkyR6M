@@ -7,6 +7,7 @@ assignees: FirezTheGreat
 
 ---
 
+body:
 - type: textarea
    id: description
    attributes:
