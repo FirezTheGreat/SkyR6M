@@ -1,0 +1,47 @@
+{
+    "TOKEN": "",
+    "Owners": [
+        {
+            "id": "",
+            "name": ""
+        }
+    ],
+    "RolePoints": [
+        {
+            "points": 0,
+            "role": ""
+        },
+        {
+            "points": 100,
+            "role": ""
+        },
+        {
+            "points": 200,
+            "role": ""
+        },
+        {
+            "points": 300,
+            "role": ""
+        },
+        {
+            "points": 500,
+            "role": ""
+        },
+        {
+            "points": 700,
+            "role": ""
+        }
+    ],
+    "Channels": {
+        "RegisterId": "",
+        "RegisterLogId": "",
+        "AuditLogId": "",
+        "InformationId": "",
+        "PlayRulesId": ""
+    },
+    "Roles": {
+        "DefaultRoleName": "",
+        "RegisteredId": "",
+        "MuteRoleId": ""
+    }
+}
