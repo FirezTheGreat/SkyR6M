@@ -14,12 +14,12 @@ body:
       placeholder: |
         Steps to reproduce with below code sample:
         1. Go to '...'
-				2. Click on '....'
-				3. Scroll down to '....'
-				4. See error
+		 2. Click on '....'
+		 3. Scroll down to '....'
+		 4. See error
     validations:
       required: true
-	- type: textarea
+  - type: textarea
     id: codesample
     attributes:
       label: Code
@@ -28,9 +28,9 @@ body:
       placeholder: |
         Use the code that produces the problem 
 
-	- type: textarea
-		id: context
-		attributes:
-			label: Additional context
-			description: |
-				Add any other context about the problem here.
+  - type: textarea
+	  id: context
+	  attributes:
+		  label: Additional context
+		  description: |
+			  Add any other context about the problem here.
