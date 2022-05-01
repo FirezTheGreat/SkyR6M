@@ -90,7 +90,7 @@ module.exports = class Rename extends Command {
                 .setTimestamp();
 
             if (interaction.member.manageable) {
-                await interaction.member.setNickname(`[${player.current_points}] ${ign}`);
+                await interaction.member.setNickname(`[${player.points.current}] ${ign}`);
             } else {
                 await interaction.followUp({ content: `*Your new IGN has been updated to our database but failed to rename your IGN on discord, please DM a moderator regarding it.*` });
             };
