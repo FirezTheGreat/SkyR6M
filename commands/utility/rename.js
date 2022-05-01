@@ -19,7 +19,7 @@ module.exports = class Rename extends Command {
 
     async InteractionRun(interaction) {
         try {
-            let ign = interaction.options.getString().trim().slice(0, 25);
+            let ign = interaction.options.getString('ign').trim().slice(0, 25);
             let player = await PlayerStats.findOne({ id: interaction.member.id });
 
             if (!player) return interaction.reply({ content: `*You are not registered at ${interaction.guild.name}*`, ephemeral: true });
