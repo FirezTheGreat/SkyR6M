@@ -12,7 +12,7 @@ module.exports = class messageDelete extends Event {
             if (message.guild.available && message.channel.id !== Channels.MessageLogId) {
                 let { executor, target } = (await message.guild.fetchAuditLogs({ type: AuditLogEvent.MessageDelete })).entries.first();
 
-                if (!message.partial && message.author && message.author.id !== target.id) {
+                if (!message.partial && message.author?.id !== target.id) {
                     executor = message.author,
                     target = message.author;
                 };

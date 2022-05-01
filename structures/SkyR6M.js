@@ -16,7 +16,7 @@ module.exports = class SkyR6M extends Client {
                 IntentsBitField.Flags.MessageContent, IntentsBitField.Flags.Guilds,
                 IntentsBitField.Flags.GuildMembers, IntentsBitField.Flags.GuildMessages,
                 IntentsBitField.Flags.GuildVoiceStates, IntentsBitField.Flags.GuildBans,
-                IntentsBitField.Flags.GuildInvites
+                IntentsBitField.Flags.GuildInvites, IntentsBitField.Flags.GuildPresences
             ],
             sweepers: {
                 messages: {

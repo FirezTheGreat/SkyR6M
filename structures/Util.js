@@ -93,6 +93,13 @@ module.exports = class Util {
         return duration;
     };
 
+    /**
+     * 
+     * @param {number} milliseconds Date in MS
+     * @param {boolean} minimal Formats in hh:mm:ss
+     * @returns formatted time in 1h 1m 1s or 01:01:01
+     */
+
     formatTime(milliseconds, minimal = false) {
         if (!milliseconds || isNaN(milliseconds) || milliseconds <= 0) {
             throw new RangeError("Utils#formatTime(milliseconds: number) Milliseconds must be a number greater than 0");
@@ -143,7 +150,7 @@ module.exports = class Util {
         let first = false;
         for (const [k, v] of Object.entries(times)) {
             if (minimal) {
-                if (v === 0 && !first) {
+                if (v === 0 && !first && !['minutes', 'seconds'].includes(k)) {
                     continue;
                 }
                 finalTime.push(v < 10 ? `0${v}` : `${v}`);
@@ -180,10 +187,11 @@ module.exports = class Util {
     /**
      * 
      * @param {string} string String
+     * @returns Capitalized String
      */
 
     capitalizeFirstLetter(string) {
-        string[0].toUpperCase() + string.slice(1);
+        return string[0].toUpperCase() + string.slice(1).toLowerCase();
     };
 
     /**

@@ -1,4 +1,4 @@
-const { ApplicationCommandType, ActionRowBuilder, SelectMenuBuilder, ComponentType, Colors, SelectMenuOptionBuilder } = require('discord.js');
+const { ApplicationCommandType, ActionRowBuilder, SelectMenuBuilder, ComponentType, Colors, SelectMenuOptionBuilder, ActivityType } = require('discord.js');
 const Command = require('../../structures/Command.js');
 const PlayerStats = require('../../structures/models/PlayerStats.js');
 const Flags = {
@@ -64,6 +64,10 @@ module.exports = class ViewUser extends Command {
 
             interaction.targetUser.banner ? userEmbedOptions.push({ label: 'Banner', value: 'banner' }) : null;
 
+            interaction.targetMember.presence?.activities?.some(({ type }) => [ActivityType.Listening, ActivityType.Playing, ActivityType.Streaming, ActivityType.Watching].includes(type))
+                ? userEmbedOptions.push({ label: 'Activity', value: 'activity' })
+                : null
+
             let userEmbedComponents = new ActionRowBuilder()
                 .addComponents([
                     new SelectMenuBuilder()
@@ -122,7 +126,10 @@ module.exports = class ViewUser extends Command {
                     selectMenuOptions.push(SelectMenuOption);
                 };
 
-                userEmbedComponents = SelectMenuBuilder.from(fixedEmbedComponents.components[0]).setOptions(selectMenuOptions);
+                userEmbedComponents = new ActionRowBuilder()
+                    .addComponents([
+                        SelectMenuBuilder.from(fixedEmbedComponents.components[0]).setOptions(selectMenuOptions)
+                    ]);
 
                 switch (selectMenu.values[0]) {
                     case 'overview':
@@ -153,12 +160,7 @@ module.exports = class ViewUser extends Command {
                                     timestamp: new Date().toISOString()
                                 }
                             ],
-                            components: [
-                                {
-                                    type: ComponentType.ActionRow,
-                                    components: [userEmbedComponents]
-                                }
-                            ]
+                            components: [userEmbedComponents]
                         });
                         break;
                     case 'roles':
@@ -182,12 +184,7 @@ module.exports = class ViewUser extends Command {
                                     timestamp: new Date().toISOString()
                                 }
                             ],
-                            components: [
-                                {
-                                    type: ComponentType.ActionRow,
-                                    components: [userEmbedComponents]
-                                }
-                            ]
+                            components: [userEmbedComponents]
                         });
                         break;
                     case 'avatar':
@@ -223,12 +220,7 @@ module.exports = class ViewUser extends Command {
                                     timestamp: new Date().toISOString()
                                 }
                             ],
-                            components: [
-                                {
-                                    type: ComponentType.ActionRow,
-                                    components: [userEmbedComponents]
-                                }
-                            ]
+                            components: [userEmbedComponents]
                         });
                         break;
                     case 'banner':
@@ -264,12 +256,74 @@ module.exports = class ViewUser extends Command {
                                     timestamp: new Date().toISOString()
                                 }
                             ],
-                            components: [
+                            components: [userEmbedComponents]
+                        });
+                        break;
+                    case 'activity':
+                        const { activities } = interaction.targetMember.presence;
+                        const activity_fields = [];
+
+                        let imageURL = null;
+
+                        for (const { name, type, url, state, details, timestamps, syncId, assets } of activities) {
+                            if (ActivityType.Custom === type) {
+                                activity_fields.push({ name: 'Status', value: state });
+                            } else if (ActivityType.Playing === type) {
+                                if (name.toLowerCase() === 'youtube') {
+                                    activity_fields.push(
+                                        { name: 'Watching on YouTube', value: `*[${details}](${url})*` },
+                                        { name: 'Channel', value: state, inline: true },
+                                        { name: `${assets.smallText.toLowerCase() === 'live' ? 'Live' : 'Ends In'}`, value: assets.smallText.toLowerCase() === 'live' ? 'Live Stream' : this.bot.utils.formatTime(new Date(timestamps?.end || Date.now() + 1000).getTime() - Date.now(), true), inline: true }
+                                    );
+                                };
+
+                                if (name.toLowerCase() === 'visual studio code') {
+                                    activity_fields.push(
+                                        { name: 'Visual Studio Code', value: `**${details}**` },
+                                        { name: 'Folder', value: state ? state.split(':')[1].trim() : 'Idle', inline: true },
+                                        { name: 'Opened Since', value: this.bot.utils.formatTime(Date.now() - new Date(timestamps?.start || Date.now() - 1000).getTime(), true), inline: true },
+                                        { name: 'Language', value: state ? this.bot.utils.capitalizeFirstLetter(assets.largeText.match(/(\b[A-Z]+|\b[A-Z]\b)/g).filter((word) => word.length > 1).toString()) : 'Idle', inline: true }
+                                    );
+                                };
+                            } else if (ActivityType.Listening === type) {
+                                if (name.toLowerCase() === 'spotify') {
+                                    activity_fields.push(
+                                        { name: 'Listening to Spotify', value: `**${state.replace(/;/g, ',')} -** *[${details}](https://open.spotify.com/track/${syncId || '6Uh4txYnvejoOrITECJAiA'})*` },
+                                        { name: 'Album', value: assets.largeText, inline: true },
+                                        { name: 'Duration', value: this.bot.utils.formatTime(new Date(timestamps?.end || Date.now() + 1000).getTime() - new Date(timestamps?.start || Date.now()).getTime(), true), inline: true },
+                                        { name: 'Ends In', value: this.bot.utils.formatTime(new Date(timestamps?.end || Date.now() + 1000).getTime() - Date.now(), true), inline: true }
+                                    );
+
+                                    imageURL = `https://i.scdn.co/image/${assets.largeImage.split(':')[1]}`;
+                                };
+                            };
+                        };
+
+                        await selectMenu.update({
+                            embeds: [
                                 {
-                                    type: ComponentType.ActionRow,
-                                    components: [userEmbedComponents]
+                                    author: {
+                                        name: 'User Activity',
+                                        iconURL: interaction.targetUser.displayAvatarURL()
+                                    },
+                                    color: Colors.Aqua,
+                                    title: interaction.targetUser.tag,
+                                    description: `${nitroUserAvatar} ${Badges.join(' ')}`,
+                                    thumbnail: {
+                                        url: interaction.targetUser.displayAvatarURL()
+                                    },
+                                    fields: [...activity_fields],
+                                    image: {
+                                        url: imageURL
+                                    },
+                                    footer: {
+                                        text: interaction.targetUser.username,
+                                        iconURL: interaction.targetUser.displayAvatarURL()
+                                    },
+                                    timestamp: new Date().toISOString()
                                 }
-                            ]
+                            ],
+                            components: [userEmbedComponents]
                         });
                         break;
                 };
@@ -277,16 +331,12 @@ module.exports = class ViewUser extends Command {
 
             EmbedCollector.on('end', async (_collected, reason) => {
                 if (reason === 'time') {
-                    userEmbedComponents = SelectMenuBuilder.from(userEmbedComponents.components ? userEmbedComponents.components[0] : userEmbedComponents).setDisabled(true);
+                    userEmbedComponents = new ActionRowBuilder()
+                        .addComponents([
+                            SelectMenuBuilder.from(userEmbedComponents.components ? userEmbedComponents.components[0] : userEmbedComponents).setDisabled(true)
+                        ]);
 
-                    return await interaction.editReply({
-                        components: [
-                            {
-                                type: ComponentType.ActionRow,
-                                components: [userEmbedComponents]
-                            }
-                        ]
-                    });
+                    return interaction.editReply({ components: [userEmbedComponents] }).catch(() => null);
                 };
             });
         } catch (error) {
