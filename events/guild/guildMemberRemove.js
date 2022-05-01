@@ -18,7 +18,7 @@ module.exports = class guildMemberRemove extends Event {
                 const guildLeaveEmbed = new EmbedBuilder()
                     .setAuthor({ name: member.user.tag, iconURL: member.user.displayAvatarURL() })
                     .setColor('Red')
-                    .setDescription(`***${member.user.tag} has left the server on <t:${Math.floor(Date.now() / 1000)}> (<t:${Math.floor(Date.now() / 1000)}:R>)***`)
+                    .setDescription(`***${member.user.tag}** has left the server on <t:${Math.floor(Date.now() / 1000)}> (<t:${Math.floor(Date.now() / 1000)}:R>)*`)
                     .addFields([
                         { name: 'Player', value: player?.name || 'Unregistered', inline: true },
                         { name: 'User ID', value: member.id, inline: true },
