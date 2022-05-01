@@ -9,7 +9,7 @@
   "author": "Firez",
   "license": "GPL-3.0",
   "dependencies": {
-    "discord.js": "^14.0.0-dev.1650413390-585169f",
+    "discord.js": "^14.0.0-dev.1651147765-679dcda",
     "glob": "^7.2.0",
     "mongoose": "^6.3.0"
   }

@@ -1,6 +1,6 @@
-const { ApplicationCommandType, ApplicationCommandPermissionType, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
+const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
 const Command = require('../../structures/Command.js');
-const { Owners, Roles, Channels } = require('../../config.json');
+const { Roles, Channels } = require('../../config.json');
 const PlayerStats = require('../../structures/models/PlayerStats.js');
 
 module.exports = class Register extends Command {
@@ -10,12 +10,8 @@ module.exports = class Register extends Command {
             description: 'Register your in-game name',
             category: 'Utility',
             usage: '[ign]',
-            permissions: [
-                { id: '', type: ApplicationCommandPermissionType.Role, permission: false },
-                ...Owners.map(({ id }) => ({ id, type: ApplicationCommandPermissionType.User, permission: true }))
-            ],
             type: ApplicationCommandType.ChatInput,
-            commandOptions: [
+            options: [
                 { name: 'ign', type: ApplicationCommandOptionType.String, description: 'Enter your Rainbow 6 Mobile IGN', required: true }
             ]
         });
@@ -26,7 +22,7 @@ module.exports = class Register extends Command {
             let ign = interaction.options.getString('ign').trim().slice(0, 25);
             let player = await PlayerStats.findOne({ id: interaction.member.id });
 
-            if (player) return interaction.reply({ content: '*You have already registered at Sky Rainbow 6 Mobile Match Making*', ephemeral: true });
+            if (player) return await interaction.reply({ content: `*You have already registered at ${interaction.guild.name}*`, ephemeral: true });
 
             await interaction.deferReply({ ephemeral: true });
 
@@ -49,15 +45,15 @@ module.exports = class Register extends Command {
                         .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                         .setColor('Red')
                         .setDescription(`*Sorry, We couldn\'t register your IGN as it is already taken by ${memberExists ? originalNameMember : originalNameUser.tag}*`)
-                        .addFields(
+                        .addFields([
                             { name: 'IGN', value: splitName, inline: true },
                             { name: 'Existing Player ID', value: originalNameUser.id, inline: true },
                             { name: 'Existing Player IGN', value: member.no_case_name, inline: true }
-                        )
+                        ])
                         .setFooter({ text: interaction.user.username, iconURL: interaction.user.displayAvatarURL() })
                         .setTimestamp();
 
-                    return interaction.editReply({ embeds: [failedRegistrationEmbed] });
+                    return await interaction.editReply({ embeds: [failedRegistrationEmbed] });
                 };
             };
 
@@ -67,11 +63,19 @@ module.exports = class Register extends Command {
                 id: interaction.member.id,
                 name: ign,
                 rank: role.name,
-                matches: 0,
-                wins: 0,
-                loses: 0,
-                current_points: 0,
-                total_points: 0,
+                points: {
+                    current: 0,
+                    total: 0
+                },
+                statistics: {
+                    kills: 0,
+                    deaths: 0,
+                    total_kills: 0,
+                    total_deaths: 0,
+                    wins: 0,
+                    loses: 0,
+                    matches: 0
+                },
                 penalties: {
                     count: 0,
                     events: []
@@ -89,7 +93,12 @@ module.exports = class Register extends Command {
                     ping_interval: 0,
                     daily_pings: 0,
                     daily_substitute_cooldown: 0
-                }
+                },
+                logs: {
+                    matches: [],
+                    penalties: []
+                },
+                _roles: [Roles.RegisteredId]
             });
 
             await player.save();
@@ -97,32 +106,36 @@ module.exports = class Register extends Command {
             const successfulRegistrationEmbed = new EmbedBuilder()
                 .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                 .setColor('Green')
-                .setDescription(`*We have successfully registered you at Sky Rainbow 6 Mobile Match Making!*`)
-                .addFields(
+                .setDescription(`*We have successfully registered you at ${interaction.guild.name}!*`)
+                .addFields([
                     { name: 'Player', value: `${interaction.member}`, inline: true },
                     { name: 'Player ID', value: interaction.member.id, inline: true },
                     { name: 'IGN', value: ign, inline: true }
-                )
+                ])
                 .setFooter({ text: interaction.user.username, iconURL: interaction.user.displayAvatarURL() })
                 .setTimestamp();
 
             const AuditLogEmbed = new EmbedBuilder()
                 .setAuthor({ name: 'Registered User', iconURL: interaction.user.displayAvatarURL() })
                 .setColor('Green')
-                .setDescription(`*Player has registered at Sky Rainbow 6 Mobile Match Making!*`)
-                .addFields(
+                .setDescription(`*Player has registered at ${interaction.guild.name}!*`)
+                .addFields([
                     { name: 'Player', value: `${interaction.member}`, inline: true },
                     { name: 'Player ID', value: interaction.member.id, inline: true },
                     { name: 'IGN', value: ign, inline: true },
-                )
+                ])
                 .setFooter({ text: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                 .setTimestamp();
 
-            await interaction.member.roles.add(role.id);
-            interaction.member.setNickname(`[${player.current_points}] ${ign}`).catch(() => null);
+            if (interaction.member.manageable) {
+                await interaction.member.roles.add(role.id);
+                await interaction.member.setNickname(`[${player.points.current}] ${ign}`);
+            } else {
+                await interaction.followUp({ content: `*Couldn't add registered role to you or change your nickname, please DM a moderator regarding it.*` });
+            };
 
-            interaction.editReply({ embeds: [successfulRegistrationEmbed] });
-            return this.bot.utils.auditSend(Channels.RegisterLogId, AuditLogEmbed);
+            await interaction.editReply({ embeds: [successfulRegistrationEmbed] });
+            return this.bot.utils.auditSend(Channels.RegisterLogId, { embeds: [AuditLogEmbed] });
         } catch (error) {
             console.error(error);
 

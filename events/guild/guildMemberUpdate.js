@@ -1,10 +1,10 @@
+const { EmbedBuilder } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const { Channels, Roles } = require('../../config.json');
-const { EmbedBuilder } = require('discord.js');
 const PlayerStats = require('../../structures/models/PlayerStats.js');
 const MuteList = require('../../structures/models/MuteList.js');
 
-module.exports = class guildMemberAdd extends Event {
+module.exports = class guildMemberUpdate extends Event {
     constructor(...args) {
         super(...args);
     };
@@ -16,7 +16,7 @@ module.exports = class guildMemberAdd extends Event {
             if (oldMember.pending && !newMember.pending && !player) {
                 const JoinedMemberEmbed = new EmbedBuilder()
                     .setAuthor({ name: newMember.guild.name, iconURL: newMember.guild.iconURL() })
-                    .setColor('Green')
+                    .setColor('Aqua')
                     .setTitle(`Welcome to ${newMember.guild.name}`)
                     .setThumbnail(newMember.guild.iconURL())
                     .setDescription(`*Welcome ${newMember.user.tag} to ${newMember.guild.name}!. Please register yourself in <#${Channels.RegisterId}> and go through <#${Channels.InformationId}> and <#${Channels.PlayRulesId}> respectively to know more about the server and how to play in our Match Making!*`)

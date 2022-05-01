@@ -1,26 +1,40 @@
 const { Client, Collection, IntentsBitField, Partials } = require('discord.js');
 const Util = require('./Util.js');
+const Mongoose = require('./mongoose.js');
 
 module.exports = class SkyR6M extends Client {
     constructor(options = {}) {
         super({
-            partials: [Partials.Message, Partials.Reaction],
+            partials: [Partials.Message, Partials.Reaction, Partials.GuildMember],
             presence: {
                 status: 'idle',
                 activities: [
                     { name: 'Sky Rainbow 6 Mobile MatchMaking', type: 'WATCHING' }
                 ]
             },
-            intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers, IntentsBitField.Flags.GuildMessages, IntentsBitField.Flags.GuildVoiceStates]
+            intents: [
+                IntentsBitField.Flags.MessageContent, IntentsBitField.Flags.Guilds,
+                IntentsBitField.Flags.GuildMembers, IntentsBitField.Flags.GuildMessages,
+                IntentsBitField.Flags.GuildVoiceStates, IntentsBitField.Flags.GuildBans,
+                IntentsBitField.Flags.GuildInvites
+            ],
+            sweepers: {
+                messages: {
+                    interval: 7000,
+                    lifetime: 7000
+                }
+            }
         });
 
         this.validate(options);
 
         this.offenders = new Collection();
         this.commands = new Collection();
+        this.invites = new Collection();
         this.events = new Collection();
+        this.mongoose = new Mongoose();
         this.utils = new Util(this);
-        this.mongoose = require('./mongoose.js');
+
     };
 
     validate(options) {

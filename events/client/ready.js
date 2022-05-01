@@ -1,5 +1,5 @@
-const { ApplicationCommandType } = require('discord.js');
-const Event = require('../../structures/Event');
+const { ApplicationCommandType, ChannelType } = require('discord.js');
+const Event = require('../../structures/Event.js');
 
 module.exports = class Ready extends Event {
     constructor(...args) {
@@ -12,18 +12,36 @@ module.exports = class Ready extends Event {
         try {
             let ChatInputCommands = this.bot.commands.filter(({ type }) => type === ApplicationCommandType.ChatInput);
 
-            for (const [key, { description, type, commandOptions, permissions }] of ChatInputCommands) {
-                const ChatInputData = await this.bot.guilds.cache.first().commands.create({ name: key, description, type, options: commandOptions });
-
-                await ChatInputData.permissions.add({ permissions });
+            for (const [name, { description, type, options }] of ChatInputCommands) {
+                await this.bot.guilds.cache.first().commands.create({ name, description, type, options });
             };
 
             let UserCommands = this.bot.commands.filter(({ type }) => [ApplicationCommandType.User, ApplicationCommandType.Message].includes(type));
 
-            for (const [key, { type, permissions }] of UserCommands) {
-                const UserData = await this.bot.guilds.cache.first().commands.create({ name: key, type });
+            for (const [name, { type }] of UserCommands) {
+                await this.bot.guilds.cache.first().commands.create({ name, type });
+            };
 
-                await UserData.permissions.add({ permissions });
+            for (const guild of this.bot.guilds.cache.values()) {
+                if (guild.available) {
+                    const invites = await guild.invites.fetch({ cache: false });
+
+                    this.bot.invites.set(guild.id, invites);
+                };
+            };
+
+            for (const channel of this.bot.channels.cache.filter(({ type, viewable }) => [ChannelType.GuildText, ChannelType.GuildNews, ChannelType.GuildPublicThread, ChannelType.GuildPrivateThread].includes(type) && viewable).values()) {
+                await channel.messages.fetch({ limit: 50, cache: true });
+
+                let fetchInterval = setInterval(async () => {
+                    const cached_channel = this.bot.channels.cache.get(channel.id);
+
+                    if (cached_channel) {
+                        await cached_channel.messages.fetch({ limit: 50, cache: true });
+                    } else {
+                        clearInterval(fetchInterval);
+                    };
+                }, 7100000 - (7100000 - this.bot.sweepers.intervals.messages._repeat) + 100000);
             };
 
             console.log(`${this.bot.user.username} is Online!`);

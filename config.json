@@ -1,15 +1,19 @@
 {
-    "TOKEN": "",
+    "TOKEN": "OTY1NjA4MTYxNDg0NjMyMTE0.Yl1qrQ.FM5sm4zKhPMW-n00N1r9xWNP2L8",
     "Owners": [
         {
-            "id": "",
-            "name": ""
+            "id": "457556815345877003",
+            "name": "Pain"
+        },
+        {
+            "id": "763985299604373554",
+            "name": "LXIX"
         }
     ],
     "RolePoints": [
         {
             "points": 0,
-            "role": ""
+            "role": "965522235467116544"
         },
         {
             "points": 100,
@@ -33,15 +37,19 @@
         }
     ],
     "Channels": {
-        "RegisterId": "",
-        "RegisterLogId": "",
-        "AuditLogId": "",
-        "InformationId": "",
+        "RegisterId": "965551444864401448",
+        "RegisterLogId": "966234465150070796",
+        "AuditLogId": "965594690797838367",
+        "SkyLogId": "969471892639584266",
+        "MessageLogId": "965594670648393788",
+        "PointLogId": "968011798076854273",
+        "InformationId": "965522999241478154",
+        "PointsUpdateId": "",
         "PlayRulesId": ""
     },
     "Roles": {
-        "DefaultRoleName": "",
-        "RegisteredId": "",
-        "MuteRoleId": ""
+        "DefaultRoleName": "Sky | Registered",
+        "RegisteredId": "965522235467116544",
+        "MuteRoleId": "966192620508438538"
     }
 }

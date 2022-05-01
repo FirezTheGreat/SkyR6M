@@ -6,10 +6,9 @@ module.exports = class Command {
         this.name = options.name || name;
         this.description = options.description || null;
         this.category = options.category;
-        this.usage = options.usage || 'No Usage';
-        this.permissions = options.permissions || [];
+        this.usage = options.usage || null;
         this.type = options.type || ApplicationCommandType.ChatInput;
-        this.commandOptions = options.commandOptions || [];
+        this.options = options.options || [];
     };
 
     async InteractionRun(interaction) {

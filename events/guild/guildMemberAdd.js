@@ -1,7 +1,7 @@
+const { EmbedBuilder } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const PlayerStats = require('../../structures/models/PlayerStats.js');
-const { RolePointChecker } = require('../../structures/functions.js');
-const { Roles } = require('../../config.json');
+const { Channels } = require('../../config.json');
 
 module.exports = class guildMemberAdd extends Event {
     constructor(...args) {
@@ -12,14 +12,29 @@ module.exports = class guildMemberAdd extends Event {
         try {
             const player = await PlayerStats.findOne({ id: member.id });
 
-            if (player) {
-                const roleId = RolePointChecker(player.current_points, player.current_points);
-                const roles = [Roles.RegisteredId];
+            const cached_invites = this.bot.invites.get(member.guild.id);
+            const new_invites = await member.guild.invites.fetch({ cache: false });
 
-                if (roleId !== Roles.RegisteredId) roles.push(roleId);
+            const { inviter } = new_invites.find(({ code, uses }) => cached_invites?.get(code)?.uses < uses) || { inviter: { tag: 'Unknown#0000' } };
+            this.bot.invites.set(member.guild.id, new_invites);
 
-                member.setNickname(`[${player.current_points}] ${player.name}`).catch(() => null);
-                await member.roles.add(roles);
+            const guildJoinEmbed = new EmbedBuilder()
+                .setAuthor({ name: member.user.tag, iconURL: member.user.displayAvatarURL() })
+                .setColor('Green')
+                .setDescription(`***${member.user.tag}** has joined the server on <t:${Math.floor(member.joinedTimestamp / 1000)}> (<t:${Math.floor(member.joinedTimestamp / 1000)}:R>)*`)
+                .addFields([
+                    { name: 'Registered Name', value: player?.name || 'Unregistered', inline: true },
+                    { name: 'User ID', value: member.id, inline: true },
+                    { name: 'Invited By', value: inviter.tag, inline: true }
+                ])
+                .setFooter({ text: member.guild.name, iconURL: member.guild.iconURL() })
+                .setTimestamp();
+
+            this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [guildJoinEmbed] });
+
+            if (player && member.manageable) {
+                await member.setNickname(`[${player.points.current}] ${player.name.trim()}`);
+                await member.roles.add(player._roles);
             };
         } catch (error) {
             console.error(error);

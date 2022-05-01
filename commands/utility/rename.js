@@ -1,6 +1,6 @@
-const { ApplicationCommandType, ApplicationCommandPermissionType, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
+const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
 const Command = require('../../structures/Command.js');
-const { Channels, Owners } = require('../../config.json');
+const { Channels } = require('../../config.json');
 const PlayerStats = require('../../structures/models/PlayerStats.js');
 
 module.exports = class Rename extends Command {
@@ -10,13 +10,8 @@ module.exports = class Rename extends Command {
             description: 'Rename your in-game name',
             category: 'Utility',
             usage: '[ign]',
-            permissions: [
-                { id: '', type: ApplicationCommandPermissionType.Role, permission: false },
-                { id: '', type: ApplicationCommandPermissionType.Role, permission: true },
-                ...Owners.map(({ id }) => ({ id, type: ApplicationCommandPermissionType.User, permission: true }))
-            ],
             type: ApplicationCommandType.ChatInput,
-            commandOptions: [
+            options: [
                 { name: 'ign', type: ApplicationCommandOptionType.String, description: 'Rename your Rainbow 6 Mobile IGN', required: true }
             ]
         });
@@ -24,10 +19,10 @@ module.exports = class Rename extends Command {
 
     async InteractionRun(interaction) {
         try {
-            let ign = interaction.options.getString('ign').trim().slice(0, 25);
+            let ign = interaction.options.getString().trim().slice(0, 25);
             let player = await PlayerStats.findOne({ id: interaction.member.id });
 
-            if (!player) return interaction.reply({ content: '*You are not registered at Sky Rainbow 6 Mobile Match Making*', ephemeral: true });
+            if (!player) return interaction.reply({ content: `*You are not registered at ${interaction.guild.name}*`, ephemeral: true });
 
             await interaction.deferReply({ ephemeral: true });
 
@@ -50,11 +45,11 @@ module.exports = class Rename extends Command {
                         .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                         .setColor('Red')
                         .setDescription(`*Sorry, We couldn\'t rename your IGN as it is already taken by ${memberExists ? originalNameMember : originalNameUser.tag}*`)
-                        .addFields(
+                        .addFields([
                             { name: 'IGN', value: splitName, inline: true },
                             { name: 'Existing Player ID', value: originalNameUser.id, inline: true },
                             { name: 'Existing Player IGN', value: member.no_case_name, inline: true }
-                        )
+                        ])
                         .setFooter({ text: interaction.user.username, iconURL: interaction.user.displayAvatarURL() })
                         .setTimestamp();
 
@@ -74,30 +69,34 @@ module.exports = class Rename extends Command {
             const successfulRegistrationEmbed = new EmbedBuilder()
                 .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                 .setColor('Green')
-                .setDescription(`*We have successfully renamed your IGN at Sky Rainbow 6 Mobile Match Making!*`)
-                .addFields(
+                .setDescription(`*We have successfully renamed your IGN at ${interaction.guild.name}!*`)
+                .addFields([
                     { name: 'Player', value: `${interaction.member}`, inline: true },
                     { name: 'Previous IGN', value: player.name, inline: true },
                     { name: 'New IGN', value: ign, inline: true },
-                )
+                ])
                 .setFooter({ text: interaction.user.username, iconURL: interaction.user.displayAvatarURL() })
                 .setTimestamp();
 
             const AuditLogEmbed = new EmbedBuilder()
                 .setAuthor({ name: 'Renamed IGN', iconURL: interaction.user.displayAvatarURL() })
                 .setColor('Green')
-                .addFields(
+                .addFields([
                     { name: 'Player', value: `${interaction.member}`, inline: true },
                     { name: 'Previous IGN', value: player.name, inline: true },
                     { name: 'New IGN', value: ign, inline: true },
-                )
+                ])
                 .setFooter({ text: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                 .setTimestamp();
 
-            interaction.member.setNickname(`[${player.current_points}] ${ign}`).catch(() => null);
+            if (interaction.member.manageable) {
+                await interaction.member.setNickname(`[${player.current_points}] ${ign}`);
+            } else {
+                await interaction.followUp({ content: `*Your new IGN has been updated to our database but failed to rename your IGN on discord, please DM a moderator regarding it.*` });
+            };
 
             interaction.editReply({ embeds: [successfulRegistrationEmbed] });
-            return this.bot.utils.auditSend(Channels.AuditLogId, AuditLogEmbed);
+            return this.bot.utils.auditSend(Channels.SkyLogId, { embeds: [AuditLogEmbed] });
         } catch (error) {
             console.error(error);
 

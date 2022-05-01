@@ -1,6 +1,6 @@
-const Event = require('../../structures/Event');
+const Event = require('../../structures/Event.js');
 
-module.exports = class Ready extends Event {
+module.exports = class interactionCreate extends Event {
     constructor(...args) {
         super(...args)
     };

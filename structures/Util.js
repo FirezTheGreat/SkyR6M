@@ -160,19 +160,21 @@ module.exports = class Util {
             time = `${time.slice(0, pos)} and ${time.slice(pos + 1)}`;
         }
         return time;
-    }
+    };
 
     /**
      * 
      * @param {string} id Channel Id
-     * @param {EmbedBuilder} embed Embed to Send
+     * @param {Array<EmbedBuilder>} embed Embed to Send
+     * @param {array} files Files to Attach
+     * @returns Embeded message to the channel
      */
 
-    auditSend(id, embed) {
+    auditSend(id, { embeds = [], files = [] }) {
         const channel = this.bot.channels.cache.get(id);
 
-        if (channel) channel.send({ embeds: [embed] });
-        else throw new TypeError(`Channel Id doesn't exist`);
+        if (channel) channel.send({ embeds, files });
+        else return new TypeError(`Channel Id doesn't exist`);
     };
 
     /**
@@ -182,5 +184,41 @@ module.exports = class Util {
 
     capitalizeFirstLetter(string) {
         string[0].toUpperCase() + string.slice(1);
+    };
+
+    /**
+     * 
+     * @param {number} current_points Current Points
+     * @param {boolean} reverse Invert the point value to negative
+     * @returns {number} Added Points
+     */
+
+    addPoints(current_points, reverse = false) {
+        let points = 0;
+
+        if (current_points < 200) points += 20;
+        else if (current_points < 500) points += 15;
+        else points += 10;
+
+        return reverse ? -points : points;
+    };
+
+    /**
+     * 
+     * @param {number} current_points Current Points
+     * @param {boolean} reverse Invert the point value to positive
+     * @returns Removed Points
+     */
+
+    removePoints(current_points, reverse = false) {
+        let points = 0;
+
+        if (current_points < 100) points -= 0;
+        else if (current_points < 200) points -= 10;
+        else if (current_points < 300) points -= 15;
+        else if (current_points < 700) points -= 20;
+        else points -= 25;
+
+        return reverse ? +points : points;
     };
 };

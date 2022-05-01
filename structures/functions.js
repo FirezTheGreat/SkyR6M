@@ -1,8 +1,16 @@
 const { RolePoints } = require('../config.json');
 
 module.exports = {
+    /**
+     * 
+     * @param {number} old_points Total Old Points
+     * @param {number} new_points Added New Points
+     * @returns {string<role>} Role ID
+     */
     RolePointChecker(old_points, new_points) {
-        let old_role;
+        let old_role; 
+        new_points += old_points;
+        
         for (const role of RolePoints) {
             if (role.points <= old_points) {
                 old_role = role.role;
