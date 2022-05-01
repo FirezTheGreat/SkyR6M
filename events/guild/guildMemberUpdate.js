@@ -32,24 +32,53 @@ module.exports = class guildMemberUpdate extends Event {
                 if (!mutedUser) {
                     const roles = newMember.roles.cache.filter((role) => !role.managed && ![Roles.MuteRoleId, newMember.guild.id].includes(role.id)).map((role) => role.id);
 
-                    if (roles.length) {
+                    if (roles.length && player) {
                         await newMember.roles.remove(roles);
-                        this.bot.offenders.set(newMember.id, roles);
+                        await PlayerStats.findOneAndUpdate(
+                            {
+                                id: player.id
+                            },
+                            {
+                                _roles: [Roles.MuteRoleId]
+                            }
+                        );
                     };
+
+                    this.bot.offenders.set(newMember.id, roles);
                 };
             };
-
+            
             if (oldMember.roles.cache.has(Roles.MuteRoleId) && !newMember.roles.cache.has(Roles.MuteRoleId)) {
                 let mutedUser = await MuteList.findOne({ id: newMember.id });
 
                 if (!mutedUser) {
                     const roles = this.bot.offenders.get(newMember.id);
 
-                    if (roles) {
+                    if (roles && player) {
                         await newMember.roles.add(roles);
-                        this.bot.offenders.delete(newMember.id);
+                        await PlayerStats.findOneAndUpdate(
+                            {
+                                id: player.id
+                            },
+                            {
+                                _roles: roles
+                            }
+                        );
                     };
+
+                    this.bot.offenders.delete(newMember.id);
                 };
+            };
+            
+            if (!oldMember.roles.cache.has(Roles.MuteRoleId) && !newMember.roles.cache.has(Roles.MuteRoleId) && player && (player._roles.length !== newMember.roles.cache.filter(({ managed, id }) => !managed && ![Roles.MuteRoleId, newMember.guild.id].includes(id)).size || !player._roles.every((value) => !newMember.roles.cache.has(value)))) {
+                await PlayerStats.findOneAndUpdate(
+                    {
+                        id: player.id
+                    },
+                    {
+                        _roles: newMember.roles.cache.filter(({ managed, id }) => !managed && ![Roles.MuteRoleId, newMember.guild.id].includes(id)).map(({ id }) => id)
+                    }
+                );
             };
         } catch (error) {
             console.error(error);
