@@ -9,7 +9,7 @@ module.exports = class messageDeleteBulk extends Event {
 
     async EventRun(messages, channel) {
         try {
-            for (const message of messages.toJSON().reverse()) {
+            for (const message of [...messages.values()].reverse()) {
                 if (message.guild.available && channel.type !== ChannelType.DM && channel.id !== Channels.MessageLogId) {
                     let { executor } = (await message.guild.fetchAuditLogs({ type: AuditLogEvent.MessageBulkDelete })).entries.first(),
                         target = 'Unknown#0000';
