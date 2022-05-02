@@ -266,36 +266,55 @@ module.exports = class ViewUser extends Command {
                         let imageURL = null;
 
                         for (const { name, type, url, state, details, timestamps, syncId, assets } of activities) {
-                            if (ActivityType.Custom === type) {
-                                activity_fields.push({ name: 'Status', value: state });
-                            } else if (ActivityType.Playing === type) {
-                                if (name.toLowerCase() === 'youtube') {
-                                    activity_fields.push(
-                                        { name: 'Watching on YouTube', value: `*[${details}](${url})*` },
-                                        { name: 'Channel', value: state, inline: true },
-                                        { name: `${assets.smallText.toLowerCase() === 'live' ? 'Live' : 'Ends In'}`, value: assets.smallText.toLowerCase() === 'live' ? 'Live Stream' : this.bot.utils.formatTime(new Date(timestamps?.end || Date.now() + 1000).getTime() - Date.now(), true), inline: true }
-                                    );
-                                };
+                            switch (type) {
+                                case ActivityType.Custom:
+                                    activity_fields.push({ name: 'Status', value: state });
+                                    break;
+                                case ActivityType.Playing:
+                                    switch (name.toLowerCase()) {
+                                        case 'youtube':
+                                            activity_fields.push(
+                                                { name: 'Watching on YouTube', value: `*[${details}](${url})*` },
+                                                { name: 'Channel', value: state, inline: true },
+                                                {
+                                                    name: `${assets.smallText.toLowerCase() === 'live' ? 'Live' : 'Ends In'}`,
+                                                    value: assets.smallText.toLowerCase() === 'live' ? 'Live Stream' : this.bot.utils.formatTime(new Date(timestamps?.end || Date.now() + 1000).getTime() - Date.now(), true),
+                                                    inline: true
+                                                }
+                                            );
+                                            break;
+                                        case 'visual studio code':
+                                            activity_fields.push(
+                                                { name: 'Visual Studio Code', value: `**${details}**` },
+                                                { name: 'Workspace', value: state ? state.split(':')[1].trim() : 'Idle', inline: true },
+                                                { name: 'Opened Since', value: this.bot.utils.formatTime(Date.now() - new Date(timestamps?.start || Date.now() - 1000).getTime(), true), inline: true },
+                                                {
+                                                    name: 'Language',
+                                                    value: state ? this.bot.utils.capitalizeFirstLetter(assets.largeText.match(/(\b[A-Z]+|\b[A-Z]\b)/g).filter((word) => word.length > 1).toString()) : 'Idle',
+                                                    inline: true
+                                                }
+                                            );
+                                            break;
+                                    };
+                                    break;
+                                case ActivityType.Listening:
+                                    switch (name.toLowerCase()) {
+                                        case 'spotify':
+                                            activity_fields.push(
+                                                { name: 'Listening to Spotify', value: `**${state.replace(/;/g, ',')} -** *[${details}](https://open.spotify.com/track/${syncId || '6Uh4txYnvejoOrITECJAiA'})*` },
+                                                { name: 'Album', value: assets.largeText, inline: true },
+                                                {
+                                                    name: 'Duration',
+                                                    value: this.bot.utils.formatTime(new Date(timestamps?.end || Date.now() + 1000).getTime() - new Date(timestamps?.start || Date.now()).getTime(), true),
+                                                    inline: true
+                                                },
+                                                { name: 'Ends In', value: this.bot.utils.formatTime(new Date(timestamps?.end || Date.now() + 1000).getTime() - Date.now(), true), inline: true }
+                                            );
 
-                                if (name.toLowerCase() === 'visual studio code') {
-                                    activity_fields.push(
-                                        { name: 'Visual Studio Code', value: `**${details}**` },
-                                        { name: 'Folder', value: state ? state.split(':')[1].trim() : 'Idle', inline: true },
-                                        { name: 'Opened Since', value: this.bot.utils.formatTime(Date.now() - new Date(timestamps?.start || Date.now() - 1000).getTime(), true), inline: true },
-                                        { name: 'Language', value: state ? this.bot.utils.capitalizeFirstLetter(assets.largeText.match(/(\b[A-Z]+|\b[A-Z]\b)/g).filter((word) => word.length > 1).toString()) : 'Idle', inline: true }
-                                    );
-                                };
-                            } else if (ActivityType.Listening === type) {
-                                if (name.toLowerCase() === 'spotify') {
-                                    activity_fields.push(
-                                        { name: 'Listening to Spotify', value: `**${state.replace(/;/g, ',')} -** *[${details}](https://open.spotify.com/track/${syncId || '6Uh4txYnvejoOrITECJAiA'})*` },
-                                        { name: 'Album', value: assets.largeText, inline: true },
-                                        { name: 'Duration', value: this.bot.utils.formatTime(new Date(timestamps?.end || Date.now() + 1000).getTime() - new Date(timestamps?.start || Date.now()).getTime(), true), inline: true },
-                                        { name: 'Ends In', value: this.bot.utils.formatTime(new Date(timestamps?.end || Date.now() + 1000).getTime() - Date.now(), true), inline: true }
-                                    );
-
-                                    imageURL = `https://i.scdn.co/image/${assets.largeImage.split(':')[1]}`;
-                                };
+                                            imageURL = `https://i.scdn.co/image/${assets.largeImage.split(':')[1]}`;
+                                            break;
+                                    };
+                                    break;
                             };
                         };
 
@@ -310,12 +329,9 @@ module.exports = class ViewUser extends Command {
                                     title: interaction.targetUser.tag,
                                     description: `${nitroUserAvatar} ${Badges.join(' ')}`,
                                     thumbnail: {
-                                        url: interaction.targetUser.displayAvatarURL()
-                                    },
-                                    fields: [...activity_fields],
-                                    image: {
                                         url: imageURL
                                     },
+                                    fields: [...activity_fields],
                                     footer: {
                                         text: interaction.targetUser.username,
                                         iconURL: interaction.targetUser.displayAvatarURL()

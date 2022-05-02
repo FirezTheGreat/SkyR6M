@@ -1,5 +1,6 @@
 const { ApplicationCommandType, ChannelType } = require('discord.js');
 const Event = require('../../structures/Event.js');
+const { Channels } = require('../../config.json');
 
 module.exports = class Ready extends Event {
     constructor(...args) {
@@ -30,8 +31,12 @@ module.exports = class Ready extends Event {
                 };
             };
 
-            for (const channel of this.bot.channels.cache.filter(({ type, viewable }) => [ChannelType.GuildText, ChannelType.GuildNews, ChannelType.GuildPublicThread, ChannelType.GuildPrivateThread].includes(type) && viewable).values()) {
-                await channel.messages.fetch({ limit: 50, cache: true });
+            for (const channel of this.bot.channels.cache.filter(({ type, viewable, parentId }) => [ChannelType.GuildText, ChannelType.GuildNews, ChannelType.GuildPublicThread, ChannelType.GuildPrivateThread].includes(type) && viewable && parentId !== Channels.LogsCategoryId).values()) {
+                try {
+                    await channel.messages.fetch({ limit: 50, cache: true });
+                } catch {
+                    continue;
+                };
 
                 let fetchInterval = setInterval(async () => {
                     const cached_channel = this.bot.channels.cache.get(channel.id);

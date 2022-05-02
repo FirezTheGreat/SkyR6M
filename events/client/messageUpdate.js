@@ -9,7 +9,7 @@ module.exports = class messageUpdate extends Event {
 
     async EventRun(oldMessage, newMessage) {
         try {
-            if (newMessage.author.bot) return;
+            if (newMessage.author?.bot) return;
 
             if (oldMessage.content !== newMessage.content) {
                 const AuditLogEmbed = new EmbedBuilder()

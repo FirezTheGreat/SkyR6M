@@ -47,7 +47,7 @@ module.exports = class channelPinsUpdate extends Event {
                         .setFooter({ text: message.guild.name, iconURL: message.guild.iconURL() })
                         .setTimestamp();
 
-                    this.bot.utils.auditSend(Channels.MessageLogId, { embeds: [AuditLogEmbed] });
+                    this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [AuditLogEmbed] });
                 };
             };
         } catch (error) {
