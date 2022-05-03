@@ -11,13 +11,13 @@ module.exports = class Ready extends Event {
 
     async EventRun() {
         try {
-            let ChatInputCommands = this.bot.commands.filter(({ type }) => type === ApplicationCommandType.ChatInput);
+            const ChatInputCommands = this.bot.commands.filter(({ type }) => type === ApplicationCommandType.ChatInput);
 
             for (const [name, { description, type, options }] of ChatInputCommands) {
                 await this.bot.guilds.cache.first().commands.create({ name, description, type, options });
             };
 
-            let UserCommands = this.bot.commands.filter(({ type }) => [ApplicationCommandType.User, ApplicationCommandType.Message].includes(type));
+            const UserCommands = this.bot.commands.filter(({ type }) => [ApplicationCommandType.User, ApplicationCommandType.Message].includes(type));
 
             for (const [name, { type }] of UserCommands) {
                 await this.bot.guilds.cache.first().commands.create({ name, type });
@@ -28,6 +28,14 @@ module.exports = class Ready extends Event {
                     const invites = await guild.invites.fetch({ cache: false });
 
                     this.bot.invites.set(guild.id, invites);
+                };
+            };
+
+            for (const guild of this.bot.guilds.cache.values()) {
+                try {
+                    await guild.members.fetch();
+                } catch {
+                    continue;
                 };
             };
 

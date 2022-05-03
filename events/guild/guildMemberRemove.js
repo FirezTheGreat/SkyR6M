@@ -22,7 +22,7 @@ module.exports = class guildMemberRemove extends Event {
                     .addFields([
                         { name: 'Player', value: player?.name || 'Unregistered', inline: true },
                         { name: 'User ID', value: member.id, inline: true },
-                        { name: 'Joined Server On', value: `<t:${Math.floor((member.partial ? Date.now() : member.joinedTimestamp) / 1000)}> (<t:${Math.floor((member.partial ? Date.now() : member.joinedTimestamp) / 1000)}:R>)` }
+                        { name: 'Joined Server On', value: member.partial ? '*Cannot Determine*' : `<t:${Math.floor(member.joinedTimestamp / 1000)}> (<t:${Math.floor(member.joinedTimestamp / 1000)}:R>)` }
                     ])
                     .setFooter({ text: member.guild.name, iconURL: member.guild.iconURL() })
                     .setTimestamp();
