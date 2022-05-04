@@ -35,7 +35,7 @@ module.exports = class voiceStateUpdate extends Event {
                     .setFooter({ text: oldState.guild.name, iconURL: oldState.guild.iconURL() })
                     .setTimestamp();
 
-                if (executor && executor.id !== newState.id) leftVoiceEmbed.addFields([
+                if (executor && target && executor.id !== target.id && oldState.member.id === target.id) leftVoiceEmbed.addFields([
                     { name: 'Disconnected By', value: `${executor} (${executor.id})`, inline: true }
                 ]);
 
@@ -55,7 +55,7 @@ module.exports = class voiceStateUpdate extends Event {
                     .setFooter({ text: newState.guild.name, iconURL: newState.guild.iconURL() })
                     .setTimestamp();
 
-                if (executor && executor.id !== newState.id) rejoinedVoiceEmbed.addFields([
+                if (executor && target && executor.id !== target.id && newState.member.id === target.id) rejoinedVoiceEmbed.addFields([
                     { name: 'Moved By', value: `${executor} (${executor.id})`, inline: true }
                 ]);
 
