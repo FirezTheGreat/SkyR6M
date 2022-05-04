@@ -21,7 +21,7 @@ module.exports = class voiceStateUpdate extends Event {
             };
 
             if (oldState.member && oldState.channelId && !newState.channelId) {
-                const { executor } = (await newState.guild.fetchAuditLogs({ type: AuditLogEvent.MemberDisconnect })).entries.first() ?? { executor: null };
+                const { target, executor } = (await newState.guild.fetchAuditLogs({ type: AuditLogEvent.MemberDisconnect })).entries.first() ?? { target: null, executor: null };
                 const voiceLeftAttachment = new Attachment(path.join(__dirname, '..', '..', 'assets', 'emojis', 'voice_left.png'), 'voice_left.png');
 
                 const leftVoiceEmbed = new EmbedBuilder()
@@ -35,13 +35,13 @@ module.exports = class voiceStateUpdate extends Event {
                     .setFooter({ text: oldState.guild.name, iconURL: oldState.guild.iconURL() })
                     .setTimestamp();
 
-                if (executor) leftVoiceEmbed.addFields([
+                if (executor && executor.id !== newState.id) leftVoiceEmbed.addFields([
                     { name: 'Disconnected By', value: `${executor} (${executor.id})`, inline: true }
                 ]);
 
                 this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [leftVoiceEmbed], files: [voiceLeftAttachment] });
             } else if (oldState.member && newState.member && oldState.channelId && newState.channelId) {
-                const { executor } = (await newState.guild.fetchAuditLogs({ type: AuditLogEvent.MemberMove })).entries.first() ?? { executor: null };
+                const { target, executor } = (await newState.guild.fetchAuditLogs({ type: AuditLogEvent.MemberMove })).entries.first() ?? { target: null, executor: null };
                 const voiceRejoinAttachment = new Attachment(path.join(__dirname, '..', '..', 'assets', 'emojis', 'voice_joined.png'), 'voice_joined.png');
 
                 const rejoinedVoiceEmbed = new EmbedBuilder()
@@ -55,7 +55,7 @@ module.exports = class voiceStateUpdate extends Event {
                     .setFooter({ text: newState.guild.name, iconURL: newState.guild.iconURL() })
                     .setTimestamp();
 
-                if (executor) rejoinedVoiceEmbed.addFields([
+                if (executor && executor.id !== newState.id) rejoinedVoiceEmbed.addFields([
                     { name: 'Moved By', value: `${executor} (${executor.id})`, inline: true }
                 ]);
 
