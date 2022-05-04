@@ -1,4 +1,4 @@
-const { EmbedBuilder, Attachment } = require('discord.js');
+const { EmbedBuilder, Attachment, AuditLogEvent } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const { Channels, QueueRoleIds } = require('../../config.json');
 const path = require('path');
@@ -10,18 +10,18 @@ module.exports = class voiceStateUpdate extends Event {
 
     async EventRun(oldState, newState) {
         try {
-
             if (oldState.channelId) {
                 const { roles } = QueueRoleIds.find(({ voice }) => oldState.channelId === voice) ?? { roles: null };
-                await oldState.member.roles.remove(roles);
+                roles ? oldState.member.roles.remove(roles).catch(() => null) : null;
             };
 
             if (newState.channelId) {
                 const { roles } = QueueRoleIds.find(({ voice }) => newState.channelId === voice) ?? { roles: null };
-                await newState.member.roles.add(roles);
+                roles ? newState.member.roles.add(roles).catch(() => null) : null;
             };
 
             if (oldState.member && oldState.channelId && !newState.channelId) {
+                const { executor } = (await newState.guild.fetchAuditLogs({ type: AuditLogEvent.MemberDisconnect })).entries.first() ?? { executor: null };
                 const voiceLeftAttachment = new Attachment(path.join(__dirname, '..', '..', 'assets', 'emojis', 'voice_left.png'), 'voice_left.png');
 
                 const leftVoiceEmbed = new EmbedBuilder()
@@ -35,8 +35,13 @@ module.exports = class voiceStateUpdate extends Event {
                     .setFooter({ text: oldState.guild.name, iconURL: oldState.guild.iconURL() })
                     .setTimestamp();
 
+                if (executor) leftVoiceEmbed.addFields([
+                    { name: 'Disconnected By', value: `${executor} (${executor.id})`, inline: true }
+                ]);
+
                 this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [leftVoiceEmbed], files: [voiceLeftAttachment] });
             } else if (oldState.member && newState.member && oldState.channelId && newState.channelId) {
+                const { executor } = (await newState.guild.fetchAuditLogs({ type: AuditLogEvent.MemberMove })).entries.first() ?? { executor: null };
                 const voiceRejoinAttachment = new Attachment(path.join(__dirname, '..', '..', 'assets', 'emojis', 'voice_joined.png'), 'voice_joined.png');
 
                 const rejoinedVoiceEmbed = new EmbedBuilder()
@@ -49,6 +54,10 @@ module.exports = class voiceStateUpdate extends Event {
                     ])
                     .setFooter({ text: newState.guild.name, iconURL: newState.guild.iconURL() })
                     .setTimestamp();
+
+                if (executor) rejoinedVoiceEmbed.addFields([
+                    { name: 'Moved By', value: `${executor} (${executor.id})`, inline: true }
+                ]);
 
                 this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [rejoinedVoiceEmbed], files: [voiceRejoinAttachment] });
             } else {

@@ -12,7 +12,7 @@ module.exports = class threadUpdate extends Event {
             if (newThread.partial) newThread = await newThread.fetch();
 
             if (newThread.guild.available) {
-                let { executor, target } = (await newThread.guild.fetchAuditLogs({ type: AuditLogEvent.ThreadUpdate })).entries.first();
+                let { executor } = (await newThread.guild.fetchAuditLogs({ type: AuditLogEvent.ThreadUpdate })).entries.first();
 
                 const fields = [];
 
