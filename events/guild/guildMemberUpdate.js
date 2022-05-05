@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, AuditLogEvent } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const { Channels, Roles } = require('../../config.json');
 const PlayerStats = require('../../structures/models/PlayerStats.js');
@@ -47,7 +47,7 @@ module.exports = class guildMemberUpdate extends Event {
                     this.bot.offenders.set(newMember.id, roles);
                 };
             };
-            
+
             if (oldMember.roles.cache.has(Roles.MuteRoleId) && !newMember.roles.cache.has(Roles.MuteRoleId)) {
                 let mutedUser = await MuteList.findOne({ id: newMember.id });
 
@@ -69,7 +69,7 @@ module.exports = class guildMemberUpdate extends Event {
                     this.bot.offenders.delete(newMember.id);
                 };
             };
-            
+
             if (!oldMember.roles.cache.has(Roles.MuteRoleId) && !newMember.roles.cache.has(Roles.MuteRoleId) && player && (player._roles.length !== newMember.roles.cache.filter(({ managed, id }) => !managed && ![Roles.MuteRoleId, newMember.guild.id].includes(id)).size || !player._roles.every((value) => !newMember.roles.cache.has(value)))) {
                 await PlayerStats.findOneAndUpdate(
                     {
@@ -79,6 +79,37 @@ module.exports = class guildMemberUpdate extends Event {
                         _roles: newMember.roles.cache.filter(({ managed, id }) => !managed && ![Roles.MuteRoleId, newMember.guild.id].includes(id)).map(({ id }) => id)
                     }
                 );
+            };
+
+            const { target, executor, createdTimestamp } = (await newMember.guild.fetchAuditLogs({ type: AuditLogEvent.MemberRoleUpdate })).entries.first();
+            if (Date.now() - createdTimestamp <= 5000 && target.id === newMember.id) {
+                let updatedRoles,
+                    oldRoles = [],
+                    newRoles = [];
+
+                for (const oldRole of [...oldMember.roles.cache.keys()].filter((id) => id !== newMember.guild.id)) oldRoles.push(`<@&${oldRole}>`);
+                for (const newRole of [...newMember.roles.cache.keys()].filter((id) => id !== newMember.guild.id)) newRoles.push(`<@&${newRole}>`);
+
+                updatedRoles = newRoles.length >= oldRoles.length ?
+                    newRoles.filter((id) => !oldRoles.includes(id)) :
+                    oldRoles.filter((id) => !newRoles.includes(id));
+
+                const memberRoleUpdateEmbed = new EmbedBuilder()
+                    .setAuthor({ name: newMember.user.tag, iconURL: newMember.user.displayAvatarURL() })
+                    .setColor('Aqua')
+                    .setDescription(`***${newMember.user.tag}'s** roles have been updated on <t:${Math.floor(createdTimestamp / 1000)}> (<t:${Math.floor(createdTimestamp / 1000)}:R>)*`)
+                    .addFields([
+                        { name: 'Player', value: player?.name || 'Unregistered', inline: true },
+                        { name: 'User ID', value: target.id, inline: true },
+                        { name: 'Executor', value: `${executor} (${executor.id})`, inline: true },
+                        { name: 'Previous Roles', value: oldRoles.join(', ') || 'None', inline: oldRoles.length > 4 ? false : true },
+                        { name: 'Current Roles', value: newRoles.join(', ') || 'None', inline: newRoles.length > 4 ? false : true },
+                        { name: newRoles.length >= oldRoles.length ? 'Updated Roles' : 'Removed Roles', value: updatedRoles.join(', ') || 'None', inline: updatedRoles.length > 4 ? false : true }
+                    ])
+                    .setFooter({ text: newMember.guild.name, iconURL: newMember.guild.iconURL() })
+                    .setTimestamp();
+
+                this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [memberRoleUpdateEmbed] });
             };
         } catch (error) {
             console.error(error);
