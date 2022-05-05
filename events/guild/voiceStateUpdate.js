@@ -21,7 +21,7 @@ module.exports = class voiceStateUpdate extends Event {
             };
 
             if (oldState.member && oldState.channelId && !newState.channelId) {
-                const { target, executor } = (await newState.guild.fetchAuditLogs({ type: AuditLogEvent.MemberDisconnect })).entries.first() ?? { target: null, executor: null };
+                const { executor, createdTimestamp } = (await newState.guild.fetchAuditLogs({ type: AuditLogEvent.MemberDisconnect })).entries.first() ?? { createdTimestamp: Date.now(), executor: null };
                 const voiceLeftAttachment = new Attachment(path.join(__dirname, '..', '..', 'assets', 'emojis', 'voice_left.png'), 'voice_left.png');
 
                 const leftVoiceEmbed = new EmbedBuilder()
@@ -35,13 +35,13 @@ module.exports = class voiceStateUpdate extends Event {
                     .setFooter({ text: oldState.guild.name, iconURL: oldState.guild.iconURL() })
                     .setTimestamp();
 
-                if (executor && target && executor.id !== target.id && oldState.member.id === target.id) leftVoiceEmbed.addFields([
+                if (executor && executor.id !== oldState.member.id && Date.now() - createdTimestamp <= 5000) leftVoiceEmbed.addFields([
                     { name: 'Disconnected By', value: `${executor} (${executor.id})`, inline: true }
                 ]);
 
                 this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [leftVoiceEmbed], files: [voiceLeftAttachment] });
             } else if (oldState.member && newState.member && oldState.channelId && newState.channelId) {
-                const { target, executor } = (await newState.guild.fetchAuditLogs({ type: AuditLogEvent.MemberMove })).entries.first() ?? { target: null, executor: null };
+                const { executor, createdTimestamp } = (await newState.guild.fetchAuditLogs({ type: AuditLogEvent.MemberMove })).entries.first() ?? { createdTimestamp: Date.now(), executor: null };
                 const voiceRejoinAttachment = new Attachment(path.join(__dirname, '..', '..', 'assets', 'emojis', 'voice_joined.png'), 'voice_joined.png');
 
                 const rejoinedVoiceEmbed = new EmbedBuilder()
@@ -55,7 +55,7 @@ module.exports = class voiceStateUpdate extends Event {
                     .setFooter({ text: newState.guild.name, iconURL: newState.guild.iconURL() })
                     .setTimestamp();
 
-                if (executor && target && executor.id !== target.id && newState.member.id === target.id) rejoinedVoiceEmbed.addFields([
+                if (executor && executor.id !== newState.member.id && Date.now() - createdTimestamp <= 5000) rejoinedVoiceEmbed.addFields([
                     { name: 'Moved By', value: `${executor} (${executor.id})`, inline: true }
                 ]);
 
