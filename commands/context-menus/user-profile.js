@@ -1,14 +1,7 @@
 const { ApplicationCommandType, ActionRowBuilder, SelectMenuBuilder, ComponentType, Colors, ActivityType } = require('discord.js');
 const Command = require('../../structures/Command.js');
 const PlayerStats = require('../../structures/models/PlayerStats.js');
-const Flags = {
-    Partner: "<:partnered_server_owner:966328321405227058>", Hypesquad: "<:HypeSquad:966328352959004722>",
-    BugHunterLevel1: "<:BugHunter:966328528201203782>", BugHunterLevel2: "<:BugHunterLvl2:966328541815914570>",
-    HypeSquadOnlineHouse1: "<:HypeSquad_bravery:966328390141501450>", HypeSquadOnlineHouse2: "<:HypeSquad_brilliance:966328409741459546>",
-    HypeSquadOnlineHouse3: "<:HypeSquad_balance:966328371233579038>", PremiumEarlySupporter: "<:early_supporter:966328433019867146>",
-    CertifiedModerator: "<:Moderator:966328503974887475>", VerifiedDeveloper: "<:early_verified_developer:966328445237866546>",
-    NitroUser: "<:nitro:966353373295165440>"
-};
+const { Flags } = require('../../config.json');
 
 module.exports = class UserProfile extends Command {
     constructor(...args) {

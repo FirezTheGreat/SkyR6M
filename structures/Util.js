@@ -1,9 +1,8 @@
 const { EmbedBuilder } = require('discord.js');
 const path = require('path');
-const { promisify } = require('util');
 const Command = require('./Command.js');
 const Event = require('./Event.js');
-const glob = promisify(require('glob'));
+const glob = require('glob');
 
 module.exports = class Util {
     constructor(bot) {
@@ -20,39 +19,66 @@ module.exports = class Util {
         return `${path.dirname(require.main.filename)}${path.sep}`;
     };
 
-    async loadCommands() {
-        return glob(`${this.directory}commands/**/*.js`).then(commands => {
-            for (const commandFile of commands) {
-                delete require.cache[commandFile];
-                const { name } = path.parse(commandFile);
+    loadCommands(command = null) {
+        if (command) {
+            const commandName = glob.sync(`${this.directory}commands/${command.category.split(' ').join('-').toLowerCase()}/${command.name.split(' ').join('-').toLowerCase()}.js`)[0];
+            const { name } = path.parse(commandName);
+            const File = require(commandName);
 
-                const File = require(commandFile);
-                if (!this.isClass(File)) throw new TypeError(`Command ${name} doesn't export a class.`);
+            if (!File) return new Error(`*${name} is not a file constructor*`);
 
-                const command = new File(this.bot, name.toLowerCase());
-                if (!(command instanceof Command)) throw new TypeError(`Command ${name} doesnt belong in Commands.`);
+            const commandFile = new File(this.bot, name.toLowerCase());
+            this.bot.commands.set(commandFile.name, commandFile);
 
-                this.bot.commands.set(command.name, command);
-            };
-        });
+            return commandFile;
+        };
+
+        const commands = glob.sync(`${this.directory}commands/**/*.js`);
+
+        for (const commandFile of commands) {
+            delete require.cache[commandFile];
+            const { name } = path.parse(commandFile);
+
+            const File = require(commandFile);
+            if (!this.isClass(File)) throw new TypeError(`Command ${name} doesn't export a class.`);
+
+            const command = new File(this.bot, name.toLowerCase());
+            if (!(command instanceof Command)) throw new TypeError(`Command ${name} doesnt belong in Commands.`);
+
+            this.bot.commands.set(command.name, command);
+        };
     };
 
-    async loadEvents() {
-        return glob(`${this.directory}events/**/*.js`).then(events => {
-            for (const eventFile of events) {
-                delete require.cache[eventFile];
-                const { name } = path.parse(eventFile);
+    loadEvents(event = null) {
+        if (event) {
+            const eventName = glob.sync(`${this.directory}events/${event.category.toLowerCase()}/${event.name}.js`)[0];
 
-                const File = require(eventFile);
-                if (!this.isClass(File)) throw new TypeError(`Event ${name} doesn't export a class!`);
+            const { name } = path.parse(eventName);
+            const File = require(eventName);
 
-                const event = new File(this.bot, name.toLowerCase());
-                if (!(event instanceof Event)) throw new TypeError(`Event ${name} doesn't belong in Events`);
+            if (!File) return new Error(`*${name} is not a file constructor*`);
 
-                this.bot.events.set(event.name, event);
-                event.emitter[event.type](name, (...args) => event.EventRun(...args));
-            };
-        });
+            const eventFile = new File(this.bot, name.toLowerCase());
+            this.bot.events.set(eventFile.name, eventFile);
+
+            return eventFile;
+        };
+
+        const events = glob.sync(`${this.directory}events/**/*.js`);
+
+        for (const eventFile of events) {
+            delete require.cache[eventFile];
+            const { name } = path.parse(eventFile);
+
+            const File = require(eventFile);
+            if (!this.isClass(File)) throw new TypeError(`Event ${name} doesn't export a class!`);
+
+            const event = new File(this.bot, name.toLowerCase());
+            if (!(event instanceof Event)) throw new TypeError(`Event ${name} doesn't belong in Events`);
+
+            this.bot.events.set(event.name, event);
+            event.emitter[event.type](name, (...args) => event.EventRun(...args));
+        };
     };
 
     parseTime(time) {

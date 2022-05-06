@@ -4,7 +4,9 @@ const { Channels } = require('../../config.json');
 
 module.exports = class threadUpdate extends Event {
     constructor(...args) {
-        super(...args)
+        super(...args, {
+            type: 'Client'
+        });
     };
 
     async EventRun(oldThread, newThread) {

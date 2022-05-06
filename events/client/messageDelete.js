@@ -4,7 +4,9 @@ const { Channels } = require('../../config.json');
 
 module.exports = class messageDelete extends Event {
     constructor(...args) {
-        super(...args);
+        super(...args, {
+            type: 'Client'
+        });
     };
 
     async EventRun(message) {
@@ -14,9 +16,9 @@ module.exports = class messageDelete extends Event {
 
                 if (!message.partial && message.author?.id !== target.id) {
                     executor = message.author,
-                    target = message.author;
+                        target = message.author;
                 };
-                
+
                 const AuditLogEmbed = new EmbedBuilder()
                     .setAuthor({ name: target.tag, iconURL: target.displayAvatarURL() })
                     .setColor('Red')

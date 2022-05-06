@@ -62,5 +62,18 @@
         "DefaultRoleName": "",
         "RegisteredId": "",
         "MuteRoleId": ""
+    },
+    Flags": {
+        "Partner": "",
+        "Hypesquad": "",
+        "BugHunterLevel1": "",
+        "BugHunterLevel2": "",
+        "HypeSquadOnlineHouse1": "",
+        "HypeSquadOnlineHouse2": "",
+        "HypeSquadOnlineHouse3": "",
+        "PremiumEarlySupporter": "",
+        "CertifiedModerator": "",
+        "VerifiedDeveloper": "",
+        "NitroUser": ""
     }
 }

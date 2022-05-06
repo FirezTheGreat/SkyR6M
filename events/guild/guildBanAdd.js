@@ -5,7 +5,9 @@ const { Channels } = require('../../config.json');
 
 module.exports = class guildBanAdd extends Event {
     constructor(...args) {
-        super(...args);
+        super(...args, {
+            type: 'Guild'
+        });
     };
 
     async EventRun(ban) {

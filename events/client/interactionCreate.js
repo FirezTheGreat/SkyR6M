@@ -2,7 +2,9 @@ const Event = require('../../structures/Event.js');
 
 module.exports = class interactionCreate extends Event {
     constructor(...args) {
-        super(...args)
+        super(...args, {
+            type: 'Client'
+        });
     };
 
     async EventRun(interaction) {

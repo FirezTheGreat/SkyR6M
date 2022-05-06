@@ -6,7 +6,9 @@ const MuteList = require('../../structures/models/MuteList.js');
 
 module.exports = class guildMemberUpdate extends Event {
     constructor(...args) {
-        super(...args);
+        super(...args, {
+            type: 'Guild'
+        });
     };
 
     async EventRun(oldMember, newMember) {

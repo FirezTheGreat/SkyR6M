@@ -5,7 +5,9 @@ const path = require('path');
 
 module.exports = class voiceStateUpdate extends Event {
     constructor(...args) {
-        super(...args)
+        super(...args, {
+            type: 'Guild'
+        });
     };
 
     async EventRun(oldState, newState) {

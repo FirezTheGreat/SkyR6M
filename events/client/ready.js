@@ -5,21 +5,23 @@ const { Channels } = require('../../config.json');
 module.exports = class Ready extends Event {
     constructor(...args) {
         super(...args, {
-            once: true
+            once: true,
+            type: 'Client'
         });
     };
 
     async EventRun() {
         try {
-            await this.bot.guilds.cache.first().commands.set([]);
-
             const InteractionCommands = this.bot.commands.filter(({ type }) => [ApplicationCommandType.User, ApplicationCommandType.Message, ApplicationCommandType.ChatInput].includes(type));
+            const Commands = [];
 
             for (const [name, { description, type, options }] of InteractionCommands) {
                 [ApplicationCommandType.User, ApplicationCommandType.Message].includes(type)
-                    ? await this.bot.guilds.cache.first().commands.create({ name, type })
-                    : await this.bot.guilds.cache.first().commands.create({ name, description, type, options });
+                    ? Commands.push({ name, type })
+                    : Commands.push({ name, description, type, options })
             };
+
+            await this.bot.guilds.cache.first().commands.set(Commands);
 
             for (const guild of this.bot.guilds.cache.values()) {
                 if (guild.available) {

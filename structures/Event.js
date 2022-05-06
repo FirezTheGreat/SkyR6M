@@ -2,6 +2,7 @@ module.exports = class Event {
     constructor(bot, name, options = {}) {
         this.bot = bot;
         this.name = name;
+        this.category = options.type
         this.type = options.once ? 'once' : 'on';
         this.emitter = (typeof options.emitter === 'string' ? this.bot[options.emitter] : options.emitter) || this.bot;
     };

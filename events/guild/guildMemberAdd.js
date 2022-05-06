@@ -5,7 +5,9 @@ const { Channels } = require('../../config.json');
 
 module.exports = class guildMemberAdd extends Event {
     constructor(...args) {
-        super(...args);
+        super(...args, {
+            type: 'Guild'
+        });
     };
 
     async EventRun(member) {
