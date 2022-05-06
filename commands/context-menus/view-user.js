@@ -1,4 +1,4 @@
-const { ApplicationCommandType, ActionRowBuilder, SelectMenuBuilder, ComponentType, Colors, SelectMenuOptionBuilder, ActivityType } = require('discord.js');
+const { ApplicationCommandType, ActionRowBuilder, SelectMenuBuilder, ComponentType, Colors, ActivityType } = require('discord.js');
 const Command = require('../../structures/Command.js');
 const PlayerStats = require('../../structures/models/PlayerStats.js');
 const Flags = {
@@ -10,11 +10,11 @@ const Flags = {
     NitroUser: "<:nitro:966353373295165440>"
 };
 
-module.exports = class ViewUser extends Command {
+module.exports = class UserProfile extends Command {
     constructor(...args) {
         super(...args, {
-            name: 'View User Profile',
-            category: 'contextMenus',
+            name: 'User Profile',
+            category: 'Context Menus',
             type: ApplicationCommandType.User
         });
     };

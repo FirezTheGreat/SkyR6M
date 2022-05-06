@@ -8,6 +8,7 @@ module.exports = class Command {
         this.category = options.category;
         this.usage = options.usage || null;
         this.type = options.type || ApplicationCommandType.ChatInput;
+        this.sub_commands = options.sub_commands || [];
         this.options = options.options || [];
     };
 

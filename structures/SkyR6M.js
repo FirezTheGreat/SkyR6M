@@ -25,7 +25,7 @@ module.exports = class SkyR6M extends Client {
                 },
                 guildMembers: {
                     interval: 21600,
-                    filter: (member) => member.id !== member.client.user.id && ['offline'].includes(member.presence.status)
+                    filter: () => (member) => member.id !== member.client.user.id && ['offline'].includes(member.presence.status)
                 }
             }
         });

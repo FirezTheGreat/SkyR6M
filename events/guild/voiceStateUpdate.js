@@ -10,12 +10,12 @@ module.exports = class voiceStateUpdate extends Event {
 
     async EventRun(oldState, newState) {
         try {
-            if (oldState.channelId) {
+            if (oldState.channelId && newState.member) {
                 const { roles } = QueueRoleIds.find(({ voice }) => oldState.channelId === voice) ?? { roles: null };
                 roles ? oldState.member.roles.remove(roles).catch(() => null) : null;
             };
 
-            if (newState.channelId) {
+            if (newState.channelId && newState.member) {
                 const { roles } = QueueRoleIds.find(({ voice }) => newState.channelId === voice) ?? { roles: null };
                 roles ? newState.member.roles.add(roles).catch(() => null) : null;
             };

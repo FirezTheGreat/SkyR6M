@@ -11,16 +11,14 @@ module.exports = class Ready extends Event {
 
     async EventRun() {
         try {
-            const ChatInputCommands = this.bot.commands.filter(({ type }) => type === ApplicationCommandType.ChatInput);
+            await this.bot.guilds.cache.first().commands.set([]);
 
-            for (const [name, { description, type, options }] of ChatInputCommands) {
-                await this.bot.guilds.cache.first().commands.create({ name, description, type, options });
-            };
+            const InteractionCommands = this.bot.commands.filter(({ type }) => [ApplicationCommandType.User, ApplicationCommandType.Message, ApplicationCommandType.ChatInput].includes(type));
 
-            const UserCommands = this.bot.commands.filter(({ type }) => [ApplicationCommandType.User, ApplicationCommandType.Message].includes(type));
-
-            for (const [name, { type }] of UserCommands) {
-                await this.bot.guilds.cache.first().commands.create({ name, type });
+            for (const [name, { description, type, options }] of InteractionCommands) {
+                [ApplicationCommandType.User, ApplicationCommandType.Message].includes(type)
+                    ? await this.bot.guilds.cache.first().commands.create({ name, type })
+                    : await this.bot.guilds.cache.first().commands.create({ name, description, type, options });
             };
 
             for (const guild of this.bot.guilds.cache.values()) {
