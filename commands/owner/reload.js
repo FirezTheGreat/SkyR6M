@@ -1,4 +1,5 @@
 const { ApplicationCommandType, ApplicationCommandOptionType } = require('discord.js');
+const { sync } = require('glob');
 const Command = require('../../structures/Command.js');
 const { getCommands, getEvents } = require('../../structures/functions.js');
 const { Owners } = require('../../config.json');
@@ -56,10 +57,23 @@ module.exports = class Reload extends Command {
                         const eventFile = event_name ? this.bot.utils.loadEvents(Object.assign(event, { name: event_name })) : null;
 
                         if (eventFile) {
-                            return await interaction.editReply({ content: `*Reloaded Event - \`${eventFile.name}\` Successfully*` });
+                            return await interaction.editReply({ content: `*Reloaded Event - \`${event_name}\` Successfully*` });
                         } else {
-                            this.bot.events.sweep(() => true);
-                            this.bot.utils.loadEvents();
+                            const events = sync(`${this.directory}events/**/*.js`).filter((event_file) => !event_file.endsWith('ready.js') || !event_file.endsWith('interactionCreate.js'));
+
+                            for (const eventFile of events) {
+                                delete require.cache[eventFile];
+                                const { name } = path.parse(eventFile);
+
+                                const File = require(eventFile);
+                                if (!this.isClass(File)) throw new TypeError(`Event ${name} doesn't export a class!`);
+
+                                const event = new File(this.bot, name.toLowerCase());
+                                if (!(event instanceof Event)) throw new TypeError(`Event ${name} doesn't belong in Events`);
+
+                                this.bot.events.set(event.name, event);
+                                event.emitter[event.type](name, (...args) => event.EventRun(...args));
+                            };
 
                             await interaction.editReply({ content: '*Reloaded All Events Successfully.*' });
                         };

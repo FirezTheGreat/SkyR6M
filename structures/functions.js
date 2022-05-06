@@ -73,7 +73,7 @@ module.exports = class Function {
             const { name } = path.parse(events[index]);
             const File = require(events[index]);
 
-            if (isClass(File)) choices.push({ name, value: name });
+            if (isClass(File) && !['interactioncreate', 'ready'].includes(name.toLowerCase())) choices.push({ name, value: name });
         };
 
         return choices;
