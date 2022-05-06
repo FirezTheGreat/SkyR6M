@@ -4,7 +4,7 @@
   "description": "Official Sky R6M MM Custom Bot",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node index.js"
   },
   "author": "Firez",
   "license": "GPL-3.0",
