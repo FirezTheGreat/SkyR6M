@@ -52,7 +52,7 @@ module.exports = class Reload extends Command {
                         break;
                     case 'events':
                         const event_name = interaction.options.getString('event');
-                        const event = this.bot.events.get(event_name.toLowerCase());
+                        const event = this.bot.events.get(event_name?.toLowerCase());
                         const eventFile = event_name ? this.bot.utils.loadEvents(Object.assign(event, { name: event_name })) : null;
 
                         if (eventFile) {
