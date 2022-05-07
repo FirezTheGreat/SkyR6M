@@ -80,7 +80,7 @@ module.exports = class Reload extends Command {
                         break;
                 };
             } else {
-                return interaction.reply({ content: '*You do not have permission to use this command*' });
+                return interaction.reply({ content: '*You do not have permission to use this command.*' });
             };
         } catch (error) {
             console.error(error);
