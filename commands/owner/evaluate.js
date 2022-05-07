@@ -55,7 +55,7 @@ module.exports = class Evaluate extends Command {
                     return interaction.editReply({ embeds: [evalEmbed] });
                 };
             } else {
-                return interaction.reply({ content: '*You do not have permission to use this command.*' })
+                return interaction.reply({ content: '*You do not have permission to use this command.*', ephemeral: true })
             };
         } catch (error) {
             console.error(error);
