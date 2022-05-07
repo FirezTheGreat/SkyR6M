@@ -15,7 +15,7 @@ module.exports = class SkyMongoose {
             console.log('Connected to MongoDB Successfully!');
         });
 
-        connection.on('err', error => {
+        connection.on('err', (error) => {
             console.error(`Error Occured From MongoDB: \n${error.message}`);
         });
 

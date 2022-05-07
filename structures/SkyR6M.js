@@ -52,6 +52,6 @@ module.exports = class SkyR6M extends Client {
         this.utils.loadCommands();
         this.utils.loadEvents();
         this.mongoose.init();
-        super.login(token);
+        await super.login(token);
     };
 };
