@@ -1,4 +1,4 @@
-const { Client, Collection, IntentsBitField, Partials } = require('discord.js');
+const { Client, Collection, IntentsBitField, Partials, ActivityType } = require('discord.js');
 const Util = require('./Util.js');
 const Mongoose = require('./mongoose.js');
 
@@ -9,7 +9,7 @@ module.exports = class SkyR6M extends Client {
             presence: {
                 status: 'online',
                 activities: [
-                    { name: 'Sky Rainbow 6 Mobile MatchMaking', type: 'WATCHING' }
+                    { name: 'Sky Rainbow 6 Mobile MatchMaking', type: ActivityType.Watching }
                 ]
             },
             intents: [

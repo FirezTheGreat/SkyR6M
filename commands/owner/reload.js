@@ -59,7 +59,7 @@ module.exports = class Reload extends Command {
                         if (eventFile) {
                             return await interaction.editReply({ content: `*Reloaded Event - \`${event_name}\` Successfully*` });
                         } else {
-                            const events = sync(`${this.directory}events/**/*.js`).filter((event_file) => !event_file.endsWith('ready.js') || !event_file.endsWith('interactionCreate.js'));
+                            const events = sync(`${this.directory}events/**/*.js`).filter((event_file) => !['ready.js', 'interactionCreate.js'].includes(event_file) );
 
                             for (const eventFile of events) {
                                 delete require.cache[eventFile];
