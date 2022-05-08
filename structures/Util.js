@@ -22,6 +22,9 @@ module.exports = class Util {
     loadCommands(command = null) {
         if (command) {
             const commandName = glob.sync(`${this.directory}commands/${command.category.split(' ').join('-').toLowerCase()}/${command.name.split(' ').join('-').toLowerCase()}.js`)[0];
+
+            delete require.cache[commandFile];
+
             const { name } = path.parse(commandName);
             const File = require(commandName);
 
@@ -52,6 +55,8 @@ module.exports = class Util {
     loadEvents(event = null) {
         if (event) {
             const eventName = glob.sync(`${this.directory}events/${event.category.toLowerCase()}/${event.name}.js`)[0];
+
+            delete require.cache[eventName];
 
             const { name } = path.parse(eventName);
             const File = require(eventName);
