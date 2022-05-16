@@ -27,7 +27,7 @@ module.exports = class Ready extends Event {
                 if (guild.available) {
                     const invites = await guild.invites.fetch({ cache: false });
 
-                    this.bot.invites.set(guild.id, invites);
+                    this.bot.invites.set(guild.id, invites.map(({ inviter, code, uses }) => ({ inviter, code, uses })));
                 };
             };
 
