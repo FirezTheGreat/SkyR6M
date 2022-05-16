@@ -96,22 +96,24 @@ module.exports = class guildMemberUpdate extends Event {
                     newRoles.filter((id) => !oldRoles.includes(id)) :
                     oldRoles.filter((id) => !newRoles.includes(id));
 
-                const memberRoleUpdateEmbed = new EmbedBuilder()
-                    .setAuthor({ name: newMember.user.tag, iconURL: newMember.user.displayAvatarURL() })
-                    .setColor('Aqua')
-                    .setDescription(`***${newMember.user.tag}'s** roles have been updated on <t:${Math.floor(createdTimestamp / 1000)}> (<t:${Math.floor(createdTimestamp / 1000)}:R>)*`)
-                    .addFields([
-                        { name: 'Player', value: player?.name || 'Unregistered', inline: true },
-                        { name: 'User ID', value: target.id, inline: true },
-                        { name: 'Executor', value: `${executor} (${executor.id})`, inline: true },
-                        { name: 'Previous Roles', value: oldRoles.join(', ') || 'None', inline: oldRoles.length > 4 ? false : true },
-                        { name: 'Current Roles', value: newRoles.join(', ') || 'None', inline: newRoles.length > 4 ? false : true },
-                        { name: newRoles.length >= oldRoles.length ? 'Updated Roles' : 'Removed Roles', value: updatedRoles.join(', ') || 'None', inline: updatedRoles.length > 4 ? false : true }
-                    ])
-                    .setFooter({ text: newMember.guild.name, iconURL: newMember.guild.iconURL() })
-                    .setTimestamp();
+                if ([...oldRoles].sort().toString() !== [...newRoles].sort().toString()) {
+                    const memberRoleUpdateEmbed = new EmbedBuilder()
+                        .setAuthor({ name: newMember.user.tag, iconURL: newMember.user.displayAvatarURL() })
+                        .setColor('Aqua')
+                        .setDescription(`***${newMember.user.tag}'s** roles have been updated on <t:${Math.floor(createdTimestamp / 1000)}> (<t:${Math.floor(createdTimestamp / 1000)}:R>)*`)
+                        .addFields([
+                            { name: 'Player', value: player?.name || 'Unregistered', inline: true },
+                            { name: 'User ID', value: target.id, inline: true },
+                            { name: 'Executor', value: `${executor} (${executor.id})`, inline: true },
+                            { name: 'Previous Roles', value: oldRoles.join(', ') || 'None', inline: oldRoles.length > 4 ? false : true },
+                            { name: 'Current Roles', value: newRoles.join(', ') || 'None', inline: newRoles.length > 4 ? false : true },
+                            { name: newRoles.length >= oldRoles.length ? 'Updated Roles' : 'Removed Roles', value: updatedRoles.join(', ') || 'None', inline: updatedRoles.length > 4 ? false : true }
+                        ])
+                        .setFooter({ text: newMember.guild.name, iconURL: newMember.guild.iconURL() })
+                        .setTimestamp();
 
-                this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [memberRoleUpdateEmbed] });
+                    this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [memberRoleUpdateEmbed] });
+                };
             };
         } catch (error) {
             console.error(error);
