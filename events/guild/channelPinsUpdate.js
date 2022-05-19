@@ -9,6 +9,13 @@ module.exports = class channelPinsUpdate extends Event {
         });
     };
 
+    /**
+     * 
+     * @param {import('discord.js').TextBasedChannel} channel TextBasedChannel
+     * @param {Number} timestamp Date Timestamp
+     * @returns channelPinsUpdate Event
+     */
+
     async EventRun(channel, timestamp) {
         try {
             const { executor, target, extra } = (await channel.guild.fetchAuditLogs({ type: AuditLogEvent.MessagePin })).entries.first();

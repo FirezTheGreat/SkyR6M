@@ -1,4 +1,4 @@
-const { EmbedBuilder, AuditLogEvent, ChannelType } = require('discord.js');
+const { EmbedBuilder, AuditLogEvent, ChannelType, Collection } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const { Channels } = require('../../config.json');
 
@@ -8,6 +8,13 @@ module.exports = class messageDeleteBulk extends Event {
             type: 'Client'
         });
     };
+
+    /**
+     * 
+     * @param {Collection<Message>} messages Collection of Messages
+     * @param {import('discord.js').TextBasedChannel} channel Channel
+     * @returns messageDeleteBulk Event
+     */
 
     async EventRun(messages, channel) {
         try {

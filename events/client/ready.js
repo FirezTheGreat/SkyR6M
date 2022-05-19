@@ -10,6 +10,11 @@ module.exports = class Ready extends Event {
         });
     };
 
+    /**
+     * 
+     * @returns Initialises Client
+     */
+
     async EventRun() {
         try {
             const InteractionCommands = this.bot.commands.filter(({ type }) => [ApplicationCommandType.User, ApplicationCommandType.Message, ApplicationCommandType.ChatInput].includes(type));

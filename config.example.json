@@ -1,5 +1,6 @@
 {
     "TOKEN": "",
+    "MongoURL": "",
     "Owners": [
         {
             "id": "",

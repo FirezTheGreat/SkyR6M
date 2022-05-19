@@ -37,6 +37,11 @@ module.exports = class SkyR6M extends Client {
 
     };
 
+    /**
+     * 
+     * @param {Client} options Client Options
+     */
+
     validate(options) {
         if (typeof options !== 'object') throw new TypeError('Options should be a type of Object.');
 
@@ -44,10 +49,16 @@ module.exports = class SkyR6M extends Client {
         this.token = options.TOKEN;
     };
 
+    /**
+     * 
+     * @returns Starts the bot and loads all Commands, Events and Initiates Mongoose Client
+     */
+
     async start(token = this.token) {
-        this.utils.loadCommands();
-        this.utils.loadEvents();
-        this.mongoose.init();
+        await this.utils.loadCommands();
+        await this.utils.loadEvents();
         await super.login(token);
+
+        setImmediate(() => this.mongoose.init());
     };
 };

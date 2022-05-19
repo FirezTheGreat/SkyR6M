@@ -1,4 +1,4 @@
-const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
+const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder, ChatInputCommandInteraction } = require('discord.js');
 const Command = require('../../structures/Command.js');
 const { Channels } = require('../../config.json');
 const PlayerStats = require('../../structures/models/PlayerStats.js');
@@ -16,6 +16,12 @@ module.exports = class Rename extends Command {
             ]
         });
     };
+
+    /**
+     * 
+     * @param {ChatInputCommandInteraction} interaction CommandInteraction
+     * @returns Rename's User
+     */
 
     async InteractionRun(interaction) {
         try {

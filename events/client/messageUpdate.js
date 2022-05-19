@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, Message } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const { Channels } = require('../../config.json');
 
@@ -8,6 +8,13 @@ module.exports = class messageUpdate extends Event {
             type: 'Client'
         });
     };
+
+    /**
+     * 
+     * @param {Message} oldMessage Old Message
+     * @param {Message} newMessage New Message
+     * @returns messageUpdate Event
+     */
 
     async EventRun(oldMessage, newMessage) {
         try {

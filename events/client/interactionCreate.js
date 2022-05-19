@@ -1,3 +1,4 @@
+const { ChatInputCommandInteraction } = require('discord.js');
 const Event = require('../../structures/Event.js');
 
 module.exports = class interactionCreate extends Event {
@@ -6,6 +7,12 @@ module.exports = class interactionCreate extends Event {
             type: 'Client'
         });
     };
+
+    /**
+    * 
+    * @param {ChatInputCommandInteraction} interaction CommandInteraction
+    * @returns CommandInteraction
+    */
 
     async EventRun(interaction) {
         if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) {

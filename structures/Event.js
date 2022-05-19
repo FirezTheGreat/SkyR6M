@@ -1,4 +1,16 @@
+const SkyR6M = require("./SkyR6M");
+
 module.exports = class Event {
+    /**
+     * 
+     * @param {SkyR6M} bot Client
+     * @param {string} name Event Name
+     * @param {object} options Event Options
+     * @param {string} options.type Type of Event
+     * @param {boolean} options.once Once Event Emitter Boolean
+     * @param {Function} options.emitter Event Emitter
+     */
+
     constructor(bot, name, options = {}) {
         this.bot = bot;
         this.name = name;

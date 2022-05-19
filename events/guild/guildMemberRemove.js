@@ -1,4 +1,4 @@
-const { EmbedBuilder, AuditLogEvent } = require('discord.js');
+const { EmbedBuilder, AuditLogEvent, GuildMember } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const PlayerStats = require('../../structures/models/PlayerStats.js');
 const { Channels } = require('../../config.json');
@@ -9,6 +9,12 @@ module.exports = class guildMemberRemove extends Event {
             type: 'Guild'
         });
     };
+
+    /**
+     * 
+     * @param {GuildMember} member Guild Member
+     * @returns guildMemberRemove Event
+     */
 
     async EventRun(member) {
         try {
@@ -30,7 +36,7 @@ module.exports = class guildMemberRemove extends Event {
                     .setFooter({ text: member.guild.name, iconURL: member.guild.iconURL() })
                     .setTimestamp();
 
-                this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [guildLeaveEmbed] });
+                return this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [guildLeaveEmbed] });
             } else if (member.id === kick_target?.id) {
                 const guildKickEmbed = new EmbedBuilder()
                     .setAuthor({ name: member.user.tag, iconURL: member.user.displayAvatarURL() })
@@ -47,7 +53,7 @@ module.exports = class guildMemberRemove extends Event {
                     .setFooter({ text: member.guild.name, iconURL: member.guild.iconURL() })
                     .setTimestamp();
 
-                this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [guildKickEmbed] });
+                return this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [guildKickEmbed] });
             };
         } catch (error) {
             console.error(error);

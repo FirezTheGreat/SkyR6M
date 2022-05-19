@@ -1,4 +1,4 @@
-const { ApplicationCommandType, ApplicationCommandOptionType, ActionRowBuilder, SelectMenuBuilder, Colors, ButtonStyle, ComponentType, ButtonBuilder } = require('discord.js');
+const { ApplicationCommandType, ApplicationCommandOptionType, ActionRowBuilder, SelectMenuBuilder, Colors, ButtonStyle, ComponentType, ButtonBuilder, ChatInputCommandInteraction } = require('discord.js');
 const Command = require('../../structures/Command.js');
 const PlayerStats = require('../../structures/models/PlayerStats.js');
 
@@ -15,6 +15,12 @@ module.exports = class Profile extends Command {
             ]
         });
     };
+
+    /**
+     * 
+     * @param {ChatInputCommandInteraction} interaction CommandInteraction
+     * @returns Profile
+     */
 
     async InteractionRun(interaction) {
         try {

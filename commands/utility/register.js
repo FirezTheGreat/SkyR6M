@@ -1,4 +1,4 @@
-const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
+const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder, ChatInputCommandInteraction } = require('discord.js');
 const Command = require('../../structures/Command.js');
 const { Roles, Channels } = require('../../config.json');
 const PlayerStats = require('../../structures/models/PlayerStats.js');
@@ -16,6 +16,12 @@ module.exports = class Register extends Command {
             ]
         });
     };
+
+    /**
+     * 
+     * @param {ChatInputCommandInteraction} interaction CommandInteraction
+     * @returns Register's User
+     */
 
     async InteractionRun(interaction) {
         try {

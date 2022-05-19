@@ -1,4 +1,4 @@
-const { ApplicationCommandType, ApplicationCommandOptionType } = require('discord.js');
+const { ApplicationCommandType, ApplicationCommandOptionType, ChatInputCommandInteraction } = require('discord.js');
 const { sync } = require('glob');
 const Command = require('../../structures/Command.js');
 const { getCommands, getEvents } = require('../../structures/functions.js');
@@ -28,6 +28,12 @@ module.exports = class Reload extends Command {
             options: sub_commands.map(({ name, type, description, required, options }) => ({ name, type, description, required, options }))
         });
     };
+
+    /**
+     * 
+     * @param {ChatInputCommandInteraction} interaction CommandInteraction
+     * @returns Reloads Commands or Events
+     */
 
     async InteractionRun(interaction) {
         try {

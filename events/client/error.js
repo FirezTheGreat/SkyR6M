@@ -7,7 +7,13 @@ module.exports = class error extends Event {
         });
     };
 
+    /**
+     * 
+     * @param {Error} error Error
+     * @returns Error
+     */
+
     EventRun(error) {
-        console.error(error);
+        return console.error(error);
     };
 };

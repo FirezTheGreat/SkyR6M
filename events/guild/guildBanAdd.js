@@ -1,4 +1,4 @@
-const { EmbedBuilder, AuditLogEvent } = require('discord.js');
+const { EmbedBuilder, AuditLogEvent, GuildBan } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const PlayerStats = require('../../structures/models/PlayerStats.js');
 const { Channels } = require('../../config.json');
@@ -9,6 +9,12 @@ module.exports = class guildBanAdd extends Event {
             type: 'Guild'
         });
     };
+
+    /**
+     * 
+     * @param {GuildBan} ban Guild Ban
+     * @returns guildBanAdd Event
+     */
 
     async EventRun(ban) {
         try {

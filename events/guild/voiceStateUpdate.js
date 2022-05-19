@@ -1,4 +1,4 @@
-const { EmbedBuilder, Attachment, AuditLogEvent } = require('discord.js');
+const { EmbedBuilder, Attachment, AuditLogEvent, VoiceState } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const { Channels, QueueRoleIds } = require('../../config.json');
 const path = require('path');
@@ -9,6 +9,13 @@ module.exports = class voiceStateUpdate extends Event {
             type: 'Guild'
         });
     };
+
+    /**
+     * 
+     * @param {VoiceState} oldState Old VoiceState
+     * @param {VoiceState} newState New VoiceState
+     * @returns voiceStateUpdate Event
+     */
 
     async EventRun(oldState, newState) {
         try {

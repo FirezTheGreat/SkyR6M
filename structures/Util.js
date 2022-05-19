@@ -1,13 +1,25 @@
 const { EmbedBuilder } = require('discord.js');
-const path = require('path');
 const Command = require('./Command.js');
 const Event = require('./Event.js');
-const glob = require('glob');
+const SkyR6M = require('./SkyR6M.js');
+const { dirname, parse, sep } = require('path');
+const { sync } = require('glob');
 
 module.exports = class Util {
+    /**
+     * 
+     * @param {SkyR6M} bot Client
+     */
+
     constructor(bot) {
         this.bot = bot;
     };
+
+    /**
+     * 
+     * @param {Function} input 
+     * @returns {boolean} Boolean
+     */
 
     isClass(input) {
         return typeof input === 'function' &&
@@ -15,17 +27,27 @@ module.exports = class Util {
             input.toString().substring(0, 5) === 'class';
     };
 
+    /**
+     * @returns Main Folder Directory
+     */
+
     get directory() {
-        return `${path.dirname(require.main.filename)}${path.sep}`;
+        return `${dirname(require.main.filename)}${sep}`;
     };
+
+    /**
+     * 
+     * @param {object} command Command Object
+     * @returns Refreshes Command(s)
+     */
 
     loadCommands(command = null) {
         if (command) {
-            const commandName = glob.sync(`${this.directory}commands/${command.category.split(' ').join('-').toLowerCase()}/${command.name.split(' ').join('-').toLowerCase()}.js`)[0];
+            const commandName = sync(`${this.directory}commands/${command.category.split(' ').join('-').toLowerCase()}/${command.name.split(' ').join('-').toLowerCase()}.js`)[0];
 
             delete require.cache[commandFile];
 
-            const { name } = path.parse(commandName);
+            const { name } = parse(commandName);
             const File = require(commandName);
 
             if (!File) return new Error(`*${name} is not a file constructor*`);
@@ -36,11 +58,11 @@ module.exports = class Util {
             return commandFile;
         };
 
-        const commands = glob.sync(`${this.directory}commands/**/*.js`);
+        const commands = sync(`${this.directory}commands/**/*.js`);
 
         for (const commandFile of commands) {
             delete require.cache[commandFile];
-            const { name } = path.parse(commandFile);
+            const { name } = parse(commandFile);
 
             const File = require(commandFile);
             if (!this.isClass(File)) throw new TypeError(`Command ${name} doesn't export a class.`);
@@ -52,13 +74,19 @@ module.exports = class Util {
         };
     };
 
+    /**
+     * 
+     * @param {object} event Event Object
+     * @returns Refreshes and Loads Event(s)
+     */
+
     loadEvents(event = null) {
         if (event) {
-            const eventName = glob.sync(`${this.directory}events/${event.category.toLowerCase()}/${event.name}.js`)[0];
+            const eventName = sync(`${this.directory}events/${event.category.toLowerCase()}/${event.name}.js`)[0];
 
             delete require.cache[eventName];
 
-            const { name } = path.parse(eventName);
+            const { name } = parse(eventName);
             const File = require(eventName);
 
             if (!File) return new Error(`*${name} is not a file constructor*`);
@@ -69,11 +97,11 @@ module.exports = class Util {
             return eventFile;
         };
 
-        const events = glob.sync(`${this.directory}events/**/*.js`);
+        const events = sync(`${this.directory}events/**/*.js`);
 
         for (const eventFile of events) {
             delete require.cache[eventFile];
-            const { name } = path.parse(eventFile);
+            const { name } = parse(eventFile);
 
             const File = require(eventFile);
             if (!this.isClass(File)) throw new TypeError(`Event ${name} doesn't export a class!`);
@@ -85,6 +113,12 @@ module.exports = class Util {
             event.emitter[event.type](name, (...args) => event.EventRun(...args));
         };
     };
+
+    /**
+     * 
+     * @param {string} time Time String
+     * @returns Time MS
+     */
 
     parseTime(time) {
         const regex = /\d+\.*\d*\D+/g;

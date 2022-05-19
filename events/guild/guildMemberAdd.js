@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, GuildMember } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const PlayerStats = require('../../structures/models/PlayerStats.js');
 const { Channels } = require('../../config.json');
@@ -9,6 +9,12 @@ module.exports = class guildMemberAdd extends Event {
             type: 'Guild'
         });
     };
+
+    /**
+     * 
+     * @param {GuildMember} member Guild Member
+     * @returns Register's User
+     */
 
     async EventRun(member) {
         try {
@@ -32,12 +38,12 @@ module.exports = class guildMemberAdd extends Event {
                 .setFooter({ text: member.guild.name, iconURL: member.guild.iconURL() })
                 .setTimestamp();
 
-            this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [guildJoinEmbed] });
-
             if (player && member.manageable) {
                 await member.setNickname(`[${player.points.current}] ${player.name.trim()}`);
                 await member.roles.add(player._roles);
             };
+
+            return this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [guildJoinEmbed] });
         } catch (error) {
             console.error(error);
         };

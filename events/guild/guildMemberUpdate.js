@@ -1,4 +1,4 @@
-const { EmbedBuilder, AuditLogEvent } = require('discord.js');
+const { EmbedBuilder, AuditLogEvent, GuildMember } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const { Channels, Roles } = require('../../config.json');
 const PlayerStats = require('../../structures/models/PlayerStats.js');
@@ -10,6 +10,13 @@ module.exports = class guildMemberUpdate extends Event {
             type: 'Guild'
         });
     };
+
+    /**
+     * 
+     * @param {GuildMember} oldMember Old Guild Member
+     * @param {GuildMember} newMember New Guild Member
+     * @returns guildMemberUpdate Event
+     */
 
     async EventRun(oldMember, newMember) {
         try {

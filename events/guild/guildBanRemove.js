@@ -1,4 +1,4 @@
-const { EmbedBuilder, AuditLogEvent } = require('discord.js');
+const { EmbedBuilder, AuditLogEvent, GuildBan } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const PlayerStats = require('../../structures/models/PlayerStats.js');
 const { Channels } = require('../../config.json');
@@ -9,6 +9,12 @@ module.exports = class guildBanRemove extends Event {
             type: 'Guild'
         });
     };
+
+    /**
+     * 
+     * @param {GuildBan} ban Guild Ban
+     * @returns guildBanRemove Event
+     */
 
     async EventRun(ban) {
         try {
@@ -31,7 +37,7 @@ module.exports = class guildBanRemove extends Event {
                     .setFooter({ text: ban.guild.name, iconURL: ban.guild.iconURL() })
                     .setTimestamp();
 
-                this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [guildBanEmbed] });
+                return this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [guildBanEmbed] });
             };
         } catch (error) {
             console.error(error);

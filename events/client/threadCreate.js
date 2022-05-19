@@ -1,4 +1,4 @@
-const { EmbedBuilder, AuditLogEvent } = require('discord.js');
+const { EmbedBuilder, AuditLogEvent, ThreadChannel } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const { Channels } = require('../../config.json');
 
@@ -8,6 +8,13 @@ module.exports = class threadCreate extends Event {
             type: 'Client'
         });
     };
+
+    /**
+     * 
+     * @param {ThreadChannel} thread Thread Channel
+     * @param {boolean} created Boolean
+     * @returns threadCreate Event
+     */
 
     async EventRun(thread, created) {
         try {
@@ -31,7 +38,7 @@ module.exports = class threadCreate extends Event {
                     .setFooter({ text: thread.guild.name, iconURL: thread.guild.iconURL() })
                     .setTimestamp();
 
-                this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [AuditLogEmbed] });
+                return this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [AuditLogEmbed] });
             };
         } catch (error) {
             console.error(error);

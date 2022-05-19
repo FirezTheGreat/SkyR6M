@@ -1,4 +1,4 @@
-const { EmbedBuilder, AuditLogEvent } = require('discord.js');
+const { EmbedBuilder, AuditLogEvent, Message } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const { Channels } = require('../../config.json');
 
@@ -8,6 +8,12 @@ module.exports = class messageDelete extends Event {
             type: 'Client'
         });
     };
+
+    /**
+     * 
+     * @param {Message} message Message
+     * @returns messageDelete Event
+     */
 
     async EventRun(message) {
         try {

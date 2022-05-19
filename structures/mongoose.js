@@ -1,6 +1,15 @@
 let { connect, Promise, connection } = require('mongoose');
+const { MongoURL } = require('../config.json');
+
+/**
+ * @class Sky Mongoose
+ */
 
 module.exports = class SkyMongoose {
+    /**
+     * Initiates Mongoose Client
+     */
+
     init() {
         const dbOptions = {
             autoIndex: false,
@@ -8,7 +17,7 @@ module.exports = class SkyMongoose {
             connectTimeoutMS: 10000
         };
 
-        connect('mongodb+srv://firez:skyhighup@sky-high.s6amn.mongodb.net/skyr6m?authSource=admin&replicaSet=atlas-tbixx0-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true', dbOptions);
+        connect(MongoURL, dbOptions);
         Promise = global.Promise;
 
         connection.on('connected', () => {

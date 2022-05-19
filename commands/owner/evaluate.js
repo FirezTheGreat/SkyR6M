@@ -1,4 +1,4 @@
-const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
+const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder, ChatInputCommandInteraction } = require('discord.js');
 const Command = require('../../structures/Command.js');
 const { Owners } = require('../../config.json');
 
@@ -15,6 +15,12 @@ module.exports = class Evaluate extends Command {
             ]
         });
     };
+
+    /**
+     * 
+     * @param {ChatInputCommandInteraction} interaction CommandInteraction
+     * @returns Evaluated Code
+     */
 
     async InteractionRun(interaction) {
         try {

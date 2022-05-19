@@ -12,6 +12,7 @@ module.exports = class Function {
      * @param {number} new_points Added New Points
      * @returns {string<role>} Role ID
      */
+    
     static RolePointChecker(old_points, new_points) {
         let old_role;
         new_points += old_points;
