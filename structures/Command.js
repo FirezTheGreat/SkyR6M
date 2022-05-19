@@ -17,7 +17,7 @@ module.exports = class Command {
      */
 
     constructor(bot, name, options = {}) {
-        tthis.bot = bot;
+        this.bot = bot;
         this.name = options.name || name;
         this.description = options.description || null;
         this.category = options.category;
