@@ -8,7 +8,7 @@ module.exports = class UserProfile extends Command {
         super(...args, {
             name: 'User Profile',
             category: 'Context Menus',
-            type: ApplicationCommandType.User
+            type: ApplicationCommandType.User,
         });
     };
 

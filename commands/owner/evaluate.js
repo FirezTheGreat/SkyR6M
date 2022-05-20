@@ -1,4 +1,4 @@
-const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder, ChatInputCommandInteraction } = require('discord.js');
+const { ApplicationCommandOptionType, EmbedBuilder, ChatInputCommandInteraction } = require('discord.js');
 const Command = require('../../structures/Command.js');
 const { Owners } = require('../../config.json');
 
@@ -9,7 +9,6 @@ module.exports = class Evaluate extends Command {
             description: 'Evaluate Code',
             category: 'Owner',
             usage: '[code]',
-            type: ApplicationCommandType.ChatInput,
             options: [
                 { name: 'code', type: ApplicationCommandOptionType.String, description: 'Code to Evaluate', required: true }
             ]
