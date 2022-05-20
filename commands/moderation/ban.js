@@ -34,12 +34,12 @@ module.exports = class Ban extends Command {
             for (const value of users) {
                 try {
                     const user = interaction.guild.members.cache.get(value);
-                    if (user && !user.bannable) throw Error(`*Couldn\'t Ban User - <@${value}> from ${interaction.guild.name}!*`);
+                    if (user && !user.bannable) throw ({ code: 'unknown', message: `*Couldn\'t Ban User - <@${value}> from ${interaction.guild.name}!*` });
 
                     await this.bot.rest.put(Routes.guildBan(interaction.guildId, value));
                     banned_users.push(`<@${value}>`);
                 } catch (error) {
-                    interaction.followUp({ content: error.message });
+                    interaction.followUp({ content: error.code !== 'unknown' ? `*Couldn\'t Ban User - ${value} from ${interaction.guild.name}!*` : error.message });
                 };
             };
 

@@ -13,6 +13,7 @@ module.exports = class Command {
      * @param {string} options.usage Command Usage
      * @param {number} options.type Command Type
      * @param {array<import("discord.js").PermissionFlags>} options.client_permissions Command Permissions
+     * @param {array<import("discord.js").PermissionFlags>} options.user_permissions User Permissions
      * @param {array} options.sub_commands Sub Commands Array
      * @param {array} options.options Command Options
      */

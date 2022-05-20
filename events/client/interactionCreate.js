@@ -14,10 +14,18 @@ module.exports = class interactionCreate extends Event {
     * @returns CommandInteraction
     */
 
-    async EventRun(interaction) {
+    EventRun(interaction) {
         if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) {
             const command = this.bot.commands.get(interaction.commandName);
-            if (command) command.InteractionRun(interaction);
+            if (command) {
+                if (!interaction.guild.me.permissions.has(command.client_permissions)) {
+                    return interaction.reply({ content: '*I do not have permission to run this command!*' });
+                } else if (command.user_permissions.length && !interaction.member.permissions.has(command.user_permissions)) {
+                    return interaction.reply({ content: '*You do not have permission to run this command!*' });
+                } else {
+                    return command.InteractionRun(interaction);
+                };
+            };
         };
     };
 };
