@@ -144,14 +144,7 @@ module.exports = class Register extends Command {
             return this.bot.utils.auditSend(Channels.RegisterLogId, { embeds: [AuditLogEmbed] });
         } catch (error) {
             console.error(error);
-
-            if (interaction.deferred && !interaction.replied) {
-                return interaction.editReply({ content: `An Error Occurred: \`${error.message}\`!` });
-            } else if (interaction.replied) {
-                return interaction.followUp({ content: `An Error Occurred: \`${error.message}\`!` });
-            } else {
-                return interaction.reply({ content: `An Error Occurred: \`${error.message}\`!` });
-            };
+            return this.bot.utils.error(interaction, error);
         };
     };
 };

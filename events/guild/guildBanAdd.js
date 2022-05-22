@@ -37,7 +37,7 @@ module.exports = class guildBanAdd extends Event {
                     .setFooter({ text: ban.guild.name, iconURL: ban.guild.iconURL() })
                     .setTimestamp();
 
-                this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [guildBanEmbed] });
+                return this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [guildBanEmbed] });
             };
         } catch (error) {
             console.error(error);

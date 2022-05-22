@@ -2,7 +2,7 @@ const { Client, EmbedBuilder, Guild, TextChannel } = require("discord.js");
 const PlayerStats = require('../models/PlayerStats.js');
 const MatchStats = require('../models/MatchStats.js');
 const { Channels, Roles } = require('../../config.json');
-const { RolePointChecker } = require("../functions.js");
+const { RolePointChecker } = require("../Util.js");
 
 /**
  * @class PointsAllocationManager Class.

@@ -42,7 +42,7 @@ module.exports = class messageDeleteBulk extends Event {
 
                     if (message.attachments.size) AuditLogEmbed.setImage(message.attachments.first().url);
 
-                    this.bot.utils.auditSend(Channels.MessageLogId, { embeds: [AuditLogEmbed] });
+                    return this.bot.utils.auditSend(Channels.MessageLogId, { embeds: [AuditLogEmbed] });
                 };
             };
         } catch (error) {

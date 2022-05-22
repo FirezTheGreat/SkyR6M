@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType, EmbedBuilder, ChatInputCommandInteraction } = require('discord.js');
+const { ApplicationCommandOptionType, EmbedBuilder, ChatInputCommandInteraction, Util } = require('discord.js');
 const Command = require('../../structures/Command.js');
 const { Owners } = require('../../config.json');
 
@@ -43,8 +43,8 @@ module.exports = class Evaluate extends Command {
                         .setColor('Green')
                         .setTitle('Evaluated')
                         .addFields([
-                            { name: 'Code', value: `\`\`\`js\n${code.slice(0, 1024)}\`\`\`` },
-                            { name: 'Result', value: `\`\`\`js\n${code_result.replace(this.bot.token, 'TOKEN').slice(0, 1024)}\n\`\`\`` }
+                            { name: 'Code', value: Util.cleanCodeBlockContent(```js\n${code}\n```).slice(0, 1024) },
+                            { name: 'Result', value: Util.cleanCodeBlockContent(```js\n${code_result.replace(this.bot.token, 'TOKEN')}\n```).slice(0, 1024) }
                         ]);
 
                     return await interaction.editReply({ embeds: [evalEmbed] });
@@ -53,8 +53,8 @@ module.exports = class Evaluate extends Command {
                         .setColor('Red')
                         .setTitle('Error')
                         .addFields([
-                            { name: 'Code', value: `\`\`\`js\n${code.slice(0, 1024)}\`\`\`` },
-                            { name: 'Result', value: `\`\`\`js\n${error.message.replace(this.bot.token, 'TOKEN').slice(0, 1024)}\n\`\`\`` }
+                            { name: 'Code', value: Util.cleanCodeBlockContent(```js\n${code}\n```).slice(0, 1024) },
+                            { name: 'Result', value: Util.cleanCodeBlockContent(```js\n${error.message.replace(this.bot.token, 'TOKEN')}\n```).slice(0, 1024) }
                         ]);
 
                     return interaction.editReply({ embeds: [evalEmbed] });
@@ -64,14 +64,7 @@ module.exports = class Evaluate extends Command {
             };
         } catch (error) {
             console.error(error);
-
-            if (interaction.deferred && !interaction.replied) {
-                return interaction.editReply({ content: `An Error Occurred: \`${error.message}\`!` });
-            } else if (interaction.replied) {
-                return interaction.followUp({ content: `An Error Occurred: \`${error.message}\`!` });
-            } else {
-                return interaction.reply({ content: `An Error Occurred: \`${error.message}\`!` });
-            };
+            return this.bot.utils.error(interaction, error);
         };
     };
 };

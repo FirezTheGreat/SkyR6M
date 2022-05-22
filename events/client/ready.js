@@ -62,7 +62,7 @@ module.exports = class Ready extends Event {
                 }, 7100000 - (7100000 - this.bot.sweepers.intervals.messages._repeat) + 100000);
             };
 
-            console.log(`${this.bot.user.username} is Online!`);
+            return console.log(`${this.bot.user.username} is Online!`);
         } catch (error) {
             console.error(error);
         };

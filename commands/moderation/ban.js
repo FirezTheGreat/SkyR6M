@@ -29,6 +29,8 @@ module.exports = class Ban extends Command {
             const users = interaction.options._hoistedOptions.map(({ value }) => value);
             const banned_users = [];
 
+            if (users.length) return await interaction.reply({ content: '*Please Enter an User ID or User*', ephemeral: true });
+
             await interaction.deferReply();
 
             for (const value of users) {
@@ -43,19 +45,10 @@ module.exports = class Ban extends Command {
                 };
             };
 
-            return banned_users.length
-                ? await interaction.editReply({ content: `*Banned ${banned_users.join(', ')} from ${interaction.guild.name}!*` })
-                : null;
+            if (banned_users.length) return await interaction.editReply({ content: `*Banned ${banned_users.join(', ')} from ${interaction.guild.name}!*` })
         } catch (error) {
             console.error(error);
-
-            if (interaction.deferred && !interaction.replied) {
-                return interaction.editReply({ content: `An Error Occurred: \`${error.message}\`!` });
-            } else if (interaction.replied) {
-                return interaction.followUp({ content: `An Error Occurred: \`${error.message}\`!` });
-            } else {
-                return interaction.reply({ content: `An Error Occurred: \`${error.message}\`!` });
-            };
+            return this.bot.utils.error(interaction, error);
         };
     };
 };

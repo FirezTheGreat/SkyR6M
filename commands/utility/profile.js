@@ -316,14 +316,7 @@ module.exports = class Profile extends Command {
             if (error.code === 10062) return console.error(`Unknown Interaction Error - ${error.message}`);
 
             console.error(error);
-
-            if (interaction.deferred && !interaction.replied) {
-                return interaction.editReply({ content: `An Error Occurred: \`${error.message}\`!` });
-            } else if (interaction.replied) {
-                return interaction.followUp({ content: `An Error Occurred: \`${error.message}\`!` });
-            } else {
-                return interaction.reply({ content: `An Error Occurred: \`${error.message}\`!` });
-            };
+            return this.bot.utils.error(interaction, error);
         };
     };
 };
