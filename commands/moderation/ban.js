@@ -29,23 +29,23 @@ module.exports = class Ban extends Command {
             const users = interaction.options._hoistedOptions.map(({ value }) => value);
             const banned_users = [];
 
-            if (users.length) return await interaction.reply({ content: '*Please Enter an User ID or User*', ephemeral: true });
+            if (!users.length) return await interaction.reply({ content: '*Please Enter an User ID or User*', ephemeral: true });
 
             await interaction.deferReply();
 
             for (const value of users) {
                 try {
                     const user = interaction.guild.members.cache.get(value);
-                    if (user && !user.bannable) throw ({ code: 'unknown', message: `*Couldn\'t Ban User - <@${value}> from ${interaction.guild.name}!*` });
+                    if (user && !user.bannable) throw ({ code: 'unknown', message: `*Couldn\'t Ban User - *<@${value}>* from ${interaction.guild.name}!*` });
 
                     await this.bot.rest.put(Routes.guildBan(interaction.guildId, value));
                     banned_users.push(`<@${value}>`);
                 } catch (error) {
-                    interaction.followUp({ content: error.code !== 'unknown' ? `*Couldn\'t Ban User - ${value} from ${interaction.guild.name}!*` : error.message });
+                    interaction.followUp({ content: error.code !== 'unknown' ? `*Couldn\'t Ban User - *${value}* from ${interaction.guild.name}!*` : error.message });
                 };
             };
 
-            if (banned_users.length) return await interaction.editReply({ content: `*Banned ${banned_users.join(', ')} from ${interaction.guild.name}!*` })
+            if (banned_users.length) return await interaction.editReply({ content: `*Banned ${banned_users.join(', ')} from ${interaction.guild.name}!*` });
         } catch (error) {
             console.error(error);
             return this.bot.utils.error(interaction, error);

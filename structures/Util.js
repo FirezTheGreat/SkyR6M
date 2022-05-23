@@ -267,7 +267,7 @@ module.exports = class Util {
     };
 
     static getCommands() {
-        const directory = `${path.dirname(require.main.filename)}${path.sep}`;
+        const directory = `${dirname(require.main.filename)}${sep}`;
         const choices = [];
         const commands = sync(`${directory}commands/**/*.js`).slice(0, 25);
 
@@ -278,7 +278,7 @@ module.exports = class Util {
         };
 
         for (const index of commands.keys()) {
-            const { name } = path.parse(commands[index]);
+            const { name } = parse(commands[index]);
             const File = require(commands[index]);
 
             if (isClass(File)) choices.push({ name, value: name.toLowerCase().split('-').join(' ') });
@@ -288,7 +288,7 @@ module.exports = class Util {
     };
 
     static getEvents() {
-        const directory = `${path.dirname(require.main.filename)}${path.sep}`;
+        const directory = `${dirname(require.main.filename)}${sep}`;
         const choices = [];
         const events = sync(`${directory}events/**/*.js`).slice(0, 25);
 
@@ -299,7 +299,7 @@ module.exports = class Util {
         };
 
         for (const index of events.keys()) {
-            const { name } = path.parse(events[index]);
+            const { name } = parse(events[index]);
             const File = require(events[index]);
 
             if (isClass(File) && !['interactioncreate', 'ready'].includes(name.toLowerCase())) choices.push({ name, value: name });
@@ -345,8 +345,8 @@ module.exports = class Util {
     auditSend(id, { embeds = [], files = [] }) {
         const channel = this.bot.channels.cache.get(id);
 
-        if (channel) channel.send({ embeds, files });
-        else return new TypeError(`Channel Id doesn't exist`);
+        if (channel) return channel.send({ embeds, files });
+        else throw new TypeError(`Channel Id doesn't exist`);
     };
 
     /**
