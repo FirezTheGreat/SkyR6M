@@ -1,5 +1,5 @@
 const { ApplicationCommandType, PermissionFlagsBits } = require("discord.js");
-const SkyR6M = require("./SkyR6M");
+const SkyR6M = require("./SkyR6M.js");
 
 module.exports = class Command {
     /**
@@ -29,7 +29,7 @@ module.exports = class Command {
             PermissionFlagsBits.UseApplicationCommands, PermissionFlagsBits.ViewChannel,
             PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory, ...options.client_permissions ?? []
         ],
-        this.user_permissions = [...options.user_permissions ?? []]
+        this.user_permissions = options.user_permissions ?? []
         this.sub_commands = options.sub_commands || [];
         this.options = options.options || [];
     };

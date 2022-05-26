@@ -1,4 +1,4 @@
-const SkyR6M = require("./SkyR6M");
+const SkyR6M = require("./SkyR6M.js");
 
 module.exports = class Event {
     /**

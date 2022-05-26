@@ -28,7 +28,7 @@ module.exports = class Rename extends Command {
             let ign = interaction.options.getString('ign').trim().slice(0, 25);
             let player = await PlayerStats.findOne({ id: interaction.member.id });
 
-            if (!player) return interaction.reply({ content: `*You are not registered at ${interaction.guild.name}*`, ephemeral: true });
+            if (!player) return await interaction.reply({ content: `*You are not registered at ${interaction.guild.name}*`, ephemeral: true });
 
             await interaction.deferReply({ ephemeral: true });
 
@@ -59,7 +59,7 @@ module.exports = class Rename extends Command {
                         .setFooter({ text: interaction.user.username, iconURL: interaction.user.displayAvatarURL() })
                         .setTimestamp();
 
-                    return interaction.editReply({ embeds: [failedRegistrationEmbed] });
+                    return await interaction.editReply({ embeds: [failedRegistrationEmbed] });
                 };
             };
 
@@ -101,7 +101,7 @@ module.exports = class Rename extends Command {
                 await interaction.followUp({ content: `*Your new IGN has been updated to our database but failed to rename your IGN on discord, please DM a moderator regarding it.*` });
             };
 
-            interaction.editReply({ embeds: [successfulRegistrationEmbed] });
+            await interaction.editReply({ embeds: [successfulRegistrationEmbed] });
             return this.bot.utils.auditSend(Channels.SkyLogId, { embeds: [AuditLogEmbed] });
         } catch (error) {
             console.error(error);
