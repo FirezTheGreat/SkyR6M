@@ -294,6 +294,8 @@ module.exports = class UserProfile extends Command {
                                                 }
                                             );
                                             break;
+                                        default:
+                                            break;
                                     };
                                     break;
                                 case ActivityType.Listening:
@@ -312,7 +314,11 @@ module.exports = class UserProfile extends Command {
 
                                             imageURL = `https://i.scdn.co/image/${assets.largeImage.split(':')[1]}`;
                                             break;
+                                        default:
+                                            break
                                     };
+                                    break;
+                                default:
                                     break;
                             };
                         };
@@ -340,6 +346,8 @@ module.exports = class UserProfile extends Command {
                             ],
                             components: [userEmbedComponents]
                         });
+                        break;
+                    default:
                         break;
                 };
             });

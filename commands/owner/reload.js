@@ -83,6 +83,8 @@ module.exports = class Reload extends Command {
                             await interaction.editReply({ content: '*Reloaded All Events Successfully.*' });
                         };
                         break;
+                    default:
+                        break;
                 };
             } else {
                 return interaction.reply({ content: '*You do not have permission to use this command.*', ephemeral: true });

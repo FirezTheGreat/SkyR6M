@@ -47,6 +47,8 @@ module.exports = class threadUpdate extends Event {
                             { name: 'Changed By', value: `${executor}`, inline: true }
                         );
                         break;
+                    default:
+                        break;
                 };
 
                 const AuditLogEmbed = new EmbedBuilder()

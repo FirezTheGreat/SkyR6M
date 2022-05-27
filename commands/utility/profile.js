@@ -293,11 +293,15 @@ module.exports = class Profile extends Command {
                                             ++current_page
                                         };
                                         break;
+                                    default:
+                                        break;
                                 };
 
                                 await button.update({ embeds: [matchLogEmbedFields[current_page]] });
                             });
                         };
+                        break;
+                    default:
                         break;
                 };
             });
