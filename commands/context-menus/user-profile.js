@@ -1,6 +1,6 @@
 const { ApplicationCommandType, ActionRowBuilder, SelectMenuBuilder, ComponentType, Colors, ActivityType, ChatInputCommandInteraction } = require('discord.js');
 const Command = require('../../structures/Command.js');
-const PlayerStats = require('../../structures/models/PlayerStats.js');
+const Players = require('../../structures/models/Players.js');
 const { Flags } = require('../../config.json');
 
 module.exports = class UserProfile extends Command {
@@ -44,7 +44,7 @@ module.exports = class UserProfile extends Command {
                             ? Flags.NitroUser : new Set(interaction.targetUser.discriminator).size === 1
                                 ? Flags.NitroUser : '';
 
-            const player = await PlayerStats.findOne({ id: interaction.targetUser.id });
+            const player = await Players.findOne({ id: interaction.targetUser.id });
             const userEmbedOptions = [
                 {
                     label: 'Overview',

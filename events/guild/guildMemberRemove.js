@@ -1,6 +1,6 @@
 const { EmbedBuilder, AuditLogEvent, GuildMember } = require('discord.js');
 const Event = require('../../structures/Event.js');
-const PlayerStats = require('../../structures/models/PlayerStats.js');
+const Players = require('../../structures/models/Players.js');
 const { Channels } = require('../../config.json');
 
 module.exports = class guildMemberRemove extends Event {
@@ -18,7 +18,7 @@ module.exports = class guildMemberRemove extends Event {
 
     async EventRun(member) {
         try {
-            const player = await PlayerStats.findOne({ id: member.id });
+            const player = await Players.findOne({ id: member.id });
 
             const { target } = (await member.guild.fetchAuditLogs({ type: AuditLogEvent.MemberBanAdd })).entries.first() ?? { target: null };
             const { target: kick_target, executor: executor_kick, reason: reason_kick } = (await member.guild.fetchAuditLogs({ type: AuditLogEvent.MemberKick })).entries.first() ?? { target: null, executor: null, reason: null };

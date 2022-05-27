@@ -1,6 +1,7 @@
 const { Routes } = require('discord-api-types/v10');
 const { ApplicationCommandOptionType, ChatInputCommandInteraction, PermissionFlagsBits } = require('discord.js');
 const Command = require('../../structures/Command.js');
+const Players = require('../../structures/models/Players.js');
 
 module.exports = class Ban extends Command {
     constructor(...args) {
@@ -28,6 +29,7 @@ module.exports = class Ban extends Command {
         try {
             const users = interaction.options._hoistedOptions.map(({ value }) => value);
             const banned_users = [];
+            const player = await Players
 
             if (!users.length) return await interaction.reply({ content: '*Please Enter an User ID or User*', ephemeral: true });
 

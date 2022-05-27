@@ -1,6 +1,6 @@
 const { EmbedBuilder, AuditLogEvent, GuildBan } = require('discord.js');
 const Event = require('../../structures/Event.js');
-const PlayerStats = require('../../structures/models/PlayerStats.js');
+const Players = require('../../structures/models/Players.js');
 const { Channels } = require('../../config.json');
 
 module.exports = class guildBanRemove extends Event {
@@ -20,7 +20,7 @@ module.exports = class guildBanRemove extends Event {
         try {
             if (ban.partial) ban = await ban.fetch();
 
-            const player = await PlayerStats.findOne({ id: ban.user.id });
+            const player = await Players.findOne({ id: ban.user.id });
             const { target, executor } = (await ban.guild.fetchAuditLogs({ type: AuditLogEvent.MemberBanRemove })).entries.first();
 
             if (ban.user.id === target.id) {

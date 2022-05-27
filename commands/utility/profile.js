@@ -1,6 +1,6 @@
 const { ApplicationCommandType, ApplicationCommandOptionType, ActionRowBuilder, SelectMenuBuilder, Colors, ButtonStyle, ComponentType, ButtonBuilder, ChatInputCommandInteraction } = require('discord.js');
 const Command = require('../../structures/Command.js');
-const PlayerStats = require('../../structures/models/PlayerStats.js');
+const Players = require('../../structures/models/Players.js');
 
 module.exports = class Profile extends Command {
     constructor(...args) {
@@ -27,10 +27,10 @@ module.exports = class Profile extends Command {
             const member = interaction.options.getMember('player') || interaction.member;
             if (!member) return interaction.reply({ content: '*User has left the server.*', ephemeral: true });
 
-            const player = await PlayerStats.findOne({ id: member.id });
+            const player = await Players.findOne({ id: member.id });
             if (!player) return interaction.reply({ content: `***${member}** has not registered at ${interaction.guild.name}*`, ephemeral: true });
 
-            const playerPosition = (await PlayerStats.find({}).sort({ 'points.current': -1 })).findIndex(({ id }) => id === player.id);
+            const playerPosition = (await Players.find({}).sort({ 'points.current': -1 })).findIndex(({ id }) => id === player.id);
             const win_lose_ratio = player.statistics.deaths / player.statistics.kills;
 
             let collectorProfileComponents,
@@ -166,7 +166,7 @@ module.exports = class Profile extends Command {
                             matchLogCollector = null;
                         };
 
-                        const playerKDRPosition = (await PlayerStats.find({}).sort({ 'statistics.total_kills': -1 })).findIndex(({ id }) => id === player.id);
+                        const playerKDRPosition = (await Players.find({}).sort({ 'statistics.total_kills': -1 })).findIndex(({ id }) => id === player.id);
                         const kill_death_ratio = player.statistics.deaths / player.statistics.kills;
 
                         await selectMenu.update({

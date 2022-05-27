@@ -5,12 +5,12 @@ const { getCommands, getEvents } = require('../../structures/Util.js');
 const { Owners } = require('../../config.json');
 const sub_commands = [
     {
-        name: 'commands', type: ApplicationCommandOptionType.Subcommand, description: 'Reload Bot Commands', required: false, options: [
+        name: 'commands', type: ApplicationCommandOptionType.Subcommand, description: 'Reload Bot Commands', options: [
             { name: 'command', type: ApplicationCommandOptionType.String, description: 'Command to Reload', required: false, choices: getCommands() }
         ]
     },
     {
-        name: 'events', type: ApplicationCommandOptionType.Subcommand, description: 'Reload Bot Events', required: false, options: [
+        name: 'events', type: ApplicationCommandOptionType.Subcommand, description: 'Reload Bot Events', options: [
             { name: 'event', type: ApplicationCommandOptionType.String, description: 'Event to Reload', required: false, choices: getEvents() }
         ]
     }

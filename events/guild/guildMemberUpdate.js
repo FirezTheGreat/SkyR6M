@@ -1,7 +1,7 @@
 const { EmbedBuilder, AuditLogEvent, GuildMember } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const { Channels, Roles } = require('../../config.json');
-const PlayerStats = require('../../structures/models/PlayerStats.js');
+const Players = require('../../structures/models/Players.js');
 const MuteList = require('../../structures/models/MuteList.js');
 
 module.exports = class guildMemberUpdate extends Event {
@@ -20,7 +20,7 @@ module.exports = class guildMemberUpdate extends Event {
 
     async EventRun(oldMember, newMember) {
         try {
-            const player = await PlayerStats.findOne({ id: newMember.id });
+            const player = await Players.findOne({ id: newMember.id });
 
             if (oldMember.pending && !newMember.pending && !player) {
                 const JoinedMemberEmbed = new EmbedBuilder()
@@ -43,7 +43,7 @@ module.exports = class guildMemberUpdate extends Event {
 
                     if (roles.length && player) {
                         await newMember.roles.remove(roles);
-                        await PlayerStats.findOneAndUpdate(
+                        await Players.findOneAndUpdate(
                             {
                                 id: player.id
                             },
@@ -65,7 +65,7 @@ module.exports = class guildMemberUpdate extends Event {
 
                     if (roles && player) {
                         await newMember.roles.add(roles);
-                        await PlayerStats.findOneAndUpdate(
+                        await Players.findOneAndUpdate(
                             {
                                 id: player.id
                             },
@@ -80,7 +80,7 @@ module.exports = class guildMemberUpdate extends Event {
             };
 
             if (!oldMember.roles.cache.has(Roles.MuteRoleId) && !newMember.roles.cache.has(Roles.MuteRoleId) && player && (player._roles.length !== newMember.roles.cache.filter(({ managed, id }) => !managed && ![Roles.MuteRoleId, newMember.guild.id].includes(id)).size || !player._roles.every((value) => !newMember.roles.cache.has(value)))) {
-                await PlayerStats.findOneAndUpdate(
+                await Players.findOneAndUpdate(
                     {
                         id: player.id
                     },

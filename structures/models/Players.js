@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 const { Roles } = require('../../config.json');
 
-const PlayerStatsSchema = new Schema(
+const PlayersSchema = new Schema(
     {
         id: {
             type: String,
@@ -312,4 +312,4 @@ const PlayerStatsSchema = new Schema(
     }
 );
 
-module.exports = model('PlayerStats', PlayerStatsSchema, 'PlayerStats');
+module.exports = model('Players', PlayersSchema, 'Players');

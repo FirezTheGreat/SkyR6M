@@ -1,5 +1,5 @@
 const { Client, EmbedBuilder, Guild, TextChannel } = require("discord.js");
-const PlayerStats = require('../models/PlayerStats.js');
+const Players = require('../models/Players.js');
 const MatchStats = require('../models/MatchStats.js');
 const { Channels, Roles } = require('../../config.json');
 const { RolePointChecker } = require("../Util.js");
@@ -59,7 +59,7 @@ module.exports = class PointAllocationManager {
         if (!match_validity) return new Error('Invalid Match');
 
         for (const { id, kills, deaths } of losers) {
-            let player = await PlayerStats.findOne({ id });
+            let player = await Players.findOne({ id });
 
             if (!player) {
                 const user = await this.bot.users.fetch(id);
@@ -110,7 +110,7 @@ module.exports = class PointAllocationManager {
                     const match_log = await this.pointsUpdateChannel.send(`***${player.name}** has lost ${+points} points, bringing their total to ${player.current_points + points} points!${hasRoleUpdated ? ` You now have **${role.name.slice(6)}** rank` : ''}*`);
                     player.logs.matches.push(match_log);
 
-                    player = await PlayerStats.findOneAndUpdate(
+                    player = await Players.findOneAndUpdate(
                         {
                             id
                         },

@@ -1,7 +1,7 @@
 const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder, ChatInputCommandInteraction } = require('discord.js');
 const Command = require('../../structures/Command.js');
 const { Channels } = require('../../config.json');
-const PlayerStats = require('../../structures/models/PlayerStats.js');
+const Players = require('../../structures/models/Players.js');
 
 module.exports = class Rename extends Command {
     constructor(...args) {
@@ -26,13 +26,13 @@ module.exports = class Rename extends Command {
     async InteractionRun(interaction) {
         try {
             let ign = interaction.options.getString('ign').trim().slice(0, 25);
-            let player = await PlayerStats.findOne({ id: interaction.member.id });
+            let player = await Players.findOne({ id: interaction.member.id });
 
             if (!player) return await interaction.reply({ content: `*You are not registered at ${interaction.guild.name}*`, ephemeral: true });
 
             await interaction.deferReply({ ephemeral: true });
 
-            const members = (await PlayerStats.find({})).map(({ id, name }) => ({ id, name: name.toLowerCase(), no_case_name: name }));
+            const members = (await Players.find({})).map(({ id, name }) => ({ id, name: name.toLowerCase(), no_case_name: name }));
 
             for (const splitName of ign.split(/[,\/]/g)) {
                 let member = members.find(({ name }) => name.split(/[,\/]/g).includes(splitName.toLowerCase()));
@@ -63,7 +63,7 @@ module.exports = class Rename extends Command {
                 };
             };
 
-            await PlayerStats.updateOne(
+            await Players.updateOne(
                 {
                     id: interaction.member.id
                 },

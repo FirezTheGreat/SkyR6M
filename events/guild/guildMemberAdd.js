@@ -1,6 +1,6 @@
 const { EmbedBuilder, GuildMember } = require('discord.js');
 const Event = require('../../structures/Event.js');
-const PlayerStats = require('../../structures/models/PlayerStats.js');
+const Players = require('../../structures/models/Players.js');
 const { Channels } = require('../../config.json');
 
 module.exports = class guildMemberAdd extends Event {
@@ -18,7 +18,7 @@ module.exports = class guildMemberAdd extends Event {
 
     async EventRun(member) {
         try {
-            const player = await PlayerStats.findOne({ id: member.id });
+            const player = await Players.findOne({ id: member.id });
 
             const cached_invites = this.bot.invites.get(member.guild.id);
             const new_invites = await member.guild.invites.fetch({ cache: false });
