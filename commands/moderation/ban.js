@@ -29,7 +29,6 @@ module.exports = class Ban extends Command {
         try {
             const users = interaction.options._hoistedOptions.map(({ value }) => value);
             const banned_users = [];
-            const player = await Players
 
             if (!users.length) return await interaction.reply({ content: '*Please Enter an User ID or User*', ephemeral: true });
 
@@ -42,6 +41,8 @@ module.exports = class Ban extends Command {
 
                     await this.bot.rest.put(Routes.guildBan(interaction.guildId, value));
                     banned_users.push(`<@${value}>`);
+
+                    await Players.findOneAndDelete({ id: value });
                 } catch (error) {
                     interaction.followUp({ content: error.code !== 'unknown' ? `*Couldn\'t Ban User - *${value}* from ${interaction.guild.name}!*` : error.message });
                 };
