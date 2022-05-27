@@ -20,6 +20,7 @@ module.exports = class PointAllocationManager {
      * @param {string} moderator.name Moderator name
      * @param {string} moderator.tag Moderator user tag
      */
+    
     constructor({ bot, channelId = '', guildId = '', matchId = '', moderator = { id: '', name: '', tag: '' } }) {
         Object.defineProperty(this, 'bot', { value: bot });
 
@@ -32,6 +33,7 @@ module.exports = class PointAllocationManager {
     /**
      * @returns {Guild} Guild Object
      */
+
     get guild() {
         return this.bot.guilds.cache.get(this.guild_id);
     };
@@ -39,6 +41,7 @@ module.exports = class PointAllocationManager {
     /**
      * @returns {TextChannel} Text Channel of a Guild
      */
+
     get pointsUpdateChannel() {
         return this.guild.channels.cache.get(Channels.PointsUpdateId);
     };
