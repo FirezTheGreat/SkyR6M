@@ -84,7 +84,7 @@ module.exports = class Rename extends Command {
                 .setFooter({ text: interaction.user.username, iconURL: interaction.user.displayAvatarURL() })
                 .setTimestamp();
 
-            const AuditLogEmbed = new EmbedBuilder()
+            const auditLogEmbed = new EmbedBuilder()
                 .setAuthor({ name: 'Renamed IGN', iconURL: interaction.user.displayAvatarURL() })
                 .setColor('Green')
                 .addFields([
@@ -102,7 +102,7 @@ module.exports = class Rename extends Command {
             };
 
             await interaction.editReply({ embeds: [successfulRegistrationEmbed] });
-            return this.bot.utils.auditSend(Channels.SkyLogId, { embeds: [AuditLogEmbed] });
+            return this.bot.utils.auditSend(Channels.SkyLogId, { embeds: [auditLogEmbed] });
         } catch (error) {
             console.error(error);
             return this.bot.utils.error(interaction, error);

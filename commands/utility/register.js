@@ -121,7 +121,7 @@ module.exports = class Register extends Command {
                 .setFooter({ text: interaction.user.username, iconURL: interaction.user.displayAvatarURL() })
                 .setTimestamp();
 
-            const AuditLogEmbed = new EmbedBuilder()
+            const auditLogEmbed = new EmbedBuilder()
                 .setAuthor({ name: 'Registered User', iconURL: interaction.user.displayAvatarURL() })
                 .setColor('Green')
                 .setDescription(`*Player has registered at ${interaction.guild.name}!*`)
@@ -141,7 +141,7 @@ module.exports = class Register extends Command {
             };
 
             await interaction.editReply({ embeds: [successfulRegistrationEmbed] });
-            return this.bot.utils.auditSend(Channels.RegisterLogId, { embeds: [AuditLogEmbed] });
+            return this.bot.utils.auditSend(Channels.RegisterLogId, { embeds: [auditLogEmbed] });
         } catch (error) {
             console.error(error);
             return this.bot.utils.error(interaction, error);

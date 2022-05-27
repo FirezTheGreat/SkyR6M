@@ -331,7 +331,7 @@ module.exports = class Util {
             };
         } catch (error) {
             console.error(error);
-        }
+        };
     };
 
     /**
@@ -342,11 +342,15 @@ module.exports = class Util {
      * @returns Embeded message to the channel
      */
 
-    auditSend(id, { embeds = [], files = [] }) {
-        const channel = this.bot.channels.cache.get(id);
+    async auditSend(id, { embeds = [], files = [] }) {
+        try {
+            const channel = this.bot.channels.cache.get(id);
 
-        if (channel) return channel.send({ embeds, files });
-        else throw new TypeError(`Channel Id doesn't exist`);
+            if (channel) return await channel.send({ embeds, files });
+            else throw new TypeError(`Channel Id doesn't exist`);
+        } catch (error) {
+            throw error;
+        };
     };
 
     /**
@@ -357,6 +361,37 @@ module.exports = class Util {
 
     capitalizeFirstLetter(string) {
         return string[0].toUpperCase() + string.slice(1).toLowerCase();
+    };
+
+    /**
+     * 
+     * @param {number} size HexCode Size
+     * @returns Randomized HexCode
+     */
+
+    generateRandomHex(size) {
+        if (isNaN(Number(size))) throw new TypeError('Invalid Number');
+        return [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+    };
+
+    /**
+     * 
+     * @param {number} ms Milliseconds
+     * @returns Converted Time Object
+     */
+
+    convertMSToDate(ms) {
+        if (ms === 0) return null;
+        
+        let days = Math.floor(ms / 86400000);
+        ms -= days * 86400000;
+        let hours = Math.floor(ms / 3600000);
+        ms -= hours * 3600000;
+        let minutes = Math.floor(ms / 60000);
+        ms -= minutes * 60000;
+        let seconds = Math.floor(ms / 1000);
+
+        return { days, hours, minutes, seconds };
     };
 
     /**
