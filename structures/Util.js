@@ -1,9 +1,10 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, ChatInputCommandInteraction, ContextMenuCommandInteraction, UserContextMenuCommandInteraction, Message } = require('discord.js');
+const { dirname, parse, sep } = require('path');
+const { sync } = require('glob');
 const Command = require('./Command.js');
 const Event = require('./Event.js');
 const SkyR6M = require('./SkyR6M.js');
-const { dirname, parse, sep } = require('path');
-const { sync } = require('glob');
+const { RolePoints } = require('../config.json');
 
 module.exports = class Util {
     /**
@@ -310,11 +311,11 @@ module.exports = class Util {
 
     /**
      * 
-     * @param {CommandInteraction} interaction Interaction
+     * @param {ChatInputCommandInteraction|ContextMenuCommandInteraction|UserContextMenuCommandInteraction} interaction Interaction
      * @param {Error} error Error Message
      * @param {String} custom Custom Error Message
      * @param {boolean} ephemeral Ephemeral Boolean
-     * @returns Error Message
+     * @returns {Promise<Message>} Error Message
      */
 
     async error(interaction, error, custom = false, ephemeral = false) {
@@ -339,7 +340,7 @@ module.exports = class Util {
      * @param {string} id Channel Id
      * @param {Array<EmbedBuilder>} embed Embed to Send
      * @param {array} files Files to Attach
-     * @returns Embeded message to the channel
+     * @returns {Promise<Message>} Embeded message to the channel
      */
 
     async auditSend(id, { embeds = [], files = [] }) {
@@ -382,7 +383,7 @@ module.exports = class Util {
 
     convertMSToDate(ms) {
         if (ms === 0) return null;
-        
+
         let days = Math.floor(ms / 86400000);
         ms -= days * 86400000;
         let hours = Math.floor(ms / 3600000);

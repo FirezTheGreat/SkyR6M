@@ -7,12 +7,11 @@ module.exports = class Unban extends Command {
             name: 'unban',
             description: 'Unban\'s User',
             category: 'Moderation',
-            usage: '[ID | tag]',
+            usage: '[ID]',
             client_permissions: [PermissionFlagsBits.BanMembers],
             user_permissions: [PermissionFlagsBits.BanMembers],
             options: [
                 { name: 'id', type: ApplicationCommandOptionType.String, description: 'ID to Unban', required: false },
-                { name: 'tag', type: ApplicationCommandOptionType.String, description: 'User Tag to Unban', required: false }
             ]
         });
     };
@@ -34,10 +33,14 @@ module.exports = class Unban extends Command {
 
             for (const value of users) {
                 try {
-                    const { user } = await interaction.guild.bans.fetch(value);
-                    await interaction.guild.bans.remove(user.id);
+                    try {
+                        await interaction.guild.bans.fetch(value);
+                    } catch {
+                        interaction.followUp({ content: `*User <@${value}> is not Banned!*` });
+                    };
+                    await interaction.guild.bans.remove(value);
 
-                    banned_users.push(`${user}`);
+                    banned_users.push(`<@${value}>`);
                 } catch (error) {
                     interaction.followUp({ content: `*Couldn\'t Unban User - ${value} from ${interaction.guild.name}!*` });
                 };

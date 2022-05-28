@@ -14,7 +14,8 @@ module.exports = class Ban extends Command {
             user_permissions: [PermissionFlagsBits.BanMembers],
             options: [
                 { name: 'id', type: ApplicationCommandOptionType.String, description: 'ID to Ban', required: false },
-                { name: 'user', type: ApplicationCommandOptionType.User, description: 'User to Ban', required: false }
+                { name: 'user', type: ApplicationCommandOptionType.User, description: 'User to Ban', required: false },
+                { name: 'reason', type: ApplicationCommandOptionType.String, description: 'Reason for Ban', required: true }
             ]
         });
     };
@@ -27,7 +28,8 @@ module.exports = class Ban extends Command {
 
     async InteractionRun(interaction) {
         try {
-            const users = interaction.options._hoistedOptions.map(({ value }) => value);
+            const users = interaction.options._hoistedOptions.filter((option) => option.name !== 'reason').map(({ value }) => value);
+            const reason = interaction.options.getString('reason');
             const banned_users = [];
 
             if (!users.length) return await interaction.reply({ content: '*Please Enter an User ID or User*', ephemeral: true });
@@ -36,10 +38,19 @@ module.exports = class Ban extends Command {
 
             for (const value of users) {
                 try {
+                    const ban = interaction.guild.bans.cache.get(value);
+                    if (ban) {
+                        interaction.followUp({ content: `*User <@${value}> is already Banned!*` });
+                        continue;
+                    };
+                    
                     const user = interaction.guild.members.cache.get(value);
                     if (user && !user.bannable) throw ({ code: 'unknown', message: `*Couldn\'t Ban User - *<@${value}>* from ${interaction.guild.name}!*` });
 
-                    await this.bot.rest.put(Routes.guildBan(interaction.guildId, value));
+                    await this.bot.rest.put(Routes.guildBan(interaction.guildId, value), {
+                        body: { delete_message_days: 0 },
+                        reason
+                    });
                     banned_users.push(`<@${value}>`);
 
                     await Players.findOneAndDelete({ id: value });
