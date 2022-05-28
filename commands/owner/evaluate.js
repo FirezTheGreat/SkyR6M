@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType, EmbedBuilder, ChatInputCommandInteraction, Util } = require('discord.js');
+const { ApplicationCommandOptionType, EmbedBuilder, ChatInputCommandInteraction } = require('discord.js');
 const Command = require('../../structures/Command.js');
 const { Owners } = require('../../config.json');
 
@@ -43,8 +43,8 @@ module.exports = class Evaluate extends Command {
                         .setColor('Green')
                         .setTitle('Evaluated')
                         .addFields([
-                            { name: 'Code', value: Util.cleanCodeBlockContent(```js\n${code}\n```).slice(0, 1024) },
-                            { name: 'Result', value: Util.cleanCodeBlockContent(```js\n${code_result.replace(this.bot.token, 'TOKEN')}\n```).slice(0, 1024) }
+                            { name: 'Code', value: `\`\`\`js\n${code.slice(0, 1006)}\n\`\`\`` },
+                            { name: 'Result', value: `\`\`\`js\n${code_result.replace(this.bot.token, 'TOKEN').slice(0, 1006)}\n\`\`\`` }
                         ]);
 
                     return await interaction.editReply({ embeds: [evalEmbed] });
@@ -53,8 +53,8 @@ module.exports = class Evaluate extends Command {
                         .setColor('Red')
                         .setTitle('Error')
                         .addFields([
-                            { name: 'Code', value: Util.cleanCodeBlockContent(```js\n${code}\n```).slice(0, 1024) },
-                            { name: 'Result', value: Util.cleanCodeBlockContent(```js\n${error.message.replace(this.bot.token, 'TOKEN')}\n```).slice(0, 1024) }
+                            { name: 'Code', value: `\`\`\`js\n${code.slice(0, 1006)}\n\`\`\`` },
+                            { name: 'Result', value: `\`\`\`js\n${error.message.replace(this.bot.token, 'TOKEN').slice(0, 1006)}\n\`\`\`` }
                         ]);
 
                     return await interaction.editReply({ embeds: [evalEmbed] });

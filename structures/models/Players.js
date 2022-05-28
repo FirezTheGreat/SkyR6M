@@ -110,16 +110,6 @@ const PlayersSchema = new Schema(
                             required: true,
                             default: 'None'
                         },
-                        start_timestamp: {
-                            type: Number,
-                            required: true,
-                            default: 0
-                        },
-                        duration_timestamp: {
-                            type: Number,
-                            required: true,
-                            default: 0
-                        },
                         points: {
                             type: Number,
                             required: true,
@@ -289,7 +279,41 @@ const PlayersSchema = new Schema(
                     default: []
                 },
                 penalties: {
-                    type: [String], // decide later
+                    type: [{
+                        id: {
+                            type: String,
+                            required: true,
+                            index: {
+                                unique: true
+                            }
+                        },
+                        reason: {
+                            type: String,
+                            required: true,
+                            default: 'None'
+                        },
+                        points: {
+                            type: Number,
+                            required: true,
+                            default: 0
+                        },
+                        moderator: {
+                            type: {
+                                id: {
+                                    type: String,
+                                    required: true,
+                                    default: ''
+                                },
+                                tag: {
+                                    type: String,
+                                    required: true,
+                                    default: ''
+                                },
+                            },
+                            required: true,
+                            default: {}
+                        }
+                    }],
                     required: true,
                     default: []
                 }
