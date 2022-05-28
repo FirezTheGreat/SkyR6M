@@ -13,9 +13,9 @@ module.exports = class Ban extends Command {
             client_permissions: [PermissionFlagsBits.BanMembers],
             user_permissions: [PermissionFlagsBits.BanMembers],
             options: [
+                { name: 'reason', type: ApplicationCommandOptionType.String, description: 'Reason for Ban', required: true },
                 { name: 'id', type: ApplicationCommandOptionType.String, description: 'ID to Ban', required: false },
                 { name: 'user', type: ApplicationCommandOptionType.User, description: 'User to Ban', required: false },
-                { name: 'reason', type: ApplicationCommandOptionType.String, description: 'Reason for Ban', required: true }
             ]
         });
     };

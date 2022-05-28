@@ -37,6 +37,7 @@ module.exports = class Unban extends Command {
                         await interaction.guild.bans.fetch(value);
                     } catch {
                         interaction.followUp({ content: `*User <@${value}> is not Banned!*` });
+                        continue;
                     };
                     await interaction.guild.bans.remove(value);
 
