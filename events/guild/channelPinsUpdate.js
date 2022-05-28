@@ -39,7 +39,7 @@ module.exports = class channelPinsUpdate extends Event {
                         .setFooter({ text: message.guild.name, iconURL: message.guild.iconURL() })
                         .setTimestamp();
 
-                    return this.bot.utils.auditSend(Channels.MessageLogId, { embeds: [AuditLogEmbed] });
+                    return await this.bot.utils.auditSend(Channels.MessageLogId, { embeds: [AuditLogEmbed] });
                 };
             } else {
                 if (message.channel.id === extra.channel.id && message.author.id === target.id) {
@@ -56,7 +56,7 @@ module.exports = class channelPinsUpdate extends Event {
                         .setFooter({ text: message.guild.name, iconURL: message.guild.iconURL() })
                         .setTimestamp();
 
-                    return this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [AuditLogEmbed] });
+                    return await this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [AuditLogEmbed] });
                 };
             };
         } catch (error) {

@@ -48,7 +48,7 @@ module.exports = class voiceStateUpdate extends Event {
                     { name: 'Disconnected By', value: `${executor} (${executor.id})`, inline: true }
                 ]);
 
-                this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [leftVoiceEmbed], files: [voiceLeftAttachment] });
+                await this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [leftVoiceEmbed], files: [voiceLeftAttachment] });
             } else if (oldState.member && newState.member && oldState.channelId && newState.channelId) {
                 const { executor, createdTimestamp } = (await newState.guild.fetchAuditLogs({ type: AuditLogEvent.MemberMove })).entries.first() ?? { createdTimestamp: Date.now(), executor: null };
                 const voiceRejoinAttachment = new Attachment(path.join(__dirname, '..', '..', 'assets', 'emojis', 'voice_joined.png'), 'voice_joined.png');
@@ -68,7 +68,7 @@ module.exports = class voiceStateUpdate extends Event {
                     { name: 'Moved By', value: `${executor} (${executor.id})`, inline: true }
                 ]);
 
-                this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [rejoinedVoiceEmbed], files: [voiceRejoinAttachment] });
+                await this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [rejoinedVoiceEmbed], files: [voiceRejoinAttachment] });
             } else {
                 const voiceJoinAttachment = new Attachment(path.join(__dirname, '..', '..', 'assets', 'emojis', 'voice_joined.png'), 'voice_joined.png');
 
@@ -83,7 +83,7 @@ module.exports = class voiceStateUpdate extends Event {
                     .setFooter({ text: newState.guild.name, iconURL: newState.guild.iconURL() })
                     .setTimestamp();
 
-                this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [joinVoiceEmbed], files: [voiceJoinAttachment] });
+                await this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [joinVoiceEmbed], files: [voiceJoinAttachment] });
             };
         } catch (error) {
             console.error(error);

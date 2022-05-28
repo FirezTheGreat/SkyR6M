@@ -35,7 +35,7 @@ module.exports = class threadDelete extends Event {
                     .setFooter({ text: thread.guild.name, iconURL: thread.guild.iconURL() })
                     .setTimestamp();
 
-                return this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [AuditLogEmbed] });
+                return await this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [AuditLogEmbed] });
             };
         } catch (error) {
             console.error(error);

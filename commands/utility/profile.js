@@ -320,7 +320,7 @@ module.exports = class Profile extends Command {
             if (error.code === 10062) return console.error(`Unknown Interaction Error - ${error.message}`);
 
             console.error(error);
-            return this.bot.utils.error(interaction, error);
+            return await this.bot.utils.error(interaction, error);
         };
     };
 };

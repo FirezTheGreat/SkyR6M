@@ -35,7 +35,7 @@ module.exports = class messageUpdate extends Event {
                     .setFooter({ text: newMessage.guild.name, iconURL: newMessage.guild.iconURL() })
                     .setTimestamp();
 
-                return this.bot.utils.auditSend(Channels.MessageLogId, { embeds: [AuditLogEmbed] });
+                return await this.bot.utils.auditSend(Channels.MessageLogId, { embeds: [AuditLogEmbed] });
             };
         } catch (error) {
             console.error(error);

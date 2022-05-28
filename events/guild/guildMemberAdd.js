@@ -43,7 +43,7 @@ module.exports = class guildMemberAdd extends Event {
                 await member.roles.add(player._roles);
             };
 
-            return this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [guildJoinEmbed] });
+            return await this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [guildJoinEmbed] });
         } catch (error) {
             console.error(error);
         };

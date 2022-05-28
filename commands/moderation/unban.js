@@ -46,7 +46,7 @@ module.exports = class Unban extends Command {
             if (banned_users.length) return await interaction.editReply({ content: `*Unbanned ${banned_users.join(', ')} from ${interaction.guild.name}!*` });
         } catch (error) {
             console.error(error);
-            return this.bot.utils.error(interaction, error);
+            return await this.bot.utils.error(interaction, error);
         };
     };
 };

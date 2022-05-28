@@ -91,7 +91,7 @@ module.exports = class Reload extends Command {
             };
         } catch (error) {
             console.error(error);
-            return this.bot.utils.error(interaction, error);
+            return await this.bot.utils.error(interaction, error);
         };
     };
 };

@@ -119,7 +119,7 @@ module.exports = class guildMemberUpdate extends Event {
                         .setFooter({ text: newMember.guild.name, iconURL: newMember.guild.iconURL() })
                         .setTimestamp();
 
-                    this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [memberRoleUpdateEmbed] });
+                    await this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [memberRoleUpdateEmbed] });
                 };
             };
         } catch (error) {

@@ -42,7 +42,7 @@ module.exports = class messageDelete extends Event {
 
                 if (message.attachments.size) AuditLogEmbed.setImage(message.attachments.first().url);
 
-                return this.bot.utils.auditSend(Channels.MessageLogId, { embeds: [AuditLogEmbed] });
+                return await this.bot.utils.auditSend(Channels.MessageLogId, { embeds: [AuditLogEmbed] });
             };
         } catch (error) {
             console.error(error);

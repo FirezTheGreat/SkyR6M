@@ -51,7 +51,7 @@ module.exports = class Ban extends Command {
             if (banned_users.length) return await interaction.editReply({ content: `*Banned ${banned_users.join(', ')} from ${interaction.guild.name}!*` });
         } catch (error) {
             console.error(error);
-            return this.bot.utils.error(interaction, error);
+            return await this.bot.utils.error(interaction, error);
         };
     };
 };

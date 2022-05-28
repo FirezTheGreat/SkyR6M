@@ -20,7 +20,7 @@ module.exports = class PointAllocationManager {
      * @param {string} moderator.name Moderator name
      * @param {string} moderator.tag Moderator user tag
      */
-    
+
     constructor({ bot, channelId = '', guildId = '', matchId = '', moderator = { id: '', name: '', tag: '' } }) {
         Object.defineProperty(this, 'bot', { value: bot });
 
@@ -74,7 +74,7 @@ module.exports = class PointAllocationManager {
                     .setFooter({ text: this.guild.name, iconURL: this.guild.iconURL() })
                     .setTimestamp();
 
-                this.bot.utils.auditSend(this.channel_id, { embeds: [UnregisteredPlayerEmbed] });
+                await this.bot.utils.auditSend(this.channel_id, { embeds: [UnregisteredPlayerEmbed] });
             } else {
                 const member = this.guild.members.cache.get(id);
 
@@ -88,7 +88,7 @@ module.exports = class PointAllocationManager {
                         .setFooter({ text: this.guild.name, iconURL: this.guild.iconURL() })
                         .setTimestamp();
 
-                    this.bot.utils.auditSend(this.channel_id, { embeds: [PlayerLeftEmbed] });
+                    await this.bot.utils.auditSend(this.channel_id, { embeds: [PlayerLeftEmbed] });
                 } else {
                     const points = this.bot.utils.removePoints(player.current_points);
                     const role_id = RolePointChecker(player.current_points, points);
@@ -147,7 +147,7 @@ module.exports = class PointAllocationManager {
                         .setFooter({ text: this.moderator.tag, iconURL: this.moderator.icon })
                         .setTimestamp();
 
-                    this.bot.utils.auditSend(Channels.PointLogId, { embeds: [RemovedPointsAuditLogEmbed] });
+                    await this.bot.utils.auditSend(Channels.PointLogId, { embeds: [RemovedPointsAuditLogEmbed] });
 
                     const RemovePointsAllotedEmbed = new EmbedBuilder()
                         .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
@@ -162,7 +162,7 @@ module.exports = class PointAllocationManager {
                         .setFooter({ text: `Points have been removed by ${this.moderator.tag}`, iconURL: this.moderator.icon })
                         .setTimestamp();
 
-                    this.bot.utils.auditSend(this.channel_id, { embeds: [RemovePointsAllotedEmbed] });
+                    await this.bot.utils.auditSend(this.channel_id, { embeds: [RemovePointsAllotedEmbed] });
                 };
             }
         };

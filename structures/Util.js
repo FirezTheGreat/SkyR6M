@@ -314,7 +314,7 @@ module.exports = class Util {
      * @param {Error} error Error Message
      * @param {String} custom Custom Error Message
      * @param {boolean} ephemeral Ephemeral Boolean
-     * @returns {string} Error Message
+     * @returns Error Message
      */
 
     async error(interaction, error, custom = false, ephemeral = false) {

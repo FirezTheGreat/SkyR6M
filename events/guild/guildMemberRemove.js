@@ -36,7 +36,7 @@ module.exports = class guildMemberRemove extends Event {
                     .setFooter({ text: member.guild.name, iconURL: member.guild.iconURL() })
                     .setTimestamp();
 
-                return this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [guildLeaveEmbed] });
+                return await this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [guildLeaveEmbed] });
             } else if (member.id === kick_target?.id) {
                 const guildKickEmbed = new EmbedBuilder()
                     .setAuthor({ name: member.user.tag, iconURL: member.user.displayAvatarURL() })
@@ -53,7 +53,7 @@ module.exports = class guildMemberRemove extends Event {
                     .setFooter({ text: member.guild.name, iconURL: member.guild.iconURL() })
                     .setTimestamp();
 
-                return this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [guildKickEmbed] });
+                return await this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [guildKickEmbed] });
             };
         } catch (error) {
             console.error(error);

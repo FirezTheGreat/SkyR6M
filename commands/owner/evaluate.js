@@ -57,14 +57,14 @@ module.exports = class Evaluate extends Command {
                             { name: 'Result', value: Util.cleanCodeBlockContent(```js\n${error.message.replace(this.bot.token, 'TOKEN')}\n```).slice(0, 1024) }
                         ]);
 
-                    return interaction.editReply({ embeds: [evalEmbed] });
+                    return await interaction.editReply({ embeds: [evalEmbed] });
                 };
             } else {
-                return interaction.reply({ content: '*You do not have permission to use this command.*', ephemeral: true })
+                return await interaction.reply({ content: '*You do not have permission to use this command.*', ephemeral: true })
             };
         } catch (error) {
             console.error(error);
-            return this.bot.utils.error(interaction, error);
+            return await this.bot.utils.error(interaction, error);
         };
     };
 };

@@ -1,4 +1,5 @@
 const { ChatInputCommandInteraction } = require('discord.js');
+const Command = require('../../structures/Command.js');
 const Event = require('../../structures/Event.js');
 
 module.exports = class interactionCreate extends Event {

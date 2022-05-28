@@ -102,10 +102,10 @@ module.exports = class Rename extends Command {
             };
 
             await interaction.editReply({ embeds: [successfulRegistrationEmbed] });
-            return this.bot.utils.auditSend(Channels.SkyLogId, { embeds: [auditLogEmbed] });
+            return await this.bot.utils.auditSend(Channels.SkyLogId, { embeds: [auditLogEmbed] });
         } catch (error) {
             console.error(error);
-            return this.bot.utils.error(interaction, error);
+            return await this.bot.utils.error(interaction, error);
         };
     };
 };
