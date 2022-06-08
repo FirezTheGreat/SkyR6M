@@ -33,10 +33,9 @@ module.exports = class Profile extends Command {
             const playerPosition = (await Players.find({}).sort({ 'points.current': -1 })).findIndex(({ id }) => id === player.id);
             const win_lose_ratio = player.statistics.deaths / player.statistics.kills;
 
-            let collectorProfileComponents,
-                matchLogCollector = null;
+            let matchLogCollector = null;
 
-            const profileEmbedComponents = new ActionRowBuilder()
+            let profileEmbedComponents = new ActionRowBuilder()
                 .addComponents([
                     new SelectMenuBuilder()
                         .setCustomId('profile')
@@ -115,7 +114,7 @@ module.exports = class Profile extends Command {
                     selectMenuOptions.push(selectMenuOption);
                 };
 
-                collectorProfileComponents = new ActionRowBuilder()
+                profileEmbedComponents = new ActionRowBuilder()
                     .addComponents([
                         SelectMenuBuilder.from(profileEmbedComponents.components[0]).setOptions(selectMenuOptions)
                     ]);
@@ -156,7 +155,7 @@ module.exports = class Profile extends Command {
                                     timestamp: new Date().toISOString()
                                 }
                             ],
-                            components: [collectorProfileComponents]
+                            components: [profileEmbedComponents]
                         });
                         break;
                     case 'kd':
@@ -197,7 +196,7 @@ module.exports = class Profile extends Command {
                                     timestamp: new Date().toISOString()
                                 }
                             ],
-                            components: [collectorProfileComponents]
+                            components: [profileEmbedComponents]
                         });
                         break;
                     case 'logs':
@@ -245,7 +244,7 @@ module.exports = class Profile extends Command {
 
                         const matchLogComponents = [];
 
-                        total_pages > 1 ? matchLogComponents.push(matchLogComponent, collectorProfileComponents) : matchLogComponents.push(collectorProfileComponents);
+                        total_pages > 1 ? matchLogComponents.push(matchLogComponent, profileEmbedComponents) : matchLogComponents.push(profileEmbedComponents);
 
                         const matchLogEmbed = await selectMenu.update({
                             embeds: [
@@ -306,14 +305,23 @@ module.exports = class Profile extends Command {
                 };
             });
 
-            profileEmbedCollector.on('end', async (_collected, reason) => {
+            profileEmbedCollector.on('end', async (collected, reason) => {
                 if (reason === 'time') {
-                    collectorProfileComponents = new ActionRowBuilder()
-                        .addComponents([
-                            SelectMenuBuilder.from(collectorProfileComponents.components ? collectorProfileComponents.components[0] : collectorProfileComponents).setDisabled(true)
-                        ]);
+                    if (collected.size) {
+                        profileEmbedComponents = new ActionRowBuilder()
+                            .addComponents([
+                                SelectMenuBuilder.from(profileEmbedComponents.components ? profileEmbedComponents.components[0] : profileEmbedComponents).setDisabled(true)
+                            ]);
 
-                    return interaction.editReply({ components: [collectorProfileComponents] }).catch(() => null);
+                        return interaction.editReply({ components: [profileEmbedComponents] }).catch(() => null);
+                    } else {
+                        profileEmbedComponents = new ActionRowBuilder()
+                            .addComponents([
+                                SelectMenuBuilder.from(profileEmbedComponents.components ? profileEmbedComponents.components[0] : profileEmbedComponents).setDisabled(true)
+                            ]);
+
+                        return interaction.editReply({ components: [profileEmbedComponents] }).catch(() => null);
+                    };
                 };
             });
         } catch (error) {

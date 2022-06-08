@@ -19,7 +19,7 @@ module.exports = class interactionCreate extends Event {
         if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) {
             const command = this.bot.commands.get(interaction.commandName);
             if (command) {
-                if (!interaction.guild.me.permissions.has(command.client_permissions)) {
+                if (!interaction.guild.members.me.permissions.has(command.client_permissions)) {
                     return interaction.reply({ content: '*I do not have permission to run this command!*' });
                 } else if (command.user_permissions.length && !interaction.member.permissions.has(command.user_permissions)) {
                     return interaction.reply({ content: '*You do not have permission to run this command!*' });

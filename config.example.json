@@ -33,12 +33,6 @@
             "role": ""
         }
     ],
-    "QueueTextVoiceIds": [
-        {
-            "text": "",
-            "voice": ""
-        }
-    ],
     "QueueRoleIds": [
         {
             "voice": "",
