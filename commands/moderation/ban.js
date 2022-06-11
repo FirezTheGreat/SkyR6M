@@ -40,10 +40,10 @@ module.exports = class Ban extends Command {
                 try {
                     const ban = interaction.guild.bans.cache.get(value);
                     if (ban) {
-                        interaction.followUp({ content: `*User <@${value}> is already Banned!*` });
+                        await interaction.followUp({ content: `*User <@${value}> is already Banned!*` });
                         continue;
                     };
-                    
+
                     const user = interaction.guild.members.cache.get(value);
                     if (user && !user.bannable) throw ({ code: 'unknown', message: `*Couldn\'t Ban User - *<@${value}>* from ${interaction.guild.name}!*` });
 
@@ -55,7 +55,7 @@ module.exports = class Ban extends Command {
 
                     await Players.findOneAndDelete({ id: value });
                 } catch (error) {
-                    interaction.followUp({ content: error.code !== 'unknown' ? `*Couldn\'t Ban User - *${value}* from ${interaction.guild.name}!*` : error.message });
+                    await interaction.followUp({ content: error.code !== 'unknown' ? `*Couldn\'t Ban User - *${value}* from ${interaction.guild.name}!*` : error.message });
                 };
             };
 

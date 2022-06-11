@@ -20,14 +20,13 @@ module.exports = class UserProfile extends Command {
 
     async InteractionRun(interaction) {
         try {
-            if (!interaction.targetMember) return interaction.reply({ content: '*User has left the server.*', ephemeral: true });
+            if (!interaction.targetMember) return await interaction.reply({ content: '*User has left the server.*', ephemeral: true });
 
             let userBanner = (await interaction.targetUser.fetch()).bannerURL({ size: 4096 });
             if (userBanner?.includes('a_')) {
                 userBanner = userBanner.split('.');
 
-                userBanner.pop();
-                userBanner.push('gif');
+                userBanner.fill('gif', -1);
 
                 userBanner = userBanner.join('.');
             };
@@ -359,7 +358,7 @@ module.exports = class UserProfile extends Command {
                             SelectMenuBuilder.from(userEmbedComponents.components ? userEmbedComponents.components[0] : userEmbedComponents).setDisabled(true)
                         ]);
 
-                    return interaction.editReply({ components: [userEmbedComponents] }).catch(() => null);
+                    return await interaction.editReply({ components: [userEmbedComponents] }).catch(() => null);
                 };
             });
         } catch (error) {
