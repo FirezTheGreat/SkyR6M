@@ -1,4 +1,4 @@
-const { EmbedBuilder, Attachment, AuditLogEvent, VoiceState } = require('discord.js');
+const { EmbedBuilder, AttachmentBuilder, AuditLogEvent, VoiceState } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const { Channels, QueueRoleIds } = require('../../config.json');
 const path = require('path');
@@ -31,7 +31,7 @@ module.exports = class voiceStateUpdate extends Event {
 
             if (oldState.member && oldState.channelId && !newState.channelId) {
                 const { executor, createdTimestamp } = (await newState.guild.fetchAuditLogs({ type: AuditLogEvent.MemberDisconnect })).entries.first() ?? { createdTimestamp: Date.now(), executor: null };
-                const voiceLeftAttachment = new Attachment(path.join(__dirname, '..', '..', 'assets', 'emojis', 'voice_left.png'), 'voice_left.png');
+                const { attachment: voiceLeftAttachment } = new AttachmentBuilder(path.join(__dirname, '..', '..', 'assets', 'emojis', 'voice_left.png'), 'voice_left.png');
 
                 const leftVoiceEmbed = new EmbedBuilder()
                     .setAuthor({ name: 'Left Voice Channel', iconURL: 'attachment://voice_left.png' })
@@ -51,7 +51,7 @@ module.exports = class voiceStateUpdate extends Event {
                 await this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [leftVoiceEmbed], files: [voiceLeftAttachment] });
             } else if (oldState.member && newState.member && oldState.channelId && newState.channelId) {
                 const { executor, createdTimestamp } = (await newState.guild.fetchAuditLogs({ type: AuditLogEvent.MemberMove })).entries.first() ?? { createdTimestamp: Date.now(), executor: null };
-                const voiceRejoinAttachment = new Attachment(path.join(__dirname, '..', '..', 'assets', 'emojis', 'voice_joined.png'), 'voice_joined.png');
+                const { attachment: voiceRejoinAttachment } = new AttachmentBuilder(path.join(__dirname, '..', '..', 'assets', 'emojis', 'voice_joined.png'), 'voice_joined.png');
 
                 const rejoinedVoiceEmbed = new EmbedBuilder()
                     .setAuthor({ name: 'Rejoined Voice Channel', iconURL: 'attachment://voice_joined.png' })
@@ -70,7 +70,7 @@ module.exports = class voiceStateUpdate extends Event {
 
                 await this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [rejoinedVoiceEmbed], files: [voiceRejoinAttachment] });
             } else {
-                const voiceJoinAttachment = new Attachment(path.join(__dirname, '..', '..', 'assets', 'emojis', 'voice_joined.png'), 'voice_joined.png');
+                const { attachment: voiceJoinAttachment } = new AttachmentBuilder(path.join(__dirname, '..', '..', 'assets', 'emojis', 'voice_joined.png'), 'voice_joined.png');
 
                 const joinVoiceEmbed = new EmbedBuilder()
                     .setAuthor({ name: 'Joined Voice Channel', iconURL: 'attachment://voice_joined.png' })

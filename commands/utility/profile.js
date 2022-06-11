@@ -242,10 +242,6 @@ module.exports = class Profile extends Command {
                                     .setStyle(ButtonStyle.Primary)
                             ]);
 
-                        const matchLogComponents = [];
-
-                        total_pages > 1 ? matchLogComponents.push(matchLogComponent, profileEmbedComponents) : matchLogComponents.push(profileEmbedComponents);
-
                         const matchLogEmbed = await selectMenu.update({
                             embeds: [
                                 matchLogEmbedFields.length
@@ -268,7 +264,7 @@ module.exports = class Profile extends Command {
                                         timestamp: new Date().toISOString()
                                     }
                             ],
-                            components: matchLogComponents
+                            components: total_pages > 1 ? [matchLogComponent, profileEmbedComponents] : [profileEmbedComponents]
                         });
 
                         if (total_pages > 1) {
