@@ -71,5 +71,21 @@
         "CertifiedModerator": "",
         "VerifiedDeveloper": "",
         "NitroUser": ""
+    },
+    "PremiumTiers": {
+        "1": "assets/emojis/nitro_level_one.png",
+        "2": "assets/emojis/nitro_level_two.png",
+        "3": "assets/emojis/nitro_level_three.png"
+    },
+    "VerificationLevels": {
+        "0": "Unrestricted",
+        "1": "Must have verified email on account",
+        "2": "Must be registered on Discord for longer than 5 minutes",
+        "3": "Must be a member of the guild for longer than 10 minutes"
+    },
+    "ExplicitContentFilters": {
+        "0": "Disabled",
+        "1": "Anyone Without Role",
+        "2": "Everyone"
     }
 }
