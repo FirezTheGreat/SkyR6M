@@ -321,7 +321,7 @@ ${interaction.guild.premiumSubscriptionCount} boosts`, ' ')
                                     url: interaction.guild.iconURL()
                                 },
                                 fields: [
-                                    { name: 'Banner', value: GuildSplashLinks.map((link) => link.value).join(' - ') }
+                                    { name: 'Splash', value: GuildSplashLinks.map((link) => link.value).join(' - ') }
                                 ],
                                 image: {
                                     url: splash.endsWith('.webp') ? GuildSplashLinks.find((link) => link.type === 'gif') : splash
