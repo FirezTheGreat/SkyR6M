@@ -357,11 +357,13 @@ module.exports = class Util {
     /**
      * 
      * @param {string} string String
+     * @param {string} split String Split Character
+     * @param {string} join String Join Character
      * @returns Capitalized String
      */
 
-    capitalizeFirstLetter(string) {
-        return string[0].toUpperCase() + string.slice(1).toLowerCase();
+    capitalizeFirstLetter(string, split = ' ', join = ' ') {
+        return string.toLowerCase().split(split).map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(join);
     };
 
     /**

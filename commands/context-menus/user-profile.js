@@ -351,14 +351,14 @@ module.exports = class UserProfile extends Command {
                 };
             });
 
-            EmbedCollector.on('end', async (_collected, reason) => {
+            EmbedCollector.on('end', (_collected, reason) => {
                 if (reason === 'time') {
                     userEmbedComponents = new ActionRowBuilder()
                         .addComponents([
                             SelectMenuBuilder.from(userEmbedComponents.components ? userEmbedComponents.components[0] : userEmbedComponents).setDisabled(true)
                         ]);
 
-                    return await interaction.editReply({ components: [userEmbedComponents] }).catch(() => null);
+                    return interaction.editReply({ components: [userEmbedComponents] }).catch(() => null);
                 };
             });
         } catch (error) {
