@@ -381,7 +381,10 @@ ${interaction.guild.premiumSubscriptionCount} boosts`, ' ')
 
                     InfoButtonComponents = new ActionRowBuilder()
                         .addComponents([
-                            ButtonBuilder.from(InfoButtonComponents.components ? InfoButtonComponents.toJSON() : InfoButtonComponents).setDisabled(true)
+                            ButtonBuilder.from(InfoButtonComponents.components ? InfoButtonComponents.components[0] : InfoButtonComponents).setDisabled(true)
+                        ])
+                        .addComponents([
+                            ButtonBuilder.from(InfoButtonComponents.components ? InfoButtonComponents.components[1] : InfoButtonComponents).setDisabled(true)
                         ]);
 
                     return interaction.editReply({ components: [InfoEmbedComponents, InfoButtonComponents] }).catch(() => null);
