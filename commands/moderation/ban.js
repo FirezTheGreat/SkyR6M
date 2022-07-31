@@ -1,5 +1,5 @@
 const { Routes } = require('discord-api-types/v10');
-const { ApplicationCommandOptionType, ChatInputCommandInteraction, PermissionFlagsBits } = require('discord.js');
+const { PermissionFlagsBits, ApplicationCommandOptionType, ChatInputCommandInteraction } = require('discord.js');
 const Command = require('../../structures/Command.js');
 const Players = require('../../structures/models/Players.js');
 
