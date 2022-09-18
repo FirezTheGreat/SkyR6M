@@ -47,6 +47,129 @@ module.exports = class PointAllocationManager {
     };
 
     /**
+     * @param {string[]} winners Array of Winners IDs
+     * @returns {object[]} Updated stats for each winner
+     */
+
+    async setWinners(winners = []) {
+        if (!Array.isArray(winners)) return new Error('Data sent is not an Array');
+        if (!losers.length) return new Error('Empty Data');
+
+        const updatedWinners = [];
+
+        const match_validity = this.#checkMatchValidity(this.match_id);
+        if (!match_validity) return new Error('Invalid Match');
+
+        for (const { id, kills, deaths } of winners) {
+            let player = await Players.findOne({ id });
+
+            if (!player) {
+                const user = await this.bot.users.fetch(id);
+
+                const UnregisteredPlayerEmbed = new EmbedBuilder()
+                    .setAuthor({ name: user.username, iconURL: user.displayAvatarURL() })
+                    .setColor('Red')
+                    .setDescription(`*Failed to add points to **${user.tag}** as player is not registered in our server.*`)
+                    .setFooter({ text: this.guild.name, iconURL: this.guild.iconURL() })
+                    .setTimestamp();
+
+                await this.bot.utils.auditSend(this.channel_id, { embeds: [UnregisteredPlayerEmbed] });
+            } else {
+                const member = this.guild.members.cache.get(id);
+
+                if (!member) {
+                    const user = await this.bot.users.fetch(id);
+
+                    const PlayerLeftEmbed = new EmbedBuilder()
+                        .setAuthor({ name: user.username, iconURL: user.displayAvatarURL() })
+                        .setColor('Aqua')
+                        .setDescription(`***${user.tag}** has left the server, points could not be added to the player.*`)
+                        .setFooter({ text: this.guild.name, iconURL: this.guild.iconURL() })
+                        .setTimestamp();
+
+                    await this.bot.utils.auditSend(this.channel_id, { embeds: [PlayerLeftEmbed] });
+                } else {
+                    const points = this.bot.utils.addPoints(player.current_points);
+                    const role_id = RolePointChecker(player.current_points, points);
+
+                    const role = this.guild.roles.cache.get(role_id);
+
+                    let rank = player.rank;
+                    let hasRoleUpdated = false;
+
+                    if (role.name.toLowerCase() !== rank.toLowerCase()) {
+                        let prior_role = this.guild.roles.cache.find(({ name }) => name.toLowerCase() === rank.toLowerCase());
+
+                        rank = role.name;
+                        hasRoleUpdated = true;
+
+                        await member.roles.add(role.id);
+                        prior_role === Roles.RegisteredId
+                            ? null
+                            : await member.roles.remove(prior_role);
+                    };
+
+                    const match_log = await this.pointsUpdateChannel.send(`***${player.name}** has won ${points} points, bringing their total to ${player.current_points + points} points!${hasRoleUpdated ? ` You now have **${role.name.slice(6)}** rank` : ''}*`);
+                    player.logs.matches.push(match_log);
+
+                    player = await Players.findOneAndUpdate(
+                        {
+                            id
+                        },
+                        {
+                            rank,
+                            current_points: player.current_points + points,
+                            statistics: {
+                                kills,
+                                deaths,
+                                wins: ++player.statistics.wins,
+                                matches: ++player.statistics.matches
+                            },
+                            logs: {
+                                matches: player.logs.matches
+                            }
+                        },
+                        {
+                            new: true
+                        }
+                    );
+
+                    const AddedPointsAuditLogEmbed = new EmbedBuilder()
+                        .setAuthor({ name: 'Added Points', iconURL: member.user.displayAvatarURL() })
+                        .setColor('Green')
+                        .setDescription(`***${points}** points have been added to ${member.user.tag}*`)
+                        .addFields(
+                            { name: 'Previous Points', value: `${player.current_points - points}`, inline: true },
+                            { name: 'Updated Points', value: `${player.current_points}`, inline: true },
+                            { name: 'Match Id', value: `${this.match_id}`, inline: true }
+                        )
+                        .setFooter({ text: this.moderator.tag, iconURL: this.moderator.icon })
+                        .setTimestamp();
+
+                    await this.bot.utils.auditSend(Channels.PointLogId, { embeds: [AddedPointsAuditLogEmbed] });
+
+                    const AddPointsAllotedEmbed = new EmbedBuilder()
+                        .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
+                        .setColor('Green')
+                        .setThumbnail(member.user.displayAvatarURL())
+                        .setDescription(`***${points}** points have been added to ${member}*`)
+                        .addFields(
+                            { name: 'Previous Points', value: `${player.current_points - points}`, inline: true },
+                            { name: 'Current Points', value: `${player.current_points}`, inline: true },
+                            { name: 'Player', value: player.name, inline: true }
+                        )
+                        .setFooter({ text: `Points have been allotted by ${this.moderator.tag}`, iconURL: this.moderator.icon })
+                        .setTimestamp();
+
+                    await this.bot.utils.auditSend(this.channel_id, { embeds: [AddPointsAllotedEmbed] });
+                };
+            };
+        };
+
+        return updatedWinners;
+    };
+
+    /**
      * 
      * @param {string[]} losers Array of Losers IDs.
      * @returns {object[]} Updated stats for each loser.
@@ -54,7 +177,7 @@ module.exports = class PointAllocationManager {
 
     async setLosers(losers = []) {
         if (!Array.isArray(losers)) return new Error('Data sent is not an Array');
-        if (losers.length) return new Error('Empty Data');
+        if (!losers.length) return new Error('Empty Data');
 
         const updatedLosers = [];
 
@@ -84,7 +207,7 @@ module.exports = class PointAllocationManager {
                     const PlayerLeftEmbed = new EmbedBuilder()
                         .setAuthor({ name: user.username, iconURL: user.displayAvatarURL() })
                         .setColor('Aqua')
-                        .setDescription(`***${user.tag}** has left the server, the points could not be removed from the player.*`)
+                        .setDescription(`***${user.tag}** has left the server, points could not be removed from the player.*`)
                         .setFooter({ text: this.guild.name, iconURL: this.guild.iconURL() })
                         .setTimestamp();
 
@@ -110,7 +233,7 @@ module.exports = class PointAllocationManager {
                             : await member.roles.remove(prior_role);
                     };
 
-                    const match_log = await this.pointsUpdateChannel.send(`***${player.name}** has lost ${+points} points, bringing their total to ${player.current_points + points} points!${hasRoleUpdated ? ` You now have **${role.name.slice(6)}** rank` : ''}*`);
+                    const match_log = await this.pointsUpdateChannel.send(`***${player.name}** has lost ${-points} points, bringing their total to ${player.current_points + points} points!${hasRoleUpdated ? ` You now have **${role.name.slice(6)}** rank` : ''}*`);
                     player.logs.matches.push(match_log);
 
                     player = await Players.findOneAndUpdate(
@@ -138,7 +261,7 @@ module.exports = class PointAllocationManager {
                     const RemovedPointsAuditLogEmbed = new EmbedBuilder()
                         .setAuthor({ name: 'Removed Points', iconURL: member.user.displayAvatarURL() })
                         .setColor('Green')
-                        .setDescription(`***${points}** points have been removed from ${member.user.tag}*`)
+                        .setDescription(`***${+points}** points have been removed from ${member.user.tag}*`)
                         .addFields(
                             { name: 'Previous Points', value: `${player.current_points - points}`, inline: true },
                             { name: 'Updated Points', value: `${player.current_points}`, inline: true },
@@ -153,7 +276,7 @@ module.exports = class PointAllocationManager {
                         .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL({ dynamic: true }) })
                         .setColor('Green')
                         .setThumbnail(member.user.displayAvatarURL())
-                        .setDescription(`***${points}** points have been removed from ${member}*`)
+                        .setDescription(`***${+points}** points have been removed from ${member}*`)
                         .addFields(
                             { name: 'Previous Points', value: `${player.current_points - points}`, inline: true },
                             { name: 'Current Points', value: `${player.current_points}`, inline: true },
@@ -164,7 +287,7 @@ module.exports = class PointAllocationManager {
 
                     await this.bot.utils.auditSend(this.channel_id, { embeds: [RemovePointsAllotedEmbed] });
                 };
-            }
+            };
         };
 
         return updatedLosers;

@@ -430,6 +430,6 @@ module.exports = class Util {
         else if (current_points < 700) points -= 20;
         else points -= 25;
 
-        return reverse ? +points : points;
+        return reverse ? -points : points;
     };
 };
