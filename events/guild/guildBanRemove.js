@@ -18,8 +18,6 @@ module.exports = class guildBanRemove extends Event {
 
     async EventRun(ban) {
         try {
-            if (ban.partial) ban = await ban.fetch();
-
             const player = await Players.findOne({ id: ban.user.id });
             const { target, executor } = (await ban.guild.fetchAuditLogs({ type: AuditLogEvent.MemberBanRemove })).entries.first();
 

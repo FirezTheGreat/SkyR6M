@@ -24,7 +24,6 @@ module.exports = class guildMemberAdd extends Event {
             const new_invites = await member.guild.invites.fetch({ cache: false });
 
             const { inviter } = new_invites.find(({ code, uses }) => cached_invites?.get(code)?.uses < uses) || { inviter: { tag: 'Unknown#0000' } };
-            this.bot.invites.set(member.guild.id, new_invites);
 
             const guildJoinEmbed = new EmbedBuilder()
                 .setAuthor({ name: member.user.tag, iconURL: member.user.displayAvatarURL() })
