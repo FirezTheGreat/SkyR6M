@@ -1,5 +1,5 @@
-const { PermissionFlagsBits, ApplicationCommandOptionType, ChatInputCommandInteraction, EmbedBuilder } = require("discord.js");
-const Command = require("../../structures/Command.js");
+const { PermissionFlagsBits, ApplicationCommandOptionType, ChatInputCommandInteraction, EmbedBuilder } = require('discord.js');
+const Command = require('../../structures/Command.js');
 const { Channels } = require('../../config.json');
 
 module.exports = class Mute extends Command {

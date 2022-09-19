@@ -1,9 +1,9 @@
-const { PermissionFlagsBits, ApplicationCommandOptionType, ChatInputCommandInteraction, EmbedBuilder } = require("discord.js");
-const Command = require("../../structures/Command.js");
-const Players = require("../../structures/models/Players.js");
-const Penalties = require("../../structures/models/PenaltyList.js");
+const { PermissionFlagsBits, ApplicationCommandOptionType, ChatInputCommandInteraction, EmbedBuilder } = require('discord.js');
+const Command = require('../../structures/Command.js');
+const Players = require('../../structures/models/Players.js');
+const Penalties = require('../../structures/models/PenaltyList.js');
 const { Roles, Channels } = require('../../config.json');
-const { RolePointChecker } = require("../../structures/Util.js");
+const { RolePointChecker } = require('../../structures/Util.js');
 const localized_time = new Date(new Date().getTime() + (330 + new Date().getTimezoneOffset()) * 60000).getTime();
 const sub_commands = [
     {

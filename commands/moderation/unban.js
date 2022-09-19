@@ -1,5 +1,5 @@
-const { PermissionFlagsBits, ApplicationCommandOptionType, ChatInputCommandInteraction } = require("discord.js");
-const Command = require("../../structures/Command.js");
+const { PermissionFlagsBits, ApplicationCommandOptionType, ChatInputCommandInteraction } = require('discord.js');
+const Command = require('../../structures/Command.js');
 
 module.exports = class Unban extends Command {
     constructor(...args) {

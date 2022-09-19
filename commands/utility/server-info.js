@@ -1,6 +1,6 @@
-const { ApplicationCommandType, ChatInputCommandInteraction, Colors, ActionRowBuilder, SelectMenuBuilder, ComponentType, ButtonBuilder, ButtonStyle, ChannelType } = require("discord.js");
+const { ApplicationCommandType, ChatInputCommandInteraction, Colors, ActionRowBuilder, SelectMenuBuilder, ComponentType, ButtonBuilder, ButtonStyle, ChannelType } = require('discord.js');
 const path = require('path');
-const Command = require("../../structures/Command.js");
+const Command = require('../../structures/Command.js');
 const { PremiumTiers, VerificationLevels, ExplicitContentFilters } = require('../../config.json');
 
 module.exports = class ServerInfo extends Command {

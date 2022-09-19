@@ -1,6 +1,6 @@
-const { ApplicationCommandOptionType, PermissionFlagsBits, ChatInputCommandInteraction, EmbedBuilder } = require("discord.js");
-const Command = require("../../structures/Command.js");
-const Players = require("../../structures/models/Players.js");
+const { ApplicationCommandOptionType, PermissionFlagsBits, ChatInputCommandInteraction, EmbedBuilder } = require('discord.js');
+const Command = require('../../structures/Command.js');
+const Players = require('../../structures/models/Players.js');
 const { Roles, Channels } = require('../../config.json');
 const sub_commands = [
     {

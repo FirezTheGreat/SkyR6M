@@ -4,7 +4,7 @@ const { sync } = require('glob');
 const Command = require('./Command.js');
 const Event = require('./Event.js');
 const SkyR6M = require('./SkyR6M.js');
-const { RolePoints } = require('../config.json');
+const { RolePoints, GameMaps } = require('../config.json');
 
 module.exports = class Util {
     /**
@@ -431,5 +431,25 @@ module.exports = class Util {
         else points -= 25;
 
         return reverse ? -points : points;
+    };
+
+    /**
+     * 
+     * @param {string} game Game
+     * @returns {string[]} Game Maps
+     */
+
+    static chooseGameMaps(game) {
+        let maps;
+
+        if (game === 'COPS') {
+            maps = GameMaps.COPS.map((map) => ({ name: map.toLocaleLowerCase(), value: map }));
+        } else if (game === 'R6M') {
+            maps = GameMaps.R6M.map((map) => ({ name: map.toLocaleLowerCase(), value: map }));
+        } else if (game === 'VM') {
+            maps = GameMaps.VM.map((map) => ({ name: map.toLocaleLowerCase(), value: map }));
+        };
+
+        return maps;
     };
 };

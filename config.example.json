@@ -36,6 +36,7 @@
     "QueueRoleIds": [
         {
             "voice": "",
+            "text": "",
             "roles": [
                 ""
             ]
@@ -87,5 +88,10 @@
         "0": "Disabled",
         "1": "Anyone Without Role",
         "2": "Everyone"
+    },
+    "GameMaps": {
+        "COPS": ["Bureau", "Canals", "Grounded", "Legacy", "Plaza", "Port", "Raid", "Soar", "Village"],
+        "R6M": [],
+        "VM": []
     }
 }

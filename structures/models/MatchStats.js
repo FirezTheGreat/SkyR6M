@@ -9,6 +9,11 @@ const MatchStatsSchema = new Schema(
                 unique: true
             }
         },
+        map: {
+            type: String,
+            required: true,
+            default: ''
+        },
         winners: {
             type: [Object],
             required: true,

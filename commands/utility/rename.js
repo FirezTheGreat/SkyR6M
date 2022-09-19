@@ -12,7 +12,7 @@ module.exports = class Rename extends Command {
             usage: '[ign]',
             type: ApplicationCommandType.ChatInput,
             options: [
-                { name: 'ign', type: ApplicationCommandOptionType.String, description: 'Rename your Rainbow 6 Mobile IGN', required: true }
+                { name: 'ign', type: ApplicationCommandOptionType.String, description: 'Rename your IGN', required: true }
             ]
         });
     };

@@ -12,7 +12,7 @@ module.exports = class Register extends Command {
             usage: '[ign]',
             type: ApplicationCommandType.ChatInput,
             options: [
-                { name: 'ign', type: ApplicationCommandOptionType.String, description: 'Enter your Rainbow 6 Mobile IGN', required: true }
+                { name: 'ign', type: ApplicationCommandOptionType.String, description: 'Enter your IGN', required: true }
             ]
         });
     };
