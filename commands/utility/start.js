@@ -30,7 +30,7 @@ module.exports = class Start extends Command {
             let player = await Players.findOne({ id: interaction.member.id });
             if (!player) return await interaction.reply({ content: `*You are not registered at ${interaction.guild.name}*`, ephemeral: true });
 
-            if (!QueueRoleIds.map(({ text }) => text).includes(interaction.channel.id)) return await interaction.reply({ content: '*You can start this match only in queue chats!*', ephemeral: true });
+            if (!QueueRoleIds.map(({ text }) => text).includes(interaction.channelId)) return await interaction.reply({ content: '*You can start this match only in queue chats!*', ephemeral: true });
             if (!interaction.member?.voice.channel || interaction.member.voice.channel.members.size < 10) return await interaction.reply({ content: '*Cannot register match due to less players in queue!*' });
 
             let code = interaction.options.getString('code').toUpperCase();

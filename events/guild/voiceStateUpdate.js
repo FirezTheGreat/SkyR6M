@@ -1,6 +1,7 @@
 const { EmbedBuilder, AttachmentBuilder, AuditLogEvent, VoiceState } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const { Channels, QueueRoleIds } = require('../../config.json');
+const Players = require('../../structures/models/Players.js');
 const path = require('path');
 
 module.exports = class voiceStateUpdate extends Event {
@@ -21,12 +22,36 @@ module.exports = class voiceStateUpdate extends Event {
         try {
             if (oldState.channelId && newState.member) {
                 const { roles } = QueueRoleIds.find(({ voice }) => oldState.channelId === voice) ?? { roles: null };
-                roles ? oldState.member.roles.remove(roles).catch(() => null) : null;
+                if (roles) {
+                    oldState.member.roles.remove(roles).catch(() => null);
+
+                    const poll = this.bot.polls.get(oldState.channelId);
+
+                    if (poll) {
+                        if (oldState.channel.members.size > 0) {
+                            poll.players = await Promise.all(oldState.channel.members.map(async ({ id }) => ({ id, name: (await Players.findOne({ id })).name })));
+
+                            this.bot.polls.set(oldState.channelId, poll);
+                        } else {
+                            this.bot.polls.delete(newState.channelId);
+                        };
+                    };
+                };
             };
 
             if (newState.channelId && newState.member) {
                 const { roles } = QueueRoleIds.find(({ voice }) => newState.channelId === voice) ?? { roles: null };
-                roles ? newState.member.roles.add(roles).catch(() => null) : null;
+                if (roles) {
+                    newState.member.roles.add(roles).catch(() => null);
+
+                    const poll = this.bot.polls.get(newState.channelId);
+
+                    if (poll && newState.channel.members.size < 11) {
+                        poll.players = newState.channel.members.map(async ({ id }) => ({ id, name: (await Players.findOne({ id })).name }));
+
+                        this.bot.polls.set(newState.channelId, poll);
+                    };
+                };
             };
 
             if (oldState.member && oldState.channelId && !newState.channelId) {

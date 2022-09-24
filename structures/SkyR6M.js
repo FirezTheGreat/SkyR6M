@@ -32,6 +32,7 @@ module.exports = class SkyR6M extends Client {
         this.commands = new Collection();
         this.invites = new Collection();
         this.events = new Collection();
+        this.polls = new Collection();
         this.mongoose = new Mongoose();
         this.utils = new Util(this);
 
