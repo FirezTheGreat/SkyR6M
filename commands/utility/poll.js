@@ -39,7 +39,8 @@ module.exports = class Poll extends Command {
                     map: 'none',
                     highest_votes: 0,
                     total_votes: 0,
-                    map_wise_votes: []
+                    map_wise_votes: [],
+                    maps_selected: []
                 }
             );
 
@@ -53,17 +54,14 @@ module.exports = class Poll extends Command {
                 );
             };
 
-            let pollButtonsOne = new ActionRowBuilder()
-                .addComponents(mapComponents.slice(0, 5));
-
-            let pollButtonsTwo = new ActionRowBuilder()
-                .addComponents(mapComponents.slice(5));
+            let pollButtonsOne = new ActionRowBuilder().addComponents(mapComponents.slice(0, 5));
+            let pollButtonsTwo = new ActionRowBuilder().addComponents(mapComponents.slice(5));
 
             let pollButtons = mapComponents.length > 5 ? [pollButtonsOne, pollButtonsTwo] : [pollButtonsOne];
 
             const pollEmbed = new EmbedBuilder()
                 .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
-                .setTitle('Map Poll')
+                .setTitle('Poll')
                 .setColor('Green')
                 .addFields(mapFields)
                 .setFooter({ text: 'Map with the highest votes will be played', iconURL: interaction.guild.iconURL() })
@@ -71,7 +69,7 @@ module.exports = class Poll extends Command {
 
             const pollEmbedMessage = await interaction.reply({ embeds: [pollEmbed], components: pollButtons });
 
-            const pollCollector = pollEmbedMessage.createMessageComponentCollector({ filter: ({ customId }) => GameMaps[GameTheme].map((map) => map.toLowerCase()).includes(customId), time: 5000, componentType: ComponentType.Button });
+            const pollCollector = pollEmbedMessage.createMessageComponentCollector({ filter: ({ customId }) => GameMaps[GameTheme].map((map) => map.toLowerCase()).includes(customId), time: 3000, componentType: ComponentType.Button });
 
             pollCollector.on('collect', async (button) => {
                 if (!this.bot.polls.get(button.member?.voice.channelId).players.find(({ id }) => button.member.id === id)) return await button.reply({ content: '*You are not currently present in any active queue!*', ephemeral: true });
@@ -112,39 +110,63 @@ module.exports = class Poll extends Command {
                 };
             });
 
-            pollCollector.on('end', async () => {
-                const vote = this.bot.polls.get(interaction.member?.voice.channelId);
+            pollCollector.on('end', async (collected) => {
+                if (collected.size) {
+                    const vote = this.bot.polls.get(interaction.member?.voice.channelId);
 
-                const selected_maps = Object.entries(vote.map_wise_votes.reduce((acc, curr) => ({
-                    ...acc,
-                    [curr.map]: (acc[curr.map] || 0) + 1
-                }), {}))
-                    .sort(([, a], [, b]) => b - a)
-                    .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+                    const selected_votes = vote.map_wise_votes.reduce((acc, { id, map }) => ({
+                        ...acc,
+                        [map]: acc[map] ? [...acc[map], { id }] : [{ id }]
+                    }), {});
 
-                const map_winner = Object.keys(selected_maps)[0];
 
-                let description = '\n';
-                let index = 1;
+                    for (const [map, votes] of Object.entries(selected_votes)) {
+                        vote.maps_selected.push({ map, votes: votes.length, voters: votes.map(({ id }) => id) });
+                    };
 
-                for (const [map, votes] of Object.entries(selected_maps)) {
-                    description += `#${index++}. **${this.bot.utils.capitalizeFirstLetter(map)} - ${votes}**\n`;
+                    const sorted_maps = vote.maps_selected.sort((first_map, second_map) => second_map.votes - first_map.votes);
+
+                    let description = '\n';
+                    let index = 1;
+
+                    for (const [, vote] of Object.entries(sorted_maps)) {
+                        description += `#${index++}. **${this.bot.utils.capitalizeFirstLetter(vote.map)} - ${vote.voters.map((id) => `<@!${id}>`)} - (${vote.votes})**\n`;
+                    };
+
+                    const { attachment } = new AttachmentBuilder(path.join(__dirname, '..', '..', 'assets', 'maps', 'cops', `${sorted_maps.at(0).map}.png`), `${sorted_maps.at(0).map}.png`);
+
+                    const pollButtonResult = new ActionRowBuilder()
+                        .addComponents(
+                            new ButtonBuilder()
+                                .setCustomId(sorted_maps.at(0).map)
+                                .setLabel(this.bot.utils.capitalizeFirstLetter(sorted_maps.at(0).map))
+                                .setStyle(ButtonStyle.Success)
+                        );
+
+                    const pollResultEmbed = new EmbedBuilder()
+                        .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
+                        .setTitle('Poll Results')
+                        .setColor('Green')
+                        .setDescription(description)
+                        .setImage(`attachment://${sorted_maps.at(0).map}.png`)
+                        .setFooter({ text: `Map - ${this.bot.utils.capitalizeFirstLetter(sorted_maps.at(0).map)} has been chosen.`, iconURL: interaction.guild.iconURL() })
+                        .setTimestamp();
+
+                    await interaction.editReply({ embeds: [pollResultEmbed], components: [pollButtonResult], files: [attachment] });
+                    return this.bot.polls.delete(interaction.member?.voice.channelId);
+                } else {
+                    const pollResultEmbed = new EmbedBuilder()
+                        .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
+                        .setTitle('Poll Results')
+                        .setColor('Red')
+                        .setThumbnail(interaction.guild.iconURL())
+                        .setDescription('*Failed to select a map.*')
+                        .setFooter({ text: `Failed to choose a map.`, iconURL: interaction.guild.iconURL() })
+                        .setTimestamp();
+
+                    await interaction.editReply({ embeds: [pollResultEmbed], components: [] });
+                    return this.bot.polls.delete(interaction.member?.voice.channelId);
                 };
-
-                const { attachment } = new AttachmentBuilder(path.join(__dirname, '..', '..', 'assets', 'maps', 'cops', `${map_winner}.png`), `${map_winner}.png`);
-
-                const pollResultEmbed = new EmbedBuilder()
-                    .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
-                    .setTitle('Poll Results')
-                    .setColor('Green')
-                    .setThumbnail(interaction.guild.iconURL())
-                    .setDescription(description)
-                    .setImage(`attachment://${map_winner}.png`)
-                    .setFooter({ text: `${this.bot.utils.capitalizeFirstLetter(map_winner)} will be played`, iconURL: interaction.guild.iconURL() })
-                    .setTimestamp();
-
-                await interaction.editReply({ embeds: [pollResultEmbed], components: [], files: [attachment] });
-                return this.bot.polls.delete(interaction.member?.voice.channelId);
             });
         } catch (error) {
             console.error(error);
