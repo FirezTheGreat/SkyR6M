@@ -1,4 +1,4 @@
-const { EmbedBuilder, AuditLogEvent, ThreadChannel } = require('discord.js');
+const { EmbedBuilder, AuditLogEvent, ThreadChannel, channelMention } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const { Channels } = require('../../config.json');
 
@@ -29,7 +29,7 @@ module.exports = class threadDelete extends Event {
                         { name: 'Thread Id', value: target.id, inline: true },
                         { name: 'Deleted By', value: `${executor}`, inline: true },
                         { name: 'Deleted On', value: `<t:${Math.floor(Date.now() / 1000)}>`, inline: true },
-                        { name: 'Parent Channel', value: `<#${thread.parentId}>`, inline: true },
+                        { name: 'Parent Channel', value: channelMention(thread.parentId), inline: true },
                         { name: 'Parent Channel Id', value: thread.parentId, inline: true },
                     ])
                     .setFooter({ text: thread.guild.name, iconURL: thread.guild.iconURL() })

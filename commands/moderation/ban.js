@@ -1,5 +1,5 @@
 const { Routes } = require('discord-api-types/v10');
-const { PermissionFlagsBits, ApplicationCommandOptionType, ChatInputCommandInteraction } = require('discord.js');
+const { PermissionFlagsBits, ApplicationCommandOptionType, ChatInputCommandInteraction, userMention } = require('discord.js');
 const Command = require('../../structures/Command.js');
 const Players = require('../../structures/models/Players.js');
 
@@ -40,18 +40,18 @@ module.exports = class Ban extends Command {
                 try {
                     const ban = interaction.guild.bans.cache.get(value);
                     if (ban) {
-                        await interaction.followUp({ content: `*User <@${value}> is already Banned!*` });
+                        await interaction.followUp({ content: `*User ${userMention(value)} is already Banned!*` });
                         continue;
                     };
 
                     const user = interaction.guild.members.cache.get(value);
-                    if (user && !user.bannable) throw ({ code: 'unknown', message: `*Couldn\'t Ban User - *<@${value}>* from ${interaction.guild.name}!*` });
+                    if (user && !user.bannable) throw ({ code: 'unknown', message: `*Couldn\'t Ban User - *${userMention(value)}* from ${interaction.guild.name}!*` });
 
                     await this.bot.rest.put(Routes.guildBan(interaction.guildId, value), {
                         body: { delete_message_days: 0 },
                         reason
                     });
-                    banned_users.push(`<@${value}>`);
+                    banned_users.push(userMention(value));
 
                     await Players.findOneAndDelete({ id: value });
                 } catch (error) {

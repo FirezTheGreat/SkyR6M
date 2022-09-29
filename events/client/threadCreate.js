@@ -1,4 +1,4 @@
-const { EmbedBuilder, AuditLogEvent, ThreadChannel } = require('discord.js');
+const { EmbedBuilder, AuditLogEvent, ThreadChannel, channelMention } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const { Channels } = require('../../config.json');
 
@@ -26,12 +26,12 @@ module.exports = class threadCreate extends Event {
                 const AuditLogEmbed = new EmbedBuilder()
                     .setAuthor({ name: executor.username, iconURL: executor.displayAvatarURL() })
                     .setColor('Green')
-                    .setDescription(`*A Thread Channel <#${target.id}> (${target.id}) has been created by ${executor}*`)
+                    .setDescription(`*A Thread Channel ${channelMention(target.id)} (${target.id}) has been created by ${executor}*`)
                     .addFields([
                         { name: 'Created By', value: `${executor}`, inline: true },
                         { name: 'Created On', value: `<t:${Math.floor(thread.createdTimestamp / 1000)}>`, inline: true },
                         { name: 'Auto Archives In', value: `<t:${Math.floor((Date.now() / 1000)) + (thread.autoArchiveDuration * 60)}> (<t:${Math.floor((Date.now() / 1000)) + (thread.autoArchiveDuration * 60)}:R>)`, inline: true },
-                        { name: 'Parent Channel', value: `<#${target.parentId}>`, inline: true },
+                        { name: 'Parent Channel', value: channelMention(target.parentId), inline: true },
                         { name: 'Parent Channel Id', value: target.parentId, inline: true },
                         { name: 'Member Count', value: `${target.memberCount}`, inline: true }
                     ])

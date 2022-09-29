@@ -1,4 +1,4 @@
-const { EmbedBuilder, AuditLogEvent, GuildMember } = require('discord.js');
+const { EmbedBuilder, AuditLogEvent, GuildMember, roleMention, channelMention } = require('discord.js');
 const Event = require('../../structures/Event.js');
 const { Channels, Roles } = require('../../config.json');
 const Players = require('../../structures/models/Players.js');
@@ -28,7 +28,7 @@ module.exports = class guildMemberUpdate extends Event {
                     .setColor('Aqua')
                     .setTitle(`Welcome to ${newMember.guild.name}`)
                     .setThumbnail(newMember.guild.iconURL())
-                    .setDescription(`*Welcome ${newMember.user.tag} to ${newMember.guild.name}!. Please register yourself in <#${Channels.RegisterId}> and go through <#${Channels.InformationId}> and <#${Channels.PlayRulesId}> respectively to know more about the server and how to play in our Match Making!*`)
+                    .setDescription(`*Welcome ${newMember.user.tag} to ${newMember.guild.name}!. Please register yourself in ${channelMention(Channels.RegisterId)} and go through ${channelMention(Channels.InformationId)} and ${channelMention(Channels.PlayRulesId)} respectively to know more about the server and how to play in our Match Making!*`)
                     .setFooter({ text: newMember.user.username, iconURL: newMember.user.displayAvatarURL() })
                     .setTimestamp();
 
@@ -96,8 +96,8 @@ module.exports = class guildMemberUpdate extends Event {
                     oldRoles = [],
                     newRoles = [];
 
-                for (const oldRole of [...oldMember.roles.cache.keys()].filter((id) => id !== newMember.guild.id)) oldRoles.push(`<@&${oldRole}>`);
-                for (const newRole of [...newMember.roles.cache.keys()].filter((id) => id !== newMember.guild.id)) newRoles.push(`<@&${newRole}>`);
+                for (const oldRole of [...oldMember.roles.cache.keys()].filter((id) => id !== newMember.guild.id)) oldRoles.push(roleMention(oldRole));
+                for (const newRole of [...newMember.roles.cache.keys()].filter((id) => id !== newMember.guild.id)) newRoles.push(roleMention(newRole));
 
                 updatedRoles = newRoles.length >= oldRoles.length ?
                     newRoles.filter((id) => !oldRoles.includes(id)) :

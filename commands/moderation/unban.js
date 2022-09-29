@@ -1,4 +1,4 @@
-const { PermissionFlagsBits, ApplicationCommandOptionType, ChatInputCommandInteraction } = require('discord.js');
+const { PermissionFlagsBits, ApplicationCommandOptionType, ChatInputCommandInteraction, userMention } = require('discord.js');
 const Command = require('../../structures/Command.js');
 
 module.exports = class Unban extends Command {
@@ -36,12 +36,12 @@ module.exports = class Unban extends Command {
                     try {
                         await interaction.guild.bans.fetch(value);
                     } catch {
-                        interaction.followUp({ content: `*User <@${value}> is not Banned!*` });
+                        interaction.followUp({ content: `*User ${userMention(value)} is not Banned!*` });
                         continue;
                     };
                     await interaction.guild.bans.remove(value);
 
-                    banned_users.push(`<@${value}>`);
+                    banned_users.push(userMention(value));
                 } catch (error) {
                     interaction.followUp({ content: `*Couldn\'t Unban User - ${value} from ${interaction.guild.name}!*` });
                 };

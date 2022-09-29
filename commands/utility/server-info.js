@@ -1,4 +1,4 @@
-const { ApplicationCommandType, ChatInputCommandInteraction, Colors, ActionRowBuilder, SelectMenuBuilder, ComponentType, ButtonBuilder, ButtonStyle, ChannelType } = require('discord.js');
+const { ApplicationCommandType, ChatInputCommandInteraction, Colors, ActionRowBuilder, SelectMenuBuilder, ComponentType, ButtonBuilder, ButtonStyle, ChannelType, userMention } = require('discord.js');
 const path = require('path');
 const Command = require('../../structures/Command.js');
 const { PremiumTiers, VerificationLevels, ExplicitContentFilters } = require('../../config.json');
@@ -81,7 +81,7 @@ module.exports = class ServerInfo extends Command {
                         { name: 'ID', value: interaction.guildId, inline: true },
                         { name: 'Created On', value: `<t:${Math.floor(interaction.guild.createdTimestamp / 1000)}:D> (<t:${Math.floor(interaction.guild.createdTimestamp / 1000)}:R>)`, inline: true },
                         { name: '\u200b', value: '\u200b', inline: true },
-                        { name: 'Owner', value: `<@${interaction.guild.ownerId}>`, inline: true },
+                        { name: 'Owner', value: userMention(interaction.guild.ownerId), inline: true },
                         { name: 'Vanity URL', value: interaction.guild.vanityURLCode ?? 'None', inline: true },
                         { name: '\u200b', value: '\u200b', inline: true },
                         { name: 'Verification Level', value: VerificationLevels[interaction.guild.verificationLevel], inline: true },
