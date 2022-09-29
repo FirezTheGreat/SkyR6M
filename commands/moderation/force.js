@@ -6,7 +6,7 @@ const sub_commands = [
     {
         name: 'register', type: ApplicationCommandOptionType.Subcommand, description: 'Force Register Player', options: [
             { name: 'player', type: ApplicationCommandOptionType.User, description: 'Player to Force Register', required: true },
-            { name: 'ign', type: ApplicationCommandOptionType.String, description: 'IGN of Player', required: true },
+            { name: 'ign', type: ApplicationCommandOptionType.String, description: 'IGN of Player', required: true }
         ]
     },
     {

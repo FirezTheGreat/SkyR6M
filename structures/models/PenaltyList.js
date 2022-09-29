@@ -46,7 +46,7 @@ const PenaltyListSchema = new Schema(
                     type: String,
                     required: true,
                     default: ''
-                },
+                }
             },
             required: true,
             default: {}
