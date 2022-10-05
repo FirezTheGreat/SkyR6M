@@ -1,4 +1,4 @@
-const { ApplicationCommandType, ChatInputCommandInteraction, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ButtonStyle, ComponentType, AttachmentBuilder } = require('discord.js');
+const { ChatInputCommandInteraction, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ButtonStyle, ComponentType, AttachmentBuilder, userMention } = require('discord.js');
 const Command = require('../../structures/Command.js');
 const Players = require('../../structures/models/Players.js');
 const { QueueRoleIds, GameMaps, GameTheme } = require('../../config.json');
@@ -10,7 +10,6 @@ module.exports = class Poll extends Command {
             name: 'poll',
             description: 'Conduct a poll to select a map for your match',
             category: 'Utility',
-            type: ApplicationCommandType.ChatInput
         });
     };
 
@@ -106,7 +105,7 @@ module.exports = class Poll extends Command {
 
                     return vote_map !== button.customId
                         ? await button.followUp({ content: `*You have successfully voted for **${this.bot.utils.capitalizeFirstLetter(button.customId)}**!*`, ephemeral: true })
-                        : await button.followUp({ content: `*You have successfully abstained from voting **${this.bot.utils.capitalizeFirstLetter(button.customId)}**!*`, ephemeral: true }); s
+                        : await button.followUp({ content: `*You have successfully abstained from voting **${this.bot.utils.capitalizeFirstLetter(button.customId)}**!*`, ephemeral: true });
                 };
             });
 
@@ -130,7 +129,7 @@ module.exports = class Poll extends Command {
                     let index = 1;
 
                     for (const [, vote] of Object.entries(sorted_maps)) {
-                        description += `#${index++}. **${this.bot.utils.capitalizeFirstLetter(vote.map)} - ${vote.voters.map((id) => `<@!${id}>`)} - (${vote.votes})**\n`;
+                        description += `#${index++}. **${this.bot.utils.capitalizeFirstLetter(vote.map)} - ${vote.voters.map((id) => userMention(id))} - (${vote.votes})**\n`;
                     };
 
                     const { attachment } = new AttachmentBuilder(path.join(__dirname, '..', '..', 'assets', 'maps', 'cops', `${sorted_maps.at(0).map}.png`), `${sorted_maps.at(0).map}.png`);

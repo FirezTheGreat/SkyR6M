@@ -9,7 +9,6 @@ module.exports = class Profile extends Command {
             description: 'View Player Stats',
             category: 'Utility',
             usage: '[user]',
-            type: ApplicationCommandType.ChatInput,
             options: [
                 { name: 'player', type: ApplicationCommandOptionType.User, description: 'Enter Player to View Stats', required: false }
             ]
@@ -31,7 +30,7 @@ module.exports = class Profile extends Command {
             if (!player) return interaction.reply({ content: `***${member}** has not registered at ${interaction.guild.name}*`, ephemeral: true });
 
             const playerPosition = (await Players.find({}).sort({ 'points.current': -1 })).findIndex(({ id }) => id === player.id);
-            const win_lose_ratio = player.statistics.deaths / player.statistics.kills;
+            const win_lose_ratio = player.statistics.wins / player.statistics.loses;
 
             let matchLogCollector = null;
 
@@ -77,7 +76,7 @@ module.exports = class Profile extends Command {
                             { name: 'IGN', value: player.name, inline: true },
                             { name: 'Victories', value: player.statistics.wins, inline: true },
                             { name: 'Defeats', value: player.statistics.loses, inline: true },
-                            { name: 'W/L Ratio', value: win_lose_ratio ? win_lose_ratio.toFixed(2) : '0', inline: true },
+                            { name: 'W/L Ratio', value: player.statistics.loses !== 0 ? win_lose_ratio.toFixed(2) : player.statistics.wins.toFixed(2), inline: true },
                             { name: 'Matches', value: player.statistics.matches, inline: true },
                             { name: 'Position Wise Rank', value: `#${playerPosition + 1}`, inline: true }
                         ],
@@ -144,7 +143,7 @@ module.exports = class Profile extends Command {
                                         { name: 'IGN', value: player.name, inline: true },
                                         { name: 'Victories', value: player.statistics.wins, inline: true },
                                         { name: 'Defeats', value: player.statistics.loses, inline: true },
-                                        { name: 'W/L Ratio', value: win_lose_ratio ? win_lose_ratio.toFixed(2) : '0', inline: true },
+                                        { name: 'W/L Ratio', value: player.statistics.loses !== 0 ? win_lose_ratio.toFixed(2) : player.statistics.wins.toFixed(2), inline: true },
                                         { name: 'Matches', value: player.statistics.matches, inline: true },
                                         { name: 'Position Wise Rank', value: `#${playerPosition + 1}`, inline: true },
                                     ],
@@ -165,8 +164,8 @@ module.exports = class Profile extends Command {
                             matchLogCollector = null;
                         };
 
-                        const playerKDRPosition = (await Players.find({}).sort({ 'statistics.total_kills': -1 })).findIndex(({ id }) => id === player.id);
-                        const kill_death_ratio = player.statistics.deaths / player.statistics.kills;
+                        const playerKDRPosition = (await Players.find({}).sort({ 'statistics.kills': -1 })).findIndex(({ id }) => id === player.id);
+                        const kill_death_ratio = player.statistics.kills / player.statistics.deaths;
 
                         await selectMenu.update({
                             embeds: [
@@ -184,7 +183,7 @@ module.exports = class Profile extends Command {
                                     fields: [
                                         { name: 'Kills', value: player.statistics.kills, inline: true },
                                         { name: 'Deaths', value: player.statistics.deaths, inline: true },
-                                        { name: 'K/D Ratio', value: kill_death_ratio ? kill_death_ratio.toFixed(2) : '0', inline: true },
+                                        { name: 'K/D Ratio', value: player.statistics.deaths !== 0 ? kill_death_ratio.toFixed(2) : player.statistics.kills.toFixed(2), inline: true },
                                         { name: 'Highest Kills', value: player.logs.matches.length ? `${player.logs.matches.reduce((previousMatch, currentMatch) => previousMatch.kills > currentMatch.kills ? previousMatch : currentMatch).kills}` : '0', inline: true },
                                         { name: 'KDR Wise Rank', value: `#${playerKDRPosition + 1}`, inline: true },
                                         { name: 'Tier', value: `${interaction.guild.roles.cache.find(({ name }) => name.toLowerCase() === player.rank.toLowerCase())}`, inline: true }

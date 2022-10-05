@@ -4,7 +4,7 @@ const { sync } = require('glob');
 const Command = require('./Command.js');
 const Event = require('./Event.js');
 const SkyR6M = require('./SkyR6M.js');
-const { RolePoints, GameMaps } = require('../config.json');
+const { RolePoints, GameMaps, GameTheme, Achievements } = require('../config.json');
 
 module.exports = class Util {
     /**
@@ -379,6 +379,21 @@ module.exports = class Util {
 
     /**
      * 
+     * @param {Array} array Array to Randomise
+     * @returns {Array} Randomised Array
+     */
+    
+    randomiseArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        };
+        
+        return array;
+    };
+
+    /**
+     * 
      * @param {number} ms Milliseconds
      * @returns Converted Time Object
      */
@@ -451,5 +466,31 @@ module.exports = class Util {
         };
 
         return maps;
+    };
+
+    /**
+     *
+     * @param {object} player Player
+     * @param {number} points Points
+     * @returns {Array} Achievements
+     */
+
+    checkAchievements(player, points) {
+        switch (GameTheme) {
+            case 'COPS':
+                if (!player.achievements.some(({ id }) => id === 'hotshot') && (player.points.current + points) > 800) {
+                    player.achievements.push({ id: 'hotshot', description: Achievements[GameTheme].hotshot });
+                };
+
+                if (!player.achievements.some(({ id }) => id === 'death_dealer') && player.statistics.kills > 1000) {
+                    player.achievements.push({ id: 'death_dealer', description: Achievements[GameTheme].death_dealer });
+                };
+
+                if (!player.achievements.some(({ id }) => id === 'sore_loser') && player.statistics.matches > 20 && (player.statistics.loses / player.statistics.matches) > 0.60) {
+                    player.achievements.push({ id: 'sore_loser', description: Achievements[GameTheme].sore_loser });
+                };
+        };
+
+        return player.achievements;
     };
 };
