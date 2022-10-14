@@ -1,7 +1,8 @@
-const { ApplicationCommandOptionType, PermissionFlagsBits, ChatInputCommandInteraction, EmbedBuilder } = require('discord.js');
+const { ApplicationCommandOptionType, PermissionFlagsBits, ChatInputCommandInteraction, EmbedBuilder, userMention, ApplicationCommandType } = require('discord.js');
 const Command = require('../../structures/Command.js');
 const Players = require('../../structures/models/Players.js');
-const { Roles, Channels } = require('../../config.json');
+const MatchStats = require('../../structures/models/MatchStats.js');
+const { Roles, Channels, GameSides, GameTheme } = require('../../config.json');
 const sub_commands = [
     {
         name: 'register', type: ApplicationCommandOptionType.Subcommand, description: 'Force Register Player', options: [
@@ -13,6 +14,22 @@ const sub_commands = [
         name: 'rename', type: ApplicationCommandOptionType.Subcommand, description: 'Force Rename Player', options: [
             { name: 'player', type: ApplicationCommandOptionType.User, description: 'Player to Force Register', required: true },
             { name: 'ign', type: ApplicationCommandOptionType.String, description: 'IGN of Player', required: true }]
+    },
+    {
+        name: 'replace', type: ApplicationCommandOptionType.SubcommandGroup, description: 'Replace players or team with substitute(s)', options: [
+            {
+                name: 'team', type: ApplicationCommandOptionType.Subcommand, description: 'Replace a team with another', options: [
+
+                ]
+            },
+            {
+                name: 'players', type: ApplicationCommandOptionType.Subcommand, description: 'Replace a player(s) with another', options: [
+                    { name: 'code', type: ApplicationCommandOptionType.String, description: 'Match Code', required: true },
+                    { name: 'previous', type: ApplicationCommandOptionType.User, description: 'Original Player to Replace', required: true },
+                    { name: 'current', type: ApplicationCommandOptionType.User, description: 'Replaced Player', required: true }
+                ]
+            }
+        ]
     },
     {
         name: 'fix', type: ApplicationCommandOptionType.Subcommand, description: 'Force Fix Player', options: [
@@ -61,13 +78,12 @@ module.exports = class Force extends Command {
     async InteractionRun(interaction) {
         try {
             const sub_command = interaction.options._subcommand;
-            const member = interaction.options.getMember('player');
-
-            if (!member) return await interaction.reply({ content: '*Player does not exist!*', ephemeral: true });
-
-            let player = await Players.findOne({ id: member.id });
 
             if (sub_command === 'register') {
+                const member = interaction.options.getMember('player');
+                if (!member) return await interaction.reply({ content: '*Player does not exist!*', ephemeral: true });
+
+                let player = await Players.findOne({ id: member.id });
                 if (player) return await interaction.reply({ content: `*${member} has already registered at ${interaction.guild.name}*`, ephemeral: true });
 
                 await interaction.deferReply({ ephemeral: true });
@@ -184,6 +200,10 @@ module.exports = class Force extends Command {
                 await interaction.editReply({ embeds: [successfulRegistrationEmbed] });
                 return await this.bot.utils.auditSend(Channels.RegisterLogId, { embeds: [auditLogEmbed] });
             } else if (sub_command === 'rename') {
+                const member = interaction.options.getMember('player');
+                if (!member) return await interaction.reply({ content: '*Player does not exist!*', ephemeral: true });
+
+                let player = await Players.findOne({ id: member.id });
                 if (!player) return await interaction.reply({ content: `*${member} is not registered at ${interaction.guild.name}*`, ephemeral: true });
 
                 await interaction.deferReply({ ephemeral: true });
@@ -260,6 +280,87 @@ module.exports = class Force extends Command {
 
                 await interaction.editReply({ embeds: [successfulRegistrationEmbed] });
                 return await this.bot.utils.auditSend(Channels.SkyLogId, { embeds: [auditLogEmbed] });
+            } else if (sub_command === 'players') {
+                const code = interaction.options.getString('code').toUpperCase();
+
+                let match = await MatchStats.findOne({ id: code });
+                if (!match) return await interaction.reply({ content: '*Match with this room code is not registered!*', ephemeral: true });
+
+                const original_member = interaction.options.getMember('previous');
+                if (!original_member) return await interaction.reply({ content: '*Previous Player does not exist!*', ephemeral: true });
+
+                const updated_member = interaction.options.getMember('current');
+                if (!updated_member) return await interaction.reply({ content: '*Current Player does not exist!*', ephemeral: true });
+
+                let original_player = await Players.findOne({ id: original_member.id });
+                if (!original_player) return await interaction.reply({ content: `*${original_member} is not registered at ${interaction.guild.name}*`, ephemeral: true });
+
+                let updated_player = await Players.findOne({ id: updated_member.id });
+                if (!updated_player) return await interaction.reply({ content: `*${updated_member} is not registered at ${interaction.guild.name}*`, ephemeral: true });
+
+                await interaction.deferReply();
+
+                let original_team = null;
+                let updated_team = null;
+
+                if (match.coalition.players.some(({ id }) => id === original_member.id)) original_team = 'coalition';
+                else if (match.breach.players.some(({ id }) => id === original_member.id)) original_team = 'breach';
+
+                if (match.coalition.players.some(({ id }) => id === updated_member.id)) updated_team = 'coalition';
+                else if (match.breach.players.some(({ id }) => id === original_member.id)) updated_team = 'breach';
+
+                if (!original_team) return await interaction.editReply({ content: '*Previous Player cannot be replaced as they don\'t belong to any team!*' });
+                if (original_team === updated_team) return await interaction.editReply({ content: '*Previous Player and Current Player cannot be from the same team!*' });
+
+                const originalPlayerIndex = match[original_team].players.findIndex(({ id }) => id === original_member.id);
+                match[original_team].players[originalPlayerIndex] = { id: updated_member.id, name: userMention(updated_member.id), kills: 0, deaths: 0, points: 0 };
+
+                if (updated_team) {
+                    const updatedPlayerIndex = match[updated_team].players.findIndex(({ id }) => id === updated_member.id);
+                    match[updated_team].players[updatedPlayerIndex] = { id: original_member.id, name: userMention(original_member.id), kills: 0, deaths: 0, points: 0 };
+                };
+
+                match = await MatchStats.findOneAndUpdate(
+                    {
+                        id: code
+                    },
+                    {
+                        coalition: {
+                            players: match[original_team].players
+                        },
+                        breach: {
+                            players: match[updated_team].players
+                        }
+                    },
+                    {
+                        new: true
+                    }
+                );
+
+                const embedMessage = await interaction.guild.channels.cache.get(Channels.ScreenshotVerificationId).messages.fetch(match.message_id);
+
+                embedMessage.embeds[0].fields = [
+                    { name: GameSides[GameTheme][0], value: match.coalition.players.map((player, index) => index === 0 ? `${player.name} (C)` : player.name).join('\n'), inline: true },
+                    { name: GameSides[GameTheme][1], value: match.breach.players.map((player, index) => index === 0 ? `${player.name} (C)` : player.name).join('\n'), inline: true },
+                    { name: 'Host', value: match.host.name, inline: true }
+                ];
+
+                const replace_embed = new EmbedBuilder()
+                    .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
+                    .setColor('Green')
+                    .setDescription(`*Player(s) replaced successfully!*`)
+                    .addFields([
+                        { name: 'Previous Player', value: `${original_member}`, inline: true },
+                        { name: 'Current Player', value: `${updated_member}`, inline: true },
+                        { name: 'Match Code', value: match.id, inline: true }
+                    ])
+                    .setFooter({ text: `Moderator - ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() })
+                    .setTimestamp();
+
+                await embedMessage.edit({ embeds: [embedMessage] });
+                return await interaction.editReply({ embeds: [replace_embed] });
+            } else if (sub_command === 'team') {
+
             } else {
                 // Force Fix Code
             };

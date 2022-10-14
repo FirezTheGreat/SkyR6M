@@ -1,6 +1,7 @@
 {
     "TOKEN": "",
     "MongoURL": "",
+    "GameTheme": "COPS",
     "Owners": [
         {
             "id": "",
@@ -53,10 +54,13 @@
         "LogsCategoryId": "",
         "PenaltyChannelId": "",
         "PointsUpdateId": "",
-        "PlayRulesId": ""
+        "PlayRulesId": "",
+        "ScreenshotVerificationId": ""
     },
     "Roles": {
         "DefaultRoleName": "",
+        "SeniorModeratorRoleId": "",
+        "ModeratorRoleId": "",
         "RegisteredId": "",
         "MuteRoleId": ""
     },
@@ -90,8 +94,34 @@
         "2": "Everyone"
     },
     "GameMaps": {
-        "COPS": ["Bureau", "Canals", "Grounded", "Legacy", "Plaza", "Port", "Raid", "Soar", "Village"],
+        "COPS": [
+            "Bureau",
+            "Canals",
+            "Grounded",
+            "Legacy",
+            "Plaza",
+            "Port",
+            "Raid",
+            "Soar",
+            "Village"
+        ],
         "R6M": [],
         "VM": []
+    },
+    "GameSides": {
+        "COPS": [
+            "Coalition",
+            "Breach"
+        ],
+        "R6M": [],
+        "VM": []
+    },
+    "Achievements": {
+        "COPS": {
+            "hotshot": "Gained over 800 points in the current season.",
+            "death_dealer": "Killed more than 1000 players in the current season.",
+            "sore_loser": "Lost more than 60% of the all the matches played.",
+            "kill_spree": "Killed over 40 players in a single match."
+        }
     }
 }

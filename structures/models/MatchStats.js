@@ -14,18 +14,107 @@ const MatchStatsSchema = new Schema(
             required: true,
             default: ''
         },
-        winners: {
-            type: [Object],
+        coalition: {
+            type: {
+                players: {
+                    type: [{
+                        id: {
+                            type: String,
+                            required: true,
+                            index: {
+                                unique: true
+                            }
+                        },
+                        name: {
+                            type: String,
+                            required: true,
+                            default: ''
+                        },
+                        kills: {
+                            type: Number,
+                            required: true,
+                            default: 0
+                        },
+                        deaths: {
+                            type: Number,
+                            required: true,
+                            default: 0
+                        },
+                        points: {
+                            type: Number,
+                            required: true,
+                            default: 0
+                        }
+                    }],
+                    required: true,
+                    default: []
+                },
+                status: {
+                    type: String,
+                    required: true,
+                    default: 'Unknown'
+                }
+            },
             required: true,
-            default: []
+            default: {}
         },
-        losers: {
-            type: [Object],
+        breach: {
+            type: {
+                players: {
+                    type: [{
+                        id: {
+                            type: String,
+                            required: true,
+                            index: {
+                                unique: true
+                            }
+                        },
+                        name: {
+                            type: String,
+                            required: true,
+                            default: ''
+                        },
+                        kills: {
+                            type: Number,
+                            required: true,
+                            default: 0
+                        },
+                        deaths: {
+                            type: Number,
+                            required: true,
+                            default: 0
+                        },
+                        points: {
+                            type: Number,
+                            required: true,
+                            default: 0
+                        }
+                    }],
+                    required: true,
+                    default: []
+                },
+                status: {
+                    type: String,
+                    required: true,
+                    default: 'Unknown'
+                }
+            },
             required: true,
-            default: []
+            default: {}
         },
         host: {
-            type: Object,
+            type: {
+                id: {
+                    type: String,
+                    required: true,
+                    default: ''
+                },
+                name: {
+                    type: String,
+                    required: true,
+                    default: ''
+                }
+            },
             required: true,
             default: {}
         },
@@ -45,7 +134,44 @@ const MatchStatsSchema = new Schema(
             default: false
         },
         allocator: {
-            type: Object,
+            type: {
+                id: {
+                    type: String,
+                    required: true,
+                    default: ''
+                },
+                name: {
+                    type: String,
+                    required: true,
+                    default: ''
+                },
+                timestamp: {
+                    type: Number,
+                    required: true,
+                    default: 0
+                }
+            },
+            required: true,
+            default: {}
+        },
+        invalidator: {
+            type: {
+                id: {
+                    type: String,
+                    required: true,
+                    default: ''
+                },
+                name: {
+                    type: String,
+                    required: true,
+                    default: ''
+                },
+                timestamp: {
+                    type: Number,
+                    required: true,
+                    default: 0
+                }
+            },
             required: true,
             default: {}
         },
@@ -53,6 +179,16 @@ const MatchStatsSchema = new Schema(
             type: String,
             required: true,
             default: ''
+        },
+        screenshot: {
+            type: String,
+            required: true,
+            default: ''
+        },
+        score: {
+            type: String,
+            required: true,
+            default: '0-0'
         }
     },
     {

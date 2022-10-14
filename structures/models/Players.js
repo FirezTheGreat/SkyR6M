@@ -51,16 +51,6 @@ const PlayersSchema = new Schema(
                     required: true,
                     default: 0
                 },
-                total_kills: {
-                    type: Number,
-                    required: true,
-                    default: 0
-                },
-                total_deaths: {
-                    type: Number,
-                    required: true,
-                    default: 0
-                },
                 wins: {
                     type: Number,
                     required: true,
@@ -81,8 +71,6 @@ const PlayersSchema = new Schema(
             default: {
                 kills: 0,
                 deaths: 0,
-                total_kills: 0,
-                total_deaths: 0,
                 wins: 0,
                 loses: 0,
                 matches: 0
@@ -269,10 +257,20 @@ const PlayersSchema = new Schema(
                             required: true,
                             default: 0
                         },
+                        map: {
+                            type: String,
+                            required: true,
+                            default: ''
+                        },
                         description: {
                             type: String,
                             required: true,
                             default: ''
+                        },
+                        status: {
+                            type: String,
+                            required: true,
+                            default: 'Unknown'
                         }
                     }],
                     required: true,
@@ -324,6 +322,47 @@ const PlayersSchema = new Schema(
                 penalties: []
             },
             _id: false
+        },
+        previous_players: {
+            type: [{
+                id: {
+                    type: String,
+                    required: true,
+                    index: {
+                        unique: true
+                    }
+                },
+                name: {
+                    type: String,
+                    required: true,
+                    default: ''
+                },
+                status: {
+                    type: String,
+                    required: true,
+                    default: 'Unknown'
+                }
+            }],
+            required: true,
+            default: []
+        },
+        achievements: {
+            type: [{
+                id: {
+                    type: String,
+                    required: true,
+                    index: {
+                        unique: true
+                    }
+                },
+                description: {
+                    type: String,
+                    required: true,
+                    default: 'None'
+                },
+            }],
+            required: true,
+            default: []
         },
         _roles: {
             type: [String],

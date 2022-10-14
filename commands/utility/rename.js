@@ -1,4 +1,4 @@
-const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder, ChatInputCommandInteraction } = require('discord.js');
+const { ApplicationCommandOptionType, EmbedBuilder, ChatInputCommandInteraction } = require('discord.js');
 const Command = require('../../structures/Command.js');
 const { Channels } = require('../../config.json');
 const Players = require('../../structures/models/Players.js');
@@ -10,7 +10,6 @@ module.exports = class Rename extends Command {
             description: 'Rename your in-game name',
             category: 'Utility',
             usage: '[ign]',
-            type: ApplicationCommandType.ChatInput,
             options: [
                 { name: 'ign', type: ApplicationCommandOptionType.String, description: 'Rename your IGN', required: true }
             ]
