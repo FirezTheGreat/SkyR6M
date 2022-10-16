@@ -32,7 +32,7 @@ module.exports = class Start extends Command {
             if (!QueueRoleIds.map(({ text }) => text).includes(interaction.channelId)) return await interaction.reply({ content: '*You can start this match only in queue chats!*', ephemeral: true });
             if (!interaction.member?.voice.channel || interaction.member.voice.channel.members.filter((member) => !member.user.bot).size < 10) return await interaction.reply({ content: '*Cannot register match due to less players in queue!*' });
 
-            let code = interaction.options.getString('code').toUpperCase();
+            let code = interaction.options.getString('code').replace(/ .*/, '').toUpperCase();
             let map = interaction.options.getString('map');
 
             let match = await MatchStats.findOne({ id: code });

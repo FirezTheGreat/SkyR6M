@@ -68,7 +68,7 @@ module.exports = class Poll extends Command {
 
             const pollEmbedMessage = await interaction.reply({ embeds: [pollEmbed], components: pollButtons });
 
-            const pollCollector = pollEmbedMessage.createMessageComponentCollector({ filter: ({ customId }) => GameMaps[GameTheme].map((map) => map.toLowerCase()).includes(customId), time: 3000, componentType: ComponentType.Button });
+            const pollCollector = pollEmbedMessage.createMessageComponentCollector({ filter: ({ customId }) => GameMaps[GameTheme].map((map) => map.toLowerCase()).includes(customId), time: 60000, componentType: ComponentType.Button });
 
             pollCollector.on('collect', async (button) => {
                 if (!this.bot.polls.get(button.member?.voice.channelId).players.find(({ id }) => button.member.id === id)) return await button.reply({ content: '*You are not currently present in any active queue!*', ephemeral: true });
