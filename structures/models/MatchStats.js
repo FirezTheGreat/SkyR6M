@@ -137,17 +137,17 @@ const MatchStatsSchema = new Schema(
             type: {
                 id: {
                     type: String,
-                    required: true,
+                    required: false,
                     default: ''
                 },
                 name: {
                     type: String,
-                    required: true,
+                    required: false,
                     default: ''
                 },
                 timestamp: {
                     type: Number,
-                    required: true,
+                    required: false,
                     default: 0
                 }
             },
@@ -158,17 +158,17 @@ const MatchStatsSchema = new Schema(
             type: {
                 id: {
                     type: String,
-                    required: true,
+                    required: false,
                     default: ''
                 },
                 name: {
                     type: String,
-                    required: true,
+                    required: false,
                     default: ''
                 },
                 timestamp: {
                     type: Number,
-                    required: true,
+                    required: false,
                     default: 0
                 }
             },
@@ -177,12 +177,12 @@ const MatchStatsSchema = new Schema(
         },
         message_id: {
             type: String,
-            required: true,
+            required: false,
             default: ''
         },
         screenshot: {
             type: String,
-            required: true,
+            required: false,
             default: ''
         },
         score: {
