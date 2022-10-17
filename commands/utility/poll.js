@@ -29,11 +29,12 @@ module.exports = class Poll extends Command {
 
             let mapFields = [];
             let mapComponents = [];
+            let channelId = interaction.member.voice.channelId;
 
             this.bot.polls.set(
-                interaction.member.voice.channelId,
+                channelId,
                 {
-                    players: await Promise.all(interaction.member.voice.channel.members.map(async ({ id }) => ({ id, name: (await Players.findOne({ id })).name }))),
+                    players: interaction.member.voice.channel.members.map(({ id }) => ({ id })),
                     text_channel: interaction.channelId,
                     map: 'none',
                     highest_votes: 0,
@@ -71,10 +72,10 @@ module.exports = class Poll extends Command {
             const pollCollector = pollEmbedMessage.createMessageComponentCollector({ filter: ({ customId }) => GameMaps[GameTheme].map((map) => map.toLowerCase()).includes(customId), time: 60000, componentType: ComponentType.Button });
 
             pollCollector.on('collect', async (button) => {
-                if (!this.bot.polls.get(button.member?.voice.channelId).players.find(({ id }) => button.member.id === id)) return await button.reply({ content: '*You are not currently present in any active queue!*', ephemeral: true });
+                if (!this.bot.polls.has(button.member?.voice.channelId) || !this.bot.polls.get(channelId).players.some(({ id }) => button.member.id === id)) return await button.reply({ content: '*You are not currently present in any active queue!*', ephemeral: true });
 
                 if (GameMaps[GameTheme].map((map) => map.toLowerCase()).includes(button.customId)) {
-                    let vote = this.bot.polls.get(interaction.member.voice.channelId);
+                    let vote = this.bot.polls.get(channelId);
                     let vote_map = null;
 
                     if (vote) {
@@ -85,13 +86,13 @@ module.exports = class Poll extends Command {
                             vote_map = vote.map_wise_votes.at(voterIndex).map;
                             vote.map_wise_votes.splice(voterIndex, 1);
 
-                            this.bot.polls.set(interaction.member.voice.channelId, vote);
+                            this.bot.polls.set(channelId, vote);
                         };
 
                         if (vote_map !== button.customId) {
                             vote.map_wise_votes.push({ id: button.member.id, map: button.customId });
 
-                            this.bot.polls.set(interaction.member.voice.channelId, vote);
+                            this.bot.polls.set(channelId, vote);
                         };
                     };
 
@@ -111,48 +112,50 @@ module.exports = class Poll extends Command {
 
             pollCollector.on('end', async (collected) => {
                 if (collected.size) {
-                    const vote = this.bot.polls.get(interaction.member?.voice.channelId);
+                    const vote = this.bot.polls.get(channelId);
 
-                    const selected_votes = vote.map_wise_votes.reduce((acc, { id, map }) => ({
-                        ...acc,
-                        [map]: acc[map] ? [...acc[map], { id }] : [{ id }]
-                    }), {});
+                    if (vote) {
+                        const selected_votes = vote.map_wise_votes.reduce((acc, { id, map }) => ({
+                            ...acc,
+                            [map]: acc[map] ? [...acc[map], { id }] : [{ id }]
+                        }), {});
 
 
-                    for (const [map, votes] of Object.entries(selected_votes)) {
-                        vote.maps_selected.push({ map, votes: votes.length, voters: votes.map(({ id }) => id) });
+                        for (const [map, votes] of Object.entries(selected_votes)) {
+                            vote.maps_selected.push({ map, votes: votes.length, voters: votes.map(({ id }) => id) });
+                        };
+
+                        const sorted_maps = vote.maps_selected.sort((first_map, second_map) => second_map.votes - first_map.votes);
+
+                        let description = '\n';
+                        let index = 1;
+
+                        for (const [, vote] of Object.entries(sorted_maps)) {
+                            description += `#${index++}. **${this.bot.utils.capitalizeFirstLetter(vote.map)} - ${vote.voters.map((id) => userMention(id))} - (${vote.votes})**\n`;
+                        };
+
+                        const { attachment } = new AttachmentBuilder(path.join(__dirname, '..', '..', 'assets', 'maps', 'cops', `${sorted_maps.at(0).map}.png`), `${sorted_maps.at(0).map}.png`);
+
+                        const pollButtonResult = new ActionRowBuilder()
+                            .addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId(sorted_maps.at(0).map)
+                                    .setLabel(this.bot.utils.capitalizeFirstLetter(sorted_maps.at(0).map))
+                                    .setStyle(ButtonStyle.Success)
+                            );
+
+                        const pollResultEmbed = new EmbedBuilder()
+                            .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
+                            .setTitle('Poll Results')
+                            .setColor('Green')
+                            .setDescription(description)
+                            .setImage(`attachment://${sorted_maps.at(0).map}.png`)
+                            .setFooter({ text: `Map - ${this.bot.utils.capitalizeFirstLetter(sorted_maps.at(0).map)} has been chosen.`, iconURL: interaction.guild.iconURL() })
+                            .setTimestamp();
+
+                        await interaction.editReply({ embeds: [pollResultEmbed], components: [pollButtonResult], files: [attachment] });
+                        return this.bot.polls.delete(channelId);
                     };
-
-                    const sorted_maps = vote.maps_selected.sort((first_map, second_map) => second_map.votes - first_map.votes);
-
-                    let description = '\n';
-                    let index = 1;
-
-                    for (const [, vote] of Object.entries(sorted_maps)) {
-                        description += `#${index++}. **${this.bot.utils.capitalizeFirstLetter(vote.map)} - ${vote.voters.map((id) => userMention(id))} - (${vote.votes})**\n`;
-                    };
-
-                    const { attachment } = new AttachmentBuilder(path.join(__dirname, '..', '..', 'assets', 'maps', 'cops', `${sorted_maps.at(0).map}.png`), `${sorted_maps.at(0).map}.png`);
-
-                    const pollButtonResult = new ActionRowBuilder()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId(sorted_maps.at(0).map)
-                                .setLabel(this.bot.utils.capitalizeFirstLetter(sorted_maps.at(0).map))
-                                .setStyle(ButtonStyle.Success)
-                        );
-
-                    const pollResultEmbed = new EmbedBuilder()
-                        .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
-                        .setTitle('Poll Results')
-                        .setColor('Green')
-                        .setDescription(description)
-                        .setImage(`attachment://${sorted_maps.at(0).map}.png`)
-                        .setFooter({ text: `Map - ${this.bot.utils.capitalizeFirstLetter(sorted_maps.at(0).map)} has been chosen.`, iconURL: interaction.guild.iconURL() })
-                        .setTimestamp();
-
-                    await interaction.editReply({ embeds: [pollResultEmbed], components: [pollButtonResult], files: [attachment] });
-                    return this.bot.polls.delete(interaction.member?.voice.channelId);
                 } else {
                     const pollResultEmbed = new EmbedBuilder()
                         .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })

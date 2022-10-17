@@ -29,7 +29,7 @@ module.exports = class voiceStateUpdate extends Event {
 
                     if (poll) {
                         if (oldState.channel.members.size > 0) {
-                            poll.players = await Promise.all(oldState.channel.members.map(async ({ id }) => ({ id, name: (await Players.findOne({ id })).name })));
+                            poll.players = oldState.channel.members.map(({ id }) => ({ id }));
 
                             this.bot.polls.set(oldState.channelId, poll);
                         } else {
@@ -53,7 +53,7 @@ module.exports = class voiceStateUpdate extends Event {
                     const poll = this.bot.polls.get(newState.channelId);
 
                     if (poll && newState.channel.members.size < 11) {
-                        poll.players = newState.channel.members.map(async ({ id }) => ({ id, name: (await Players.findOne({ id })).name }));
+                        poll.players = newState.channel.members.map(({ id }) => ({ id }));
 
                         this.bot.polls.set(newState.channelId, poll);
                     };
