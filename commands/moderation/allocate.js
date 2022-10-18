@@ -1,9 +1,8 @@
-const { ApplicationCommandOptionType, PermissionFlagsBits, ChatInputCommandInteraction, EmbedBuilder } = require('discord.js');
+const { ApplicationCommandOptionType, PermissionFlagsBits, ChatInputCommandInteraction, EmbedBuilder, userMention } = require('discord.js');
 const Command = require('../../structures/Command.js');
 const MatchStats = require('../../structures/models/MatchStats.js');
 const Players = require('../../structures/models/Players.js');
-const { Roles, Channels, GameTheme, GameSides } = require('../../config.json');
-const { RolePointChecker } = require('../../structures/Util.js');
+const { GameTheme, GameSides } = require('../../config.json');
 const PointAllocationManager = require('../../structures/ClassManagers/PointsAllocationManager.js');
 
 module.exports = class Allocate extends Command {
@@ -37,6 +36,9 @@ module.exports = class Allocate extends Command {
             if (match.allocated) return await interaction.reply({ content: '*Points have already been allocated to the players!*' });
             if (match.invalidated) return await interaction.reply({ content: `*Cannot allocate points as match has been invalidated by **${match.invalidator.name}**!*` });
 
+            if (!match.screenshot) return await interaction.reply({ content: `*Cannot allocate points as match screenshot has not been sent by any player!*` });
+            if (match.coalition.status === 'Unknown' || match.breach.status === 'Unknown') return await interaction.reply({ content: `*Cannot allocate points as match result has not been verified yet*` });
+
             await interaction.deferReply();
 
             const manager = new PointAllocationManager({
@@ -53,11 +55,11 @@ module.exports = class Allocate extends Command {
 
             switch (GameTheme) {
                 case 'COPS':
-                    const winner_team = match.coalition.status === 'winner' ? GameSides[GameTheme][0] : GameSides[GameTheme][1]
-                    const loser_team = match.breach.status === 'loser' ? GameSides[GameTheme][1] : GameSides[GameTheme][0]
+                    const winner_team = match.coalition.status === 'winner' ? GameSides[GameTheme][0] : GameSides[GameTheme][1];
+                    const loser_team = match.breach.status === 'winner' ? GameSides[GameTheme][0] : GameSides[GameTheme][1];
 
-                    const winning_players = winner_team.toLowerCase() === GameSides[GameTheme][0] ? match.coalition.players : match.breach.players;
-                    const losing_players = loser_team.toLowerCase() === GameSides[GameTheme][0] ? match.coalition.players : match.breach.players;
+                    const winning_players = winner_team === GameSides[GameTheme][0] ? match.coalition.players : match.breach.players;
+                    const losing_players = loser_team === GameSides[GameTheme][0] ? match.coalition.players : match.breach.players;
 
                     const winning_player_stats = [];
                     const losing_player_stats = [];
@@ -68,23 +70,25 @@ module.exports = class Allocate extends Command {
                             .setColor('Blue')
                             .setThumbnail(interaction.guild.members.cache.get(id).displayAvatarURL())
                             .setDescription(`*Please the enter the amount of **kills** by ${name} of ${winner_team}.*`)
+                            .setFooter({ text: `1/2`, iconURL: interaction.guild.iconURL() })
                             .setTimestamp();
 
                         await interaction.editReply({ embeds: [winner_stat_embed] });
 
-                        const collector = interaction.channel.createMessageCollector({ filter: (message) => /^[0-9]\d*$/g.test(message.content.trim()) && message.author.id === interaction.user.id, max: 2 });
+                        const kill_collector = await interaction.channel.awaitMessages({ filter: (message) => /^[0-9]\d*$/g.test(message.content.trim()) && message.author.id === interaction.user.id, max: 1 });
 
-                        collector.on('collect', async () => {
-                            winner_stat_embed
-                                .setDescription(`*Please the enter the amount of **deaths** of ${name} of ${winner_team}.*`)
-                                .setTimestamp();
+                        winner_stat_embed
+                            .setDescription(`*Please the enter the amount of **deaths** of ${name} of ${winner_team}.*`)
+                            .setFooter({ text: `2/2`, iconURL: interaction.guild.iconURL() })
+                            .setTimestamp();
 
-                            await interaction.editReply({ embeds: [winner_stat_embed] });
-                        });
+                        await interaction.editReply({ embeds: [winner_stat_embed] });
+                        kill_collector.first().deletable ? await kill_collector.first().delete() : null;
 
-                        collector.on('end', async (collected) => {
-                            winning_player_stats.push({ id, kills: +collected.first().content.trim(), deaths: +collected.last().content.trim() });
-                        });
+                        const death_collector = await interaction.channel.awaitMessages({ filter: (message) => /^[0-9]\d*$/g.test(message.content.trim()) && message.author.id === interaction.user.id, max: 1 });
+
+                        death_collector.first().deletable ? await death_collector.first().delete() : null;
+                        winning_player_stats.push({ id, kills: +kill_collector.first().content.trim(), deaths: +death_collector.last().content.trim() });
                     };
 
                     for (const { id, name } of losing_players.values()) {
@@ -93,23 +97,25 @@ module.exports = class Allocate extends Command {
                             .setColor('Blue')
                             .setThumbnail(interaction.guild.members.cache.get(id).displayAvatarURL())
                             .setDescription(`*Please the enter the amount of **kills** by ${name} of ${loser_team}.*`)
+                            .setFooter({ text: `1/2`, iconURL: interaction.guild.iconURL() })
                             .setTimestamp();
 
                         await interaction.editReply({ embeds: [loser_stat_embed] });
 
-                        const collector = interaction.channel.createMessageCollector({ filter: (message) => /^[0-9]\d*$/g.test(message.content.trim()) && message.author.id === interaction.user.id, max: 2 });
+                        const kill_collector = await interaction.channel.awaitMessages({ filter: (message) => /^[0-9]\d*$/g.test(message.content.trim()) && message.author.id === interaction.user.id, max: 1 });
 
-                        collector.on('collect', async () => {
-                            loser_stat_embed
-                                .setDescription(`*Please the enter the amount of **deaths** of ${name} of ${loser_team}.*`)
-                                .setTimestamp();
+                        loser_stat_embed
+                            .setDescription(`*Please the enter the amount of **deaths** of ${name} of ${loser_team}.*`)
+                            .setFooter({ text: `2/2`, iconURL: interaction.guild.iconURL() })
+                            .setTimestamp();
 
-                            await interaction.editReply({ embeds: [loser_stat_embed] });
-                        });
+                        await interaction.editReply({ embeds: [loser_stat_embed] });
+                        kill_collector.first().deletable ? await kill_collector.first().delete() : null;
 
-                        collector.on('end', async (collected) => {
-                            losing_player_stats.push({ id, kills: +collected.first().content.trim(), deaths: +collected.last().content.trim() });
-                        });
+                        const death_collector = await interaction.channel.awaitMessages({ filter: (message) => /^[0-9]\d*$/g.test(message.content.trim()) && message.author.id === interaction.user.id, max: 1 });
+
+                        death_collector.first().deletable ? await death_collector.first().delete() : null;
+                        losing_player_stats.push({ id, kills: +kill_collector.first().content.trim(), deaths: +death_collector.last().content.trim() });
                     };
 
                     await MatchStats.updateOne(
@@ -118,10 +124,12 @@ module.exports = class Allocate extends Command {
                         },
                         {
                             coalition: {
-                                players: match.coalition.status === 'winner' ? manager.setWinners(winning_player_stats) : manager.setLosers(losing_player_stats)
+                                players: match.coalition.status === 'winner' ? manager.setWinners(winning_player_stats) : manager.setLosers(losing_player_stats),
+                                status: match.coalition.status
                             },
                             breach: {
-                                players: match.breach.status === 'loser' ? manager.setLosers(losing_player_stats) : manager.setWinners(winning_player_stats)
+                                players: match.breach.status === 'loser' ? manager.setLosers(losing_player_stats) : manager.setWinners(winning_player_stats),
+                                status: match.breach.status
                             },
                             allocated: true,
                             allocator: {
@@ -131,6 +139,8 @@ module.exports = class Allocate extends Command {
                             }
                         }
                     );
+
+                    await interaction.editReply({ content: `*Points have been allocated successfully by ${interaction.member}*`, embeds: [] });
                 case 'R6M':
                 // later
                 case 'VM':

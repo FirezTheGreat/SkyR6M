@@ -32,18 +32,18 @@ module.exports = class Submit extends Command {
 
             const code = interaction.options.getString('code').toUpperCase();
             const screenshot = interaction.options.getAttachment('screenshot').url;
-            const note = interaction.options.getString('note') || '';
+            const note = interaction.options.getString('note');
 
             const match = await MatchStats.findOne({ id: code });
             if (!match) return await interaction.reply({ content: '*Match with this room code is not registered!*', ephemeral: true });
 
             if (match.screenshot) return await interaction.reply({ content: '*Screenshot for this match has already been submitted!*', ephemeral: true });
-            if (match.coalition.players.concat(match.breach.players).some(({ id }) => id !== interaction.user.id)) return await interaction.reply({ content: '*You cannot submit screenshots for matches you haven\'t participated!*', ephemeral: true });
+            if (!match.coalition.players.concat(match.breach.players).some(({ id }) => id === interaction.user.id)) return await interaction.reply({ content: '*You cannot submit screenshots for matches you haven\'t participated!*', ephemeral: true });
 
             if (match.invalidated || match.allocated) return await interaction.reply({ content: `*Match ${match.invalidated ? `has been invalidated by **${match.invalidator.name}**` : `points have been allocated by **${match.allocator.name}**`}!*`, ephemeral: true });
 
             const submit_embed = new EmbedBuilder()
-                .setAuthor({ name: interaction.guild.id, iconURL: interaction.guild.iconURL() })
+                .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                 .setColor('Blue')
                 .setTitle(`Match Code - #${code}`)
                 .setDescription(note)
@@ -61,11 +61,11 @@ module.exports = class Submit extends Command {
                     new ButtonBuilder()
                         .setCustomId(`${interaction.id}_approve`)
                         .setEmoji('✅')
-                        .setStyle(ButtonStyle.Success),
+                        .setStyle(ButtonStyle.Primary),
                     new ButtonBuilder()
                         .setCustomId(`${interaction.id}_cancel`)
                         .setEmoji('❌')
-                        .setStyle(ButtonStyle.Danger)
+                        .setStyle(ButtonStyle.Primary)
                 );
 
             await interaction.reply({ content: `*Your screenshot has been successfully sent for verification!*`, ephemeral: true });
@@ -74,12 +74,12 @@ module.exports = class Submit extends Command {
 
             await MatchStats.updateOne({ id: code }, { message_id: submit_message.id });
 
-            const submit_filter = (button) => [`${interaction.id}_approve`, `${interaction.id}_cancel`].includes(button.customId) && button.member.roles.highest.comparePositionTo(Roles.SeniorModeratorRoleId) < 0;
+            const submit_filter = (button) => [`${interaction.id}_approve`, `${interaction.id}_cancel`].includes(button.customId) && button.member.roles.highest.comparePositionTo(Roles.SeniorModeratorRoleId) > 0;
             const submit_collector = await submit_message.awaitMessageComponent({ filter: submit_filter, componentType: ComponentType.Button });
 
             if (submit_collector.customId === `${interaction.id}_approve`) {
                 const winner_verification_embed = new EmbedBuilder()
-                    .setAuthor({ name: interaction.guild.id, iconURL: interaction.guild.iconURL() })
+                    .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                     .setColor('Green')
                     .setTitle(`Match Code - #${code}`)
                     .setDescription(`*Please verify which team won the match by clicking the button below this embed message!*`)
@@ -100,21 +100,21 @@ module.exports = class Submit extends Command {
 
                 const winner_verification_message = await submit_collector.update({ embeds: [winner_verification_embed], components: [winner_verification_components], fetchReply: true });
 
-                const winner_verification_filter = (button) => [`${interaction.id}_${GameSides[GameTheme][0]}`, `${interaction.id}_${GameSides[GameTheme][1]}`].includes(button.customId) && message.author.id === submit_collector.member.id;
+                const winner_verification_filter = (button) => [`${interaction.id}_${GameSides[GameTheme][0]}`, `${interaction.id}_${GameSides[GameTheme][1]}`].includes(button.customId) && button.member.id === submit_collector.member.id;
                 const winner_verification_collector = await winner_verification_message.awaitMessageComponent({ filter: winner_verification_filter, componentType: ComponentType.Button });
 
-                let winning_team = null;
+                let winning_team;
                 winner_verification_collector.customId === `${interaction.id}_${GameSides[GameTheme][0]}` ? winning_team = 'coalition' : winning_team = 'breach';
 
                 const score_verification_embed = new EmbedBuilder()
-                    .setAuthor({ name: interaction.guild.id, iconURL: interaction.guild.iconURL() })
+                    .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                     .setColor('Green')
                     .setTitle(`Match Code - #${code}`)
                     .setDescription(`*Please verify the score of this match by writing below this messsage. Eg - \`13-9\`!*`)
                     .setFooter({ text: 'Senior Moderators please verify the winning team', iconURL: interaction.guild.iconURL() })
                     .setTimestamp();
 
-                const score_verification_message = await winner_verification_collector.update({ embeds: [score_verification_embed], components: [] });
+                const score_verification_message = await winner_verification_collector.update({ embeds: [score_verification_embed], components: [], fetchReply: true });
                 const score_verification_collector = score_verification_message.channel.createMessageCollector({ filter: (message) => /^(0|[1-9]\d*)-(0|[1-9]\d*)$/.test(message.content.trim()) && message.author.id === winner_verification_collector.member.id, max: 1 });
 
                 score_verification_collector.on('collect', async (message) => {
@@ -122,9 +122,11 @@ module.exports = class Submit extends Command {
                         { id: code },
                         {
                             coalition: {
+                                players: match.coalition.players,
                                 status: winning_team === 'coalition' ? 'winner' : 'loser'
                             },
                             breach: {
+                                players: match.breach.players,
                                 status: winning_team === 'breach' ? 'winner' : 'loser'
                             },
                             screenshot,
@@ -136,7 +138,9 @@ module.exports = class Submit extends Command {
                         .setColor('Green')
                         .setFooter({ text: 'Senior Moderators have verified the screenshot!', iconURL: interaction.guild.iconURL() })
 
-                    await this.bot.utils.auditSend(Channels.PointsUpdateId, { embeds: [submit_embed] });
+                    await this.bot.utils.auditSend(Channels.SubmitScreenshotId, { embeds: [submit_embed] });
+                    message.deletable ? await message.delete() : null;
+
                     return submit_message.deletable ? await submit_message.delete() : null;
                 });
             } else {

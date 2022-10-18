@@ -55,6 +55,7 @@
         "PenaltyChannelId": "",
         "PointsUpdateId": "",
         "PlayRulesId": "",
+        "SubmitScreenshotId": "",
         "ScreenshotVerificationId": ""
     },
     "Roles": {
