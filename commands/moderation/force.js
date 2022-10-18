@@ -326,10 +326,12 @@ module.exports = class Force extends Command {
                     },
                     {
                         coalition: {
-                            players: match[original_team].players
+                            players: match[original_team].players,
+                            status: match.coalition.status
                         },
                         breach: {
-                            players: match[updated_team].players
+                            players: match[updated_team].players,
+                            status: match.breach.status
                         }
                     },
                     {
