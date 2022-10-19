@@ -130,7 +130,7 @@ module.exports = class Allocate extends Command {
                                 status: match.coalition.status
                             },
                             breach: {
-                                players: match.breach.status === 'loser' ? manager.setLosers(losing_player_stats) : manager.setWinners(winning_player_stats),
+                                players: match.breach.status === 'winner' ? manager.setWinners(winning_player_stats) : manager.setLosers(losing_player_stats),
                                 status: match.breach.status
                             },
                             allocated: true,
