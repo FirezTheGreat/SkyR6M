@@ -71,7 +71,7 @@ module.exports = class Allocate extends Command {
                             .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                             .setColor('Blue')
                             .setThumbnail(interaction.guild.members.cache.get(id).displayAvatarURL())
-                            .setDescription(`*Please the enter the amount of **kills** by ${name} of (${index++}) ${winner_team}.*`)
+                            .setDescription(`*Please the enter the amount of **kills** by (${index++}) ${name} of ${winner_team}.*`)
                             .setFooter({ text: `1/2`, iconURL: interaction.guild.iconURL() })
                             .setTimestamp();
 
@@ -80,7 +80,7 @@ module.exports = class Allocate extends Command {
                         const kill_collector = await interaction.channel.awaitMessages({ filter: (message) => /^[0-9]\d*$/g.test(message.content.trim()) && message.author.id === interaction.user.id, max: 1 });
 
                         winner_stat_embed
-                            .setDescription(`*Please the enter the amount of **deaths** of ${name} of (${index++}) ${winner_team}.*`)
+                            .setDescription(`*Please the enter the amount of **deaths** of (${index++}) ${name} of ${winner_team}.*`)
                             .setFooter({ text: `2/2`, iconURL: interaction.guild.iconURL() })
                             .setTimestamp();
 
@@ -98,7 +98,7 @@ module.exports = class Allocate extends Command {
                             .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                             .setColor('Blue')
                             .setThumbnail(interaction.guild.members.cache.get(id).displayAvatarURL())
-                            .setDescription(`*Please the enter the amount of **kills** by ${name} of (${index++}) ${loser_team}.*`)
+                            .setDescription(`*Please the enter the amount of **kills** by (${index++}) ${name} of ${loser_team}.*`)
                             .setFooter({ text: `1/2`, iconURL: interaction.guild.iconURL() })
                             .setTimestamp();
 
@@ -107,7 +107,7 @@ module.exports = class Allocate extends Command {
                         const kill_collector = await interaction.channel.awaitMessages({ filter: (message) => /^[0-9]\d*$/g.test(message.content.trim()) && message.author.id === interaction.user.id, max: 1 });
 
                         loser_stat_embed
-                            .setDescription(`*Please the enter the amount of **deaths** of ${name} of (${index++}) ${loser_team}.*`)
+                            .setDescription(`*Please the enter the amount of **deaths** of (${index++}) ${name} of ${loser_team}.*`)
                             .setFooter({ text: `2/2`, iconURL: interaction.guild.iconURL() })
                             .setTimestamp();
 
