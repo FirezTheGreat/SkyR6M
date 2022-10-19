@@ -43,7 +43,7 @@ module.exports = class voiceStateUpdate extends Event {
                 const player = await Players.findOne({ id: newState.member.id });
                 if (!player) {
                     await newState.disconnect();
-                    return newState.member.send({ content: `*You are not registered at ${interaction.guild.name}*` }).catch(() => null);
+                    return newState.member.send({ content: `*You are not registered at ${newState.guild.name}*` }).catch(() => null);
                 };
 
                 const { roles } = QueueRoleIds.find(({ voice }) => newState.channelId === voice) ?? { roles: null };
