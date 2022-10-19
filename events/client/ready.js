@@ -26,7 +26,7 @@ module.exports = class Ready extends Event {
                     : Commands.push({ name, description, type, options })
             };
 
-            await this.bot.guilds.cache.first().commands.set(Commands);
+            await this.bot.application.commands.set(Commands);
 
             for (const guild of this.bot.guilds.cache.values()) {
                 if (guild.available) {
