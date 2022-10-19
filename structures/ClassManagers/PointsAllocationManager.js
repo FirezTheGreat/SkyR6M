@@ -115,8 +115,8 @@ module.exports = class PointAllocationManager {
                         statistics: {
                             kills: player.statistics.kills + kills,
                             deaths: player.statistics.deaths + deaths,
-                            wins: player.statistics.wins++,
-                            matches: player.statistics.matches++
+                            wins: player.statistics.wins + 1,
+                            matches: player.statistics.matches + 1
                         },
                         logs: {
                             matches: player.logs.matches
@@ -235,8 +235,8 @@ module.exports = class PointAllocationManager {
                         statistics: {
                             kills: player.statistics.kills + kills,
                             deaths: player.statistics.deaths + deaths,
-                            loses: player.statistics.loses++,
-                            matches: player.statistics.matches++
+                            loses: player.statistics.loses + 1,
+                            matches: player.statistics.matches + 1
                         },
                         logs: {
                             matches: player.logs.matches
