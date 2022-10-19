@@ -83,6 +83,7 @@ module.exports = class Submit extends Command {
                     .setColor('Green')
                     .setTitle(`Match Code - #${code}`)
                     .setDescription(`*Please verify which team won the match by clicking the button below this embed message!*`)
+                    .setImage(screenshot)
                     .setFooter({ text: 'Senior Moderators please verify the winning team', iconURL: interaction.guild.iconURL() })
                     .setTimestamp();
 
@@ -111,6 +112,7 @@ module.exports = class Submit extends Command {
                     .setColor('Green')
                     .setTitle(`Match Code - #${code}`)
                     .setDescription(`*Please verify the score of this match by writing below this messsage. Eg - \`13-9\`!*`)
+                    .setImage(screenshot)
                     .setFooter({ text: 'Senior Moderators please verify the winning team', iconURL: interaction.guild.iconURL() })
                     .setTimestamp();
 
