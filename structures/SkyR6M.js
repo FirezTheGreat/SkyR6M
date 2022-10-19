@@ -9,7 +9,7 @@ module.exports = class SkyR6M extends Client {
             presence: {
                 status: 'online',
                 activities: [
-                    { name: 'Sky Rainbow 6 Mobile MatchMaking', type: ActivityType.Watching }
+                    { name: 'Sky C-OPS MatchMaking', type: ActivityType.Watching }
                 ]
             },
             intents: [
