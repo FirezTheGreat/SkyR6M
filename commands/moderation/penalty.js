@@ -299,7 +299,7 @@ module.exports = class Penalty extends Command {
                         }
                     },
                     {
-                        new: true,
+                        new: true
                     }
                 );
 
@@ -356,7 +356,7 @@ module.exports = class Penalty extends Command {
                     }, existingTimeout > 0 ? existingTimeout + timeout : timeout);
                 };
 
-                if (interaction.member.manageable) {
+                if (member.manageable) {
                     await member.setNickname(`[${player.points.current}] ${player.name}`);
                 } else {
                     await interaction.channel.send({ content: `*IGN has been updated to our database but failed to rename ${member}\'s IGN on discord.*` });
@@ -451,7 +451,7 @@ module.exports = class Penalty extends Command {
                         }
                     },
                     {
-                        new: true,
+                        new: true
                     }
                 );
 
@@ -459,7 +459,7 @@ module.exports = class Penalty extends Command {
 
                 member.communicationDisabledUntilTimestamp ? await member.disableCommunicationUntil(member.communicationDisabledUntilTimestamp - penalty.duration_timestamp > 0 ? member.communicationDisabledUntilTimestamp - penalty.duration_timestamp : null) : null;
 
-                if (interaction.member.manageable) {
+                if (member.manageable) {
                     await member.setNickname(`[${player.points.current}] ${player.name}`);
                 } else {
                     await interaction.channel.send({ content: `*IGN has been updated to our database but failed to rename ${member}\'s IGN on discord.*` });
