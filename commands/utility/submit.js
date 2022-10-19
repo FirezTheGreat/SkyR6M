@@ -74,7 +74,7 @@ module.exports = class Submit extends Command {
 
             await MatchStats.updateOne({ id: code }, { message_id: submit_message.id });
 
-            const submit_filter = (button) => [`${interaction.id}_approve`, `${interaction.id}_cancel`].includes(button.customId) && button.member.roles.highest.comparePositionTo(Roles.SeniorModeratorRoleId) > 0;
+            const submit_filter = (button) => [`${interaction.id}_approve`, `${interaction.id}_cancel`].includes(button.customId) && button.member.roles.highest.comparePositionTo(Roles.SeniorModeratorRoleId) >= 0;
             const submit_collector = await submit_message.awaitMessageComponent({ filter: submit_filter, componentType: ComponentType.Button });
 
             if (submit_collector.customId === `${interaction.id}_approve`) {
