@@ -38,7 +38,7 @@ module.exports = class Submit extends Command {
             if (!match) return await interaction.reply({ content: '*Match with this room code is not registered!*', ephemeral: true });
 
             if (match.screenshot) return await interaction.reply({ content: '*Screenshot for this match has already been submitted!*', ephemeral: true });
-            if (!match.coalition.players.concat(match.breach.players).some(({ id }) => id === interaction.user.id)) return await interaction.reply({ content: '*You cannot submit screenshots for matches you haven\'t participated!*', ephemeral: true });
+            if (!match.coalition.players.concat(match.breach.players).some(({ id }) => id === interaction.user.id) && interaction.member.roles.highest.comparePositionTo(Roles.SeniorModeratorRoleId) < 0) return await interaction.reply({ content: '*You cannot submit screenshots for matches you haven\'t participated!*', ephemeral: true });
 
             if (match.invalidated || match.allocated) return await interaction.reply({ content: `*Match ${match.invalidated ? `has been invalidated by **${match.invalidator.name}**` : `points have been allocated by **${match.allocator.name}**`}!*`, ephemeral: true });
 
