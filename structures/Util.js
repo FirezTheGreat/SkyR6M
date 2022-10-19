@@ -46,7 +46,7 @@ module.exports = class Util {
         if (command) {
             const commandName = sync(`${this.directory}commands/${command.category.split(' ').join('-').toLowerCase()}/${command.name.split(' ').join('-').toLowerCase()}.js`)[0];
 
-            delete require.cache[commandFile];
+            delete require.cache[commandName];
 
             const { name } = parse(commandName);
             const File = require(commandName);
