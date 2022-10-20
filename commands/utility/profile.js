@@ -213,7 +213,7 @@ module.exports = class Profile extends Command {
                                 },
                                 color: Colors.Aqua,
                                 title: 'Match Logs & Data',
-                                description: `*Match IDs, Logs & Data of ${member}*${`\n\n\`\`\`${current_page_logs.join('\n')}\`\`\``}`,
+                                description: `*Match IDs, Logs & Data of ${member}*\n\n${current_page_logs.join('\n')}`,
                                 thumbnail: {
                                     url: member.user.displayAvatarURL()
                                 },

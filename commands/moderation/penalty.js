@@ -295,6 +295,7 @@ module.exports = class Penalty extends Command {
                             total: player.points.total + points < 0 ? 0 : player.points.total + points
                         },
                         logs: {
+                            matches: player.logs.matches,
                             penalties: player.logs.penalties
                         }
                     },
@@ -447,6 +448,7 @@ module.exports = class Penalty extends Command {
                             total: player.points.total + points
                         },
                         logs: {
+                            matches: player.logs.matches,
                             penalties: player.logs.penalties
                         }
                     },

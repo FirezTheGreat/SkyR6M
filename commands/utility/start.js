@@ -2,8 +2,8 @@ const { ChatInputCommandInteraction, ApplicationCommandOptionType, EmbedBuilder,
 const Command = require('../../structures/Command.js');
 const { Channels, QueueRoleIds, GameTheme, GameSides } = require('../../config.json');
 const { chooseGameMaps } = require('../../structures/Util.js');
-const MatchStats = require('../../structures/models/MatchStats');
-const Players = require('../../structures/models/Players');
+const MatchStats = require('../../structures/models/MatchStats.js');
+const Players = require('../../structures/models/Players.js');
 
 module.exports = class Start extends Command {
     constructor(...args) {
@@ -52,7 +52,7 @@ module.exports = class Start extends Command {
             for (const [index, { id, name }] of candidates.sort((a, b) => b.points - a.points).entries()) {
                 if (index === 10) break;
 
-                sorted_candidates.push({ id, name });
+                sorted_candidates.push({ id, name, kills: 0, deaths: 0, points: 0 });
             };
 
             match = await MatchStats.create({

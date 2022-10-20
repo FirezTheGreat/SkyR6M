@@ -1,4 +1,4 @@
-const { ApplicationCommandType, ChatInputCommandInteraction, Colors, ActionRowBuilder, SelectMenuBuilder, ComponentType, ButtonBuilder, ButtonStyle, ChannelType, userMention } = require('discord.js');
+const { ApplicationCommandType, ChatInputCommandInteraction, Colors, ActionRowBuilder, SelectMenuBuilder, ComponentType, ButtonBuilder, ButtonStyle, ChannelType, userMention, AttachmentBuilder } = require('discord.js');
 const path = require('path');
 const Command = require('../../structures/Command.js');
 const { PremiumTiers, VerificationLevels, ExplicitContentFilters } = require('../../config.json');
@@ -21,7 +21,7 @@ module.exports = class ServerInfo extends Command {
 
     async InteractionRun(interaction) {
         try {
-            const premiumTier = interaction.guild.premiumTier > 0 ? path.join(__dirname, '..', '..', PremiumTiers[interaction.guild.premiumTier]) : null;
+            const { attachment: premiumTier } = interaction.guild.premiumTier > 0 ? new AttachmentBuilder(path.join(__dirname, '..', '..', PremiumTiers[interaction.guild.premiumTier]), PremiumTiers[interaction.guild.premiumTier].split('/').pop()) : { attachment: null };
 
             let infoButtonCollector = null;
             let current_info_button_page = 0;
@@ -69,7 +69,7 @@ module.exports = class ServerInfo extends Command {
                 {
                     author: {
                         name: interaction.guild.name,
-                        iconURL: premiumTier
+                        iconURL: `attachment://${PremiumTiers[interaction.guild.premiumTier].split('/').pop()}`
                     },
                     color: Colors.Aqua,
                     title: 'Server Profile',
@@ -100,7 +100,7 @@ module.exports = class ServerInfo extends Command {
                 {
                     author: {
                         name: interaction.guild.name,
-                        iconURL: premiumTier
+                        iconURL: `attachment://${PremiumTiers[interaction.guild.premiumTier].split('/').pop()}`
                     },
                     color: Colors.Aqua,
                     title: 'Server Profile',
@@ -130,7 +130,8 @@ ${interaction.guild.premiumSubscriptionCount} boosts`, ' ')
 
             const InfoMessage = await interaction.reply({
                 embeds: [infoEmbedFields[0]],
-                components: [InfoEmbedComponents, InfoButtonComponents]
+                components: [InfoEmbedComponents, InfoButtonComponents],
+                files: premiumTier ? [premiumTier] : []
             });
 
             infoButtonCollector = InfoMessage.createMessageComponentCollector({ filter: ({ customId }) => ['left', 'right'].includes(customId) && !interaction.user.bot, time: 300000, componentType: ComponentType.Button });
@@ -195,7 +196,8 @@ ${interaction.guild.premiumSubscriptionCount} boosts`, ' ')
 
                         const infoEmbed = await component.update({
                             embeds: [infoEmbedFields[0]],
-                            components: [InfoEmbedComponents, InfoButtonComponents]
+                            components: [InfoEmbedComponents, InfoButtonComponents],
+                            files: premiumTier ? [premiumTier] : []
                         });
 
                         infoButtonCollector = infoEmbed.createMessageComponentCollector({ filter: ({ customId }) => ['left', 'right'].includes(customId) && !interaction.user.bot, time: 300000, componentType: ComponentType.Button });
@@ -263,7 +265,7 @@ ${interaction.guild.premiumSubscriptionCount} boosts`, ' ')
                             iconEmbedFields.push({
                                 author: {
                                     name: interaction.guild.name,
-                                    iconURL: premiumTier
+                                    iconURL: `attachment://${PremiumTiers[interaction.guild.premiumTier].split('/').pop()}`
                                 },
                                 color: Colors.Aqua,
                                 title: 'Server Profile',
@@ -288,7 +290,7 @@ ${interaction.guild.premiumSubscriptionCount} boosts`, ' ')
                             iconEmbedFields.push({
                                 author: {
                                     name: interaction.guild.name,
-                                    iconURL: premiumTier
+                                    iconURL: `attachment://${PremiumTiers[interaction.guild.premiumTier].split('/').pop()}`
                                 },
                                 color: Colors.Aqua,
                                 title: 'Server Profile',
@@ -313,7 +315,7 @@ ${interaction.guild.premiumSubscriptionCount} boosts`, ' ')
                             iconEmbedFields.push({
                                 author: {
                                     name: interaction.guild.name,
-                                    iconURL: premiumTier
+                                    iconURL: `attachment://${PremiumTiers[interaction.guild.premiumTier].split('/').pop()}`
                                 },
                                 color: Colors.Aqua,
                                 title: 'Server Profile',
@@ -336,7 +338,8 @@ ${interaction.guild.premiumSubscriptionCount} boosts`, ' ')
 
                         const iconEmbed = await component.update({
                             embeds: [iconEmbedFields[0]],
-                            components: [InfoEmbedComponents, InfoButtonComponents]
+                            components: [InfoEmbedComponents, InfoButtonComponents],
+                            files: premiumTier ? [premiumTier] : []
                         });
 
                         infoButtonCollector = iconEmbed.createMessageComponentCollector({ filter: ({ customId }) => ['left', 'right'].includes(customId) && !interaction.user.bot, time: 300000, componentType: ComponentType.Button });
@@ -387,6 +390,7 @@ ${interaction.guild.premiumSubscriptionCount} boosts`, ' ')
                             ButtonBuilder.from(InfoButtonComponents.components ? InfoButtonComponents.components[1] : InfoButtonComponents).setDisabled(true)
                         ]);
 
+                    infoButtonCollector ? infoButtonCollector.stop() : null;
                     return interaction.editReply({ components: [InfoEmbedComponents, InfoButtonComponents] }).catch(() => null);
                 };
             });

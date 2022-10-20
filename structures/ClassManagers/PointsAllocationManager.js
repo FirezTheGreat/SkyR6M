@@ -95,8 +95,6 @@ module.exports = class PointAllocationManager {
                     };
                 };
 
-                member = await this.bot.users.fetch(id);
-
                 const match_log = await this.pointsUpdateChannel.send({ content: `***${player.name}** has won ${points} points, bringing their total to **${updated_points} points!**${existing_role.id !== role.id ? ` You now have **${player.rank.substring(player.rank.indexOf('|') + 1)}** rank` : ''}*` });
 
                 player.logs.matches.push({ id: this.match_id, kills, deaths, map: match.map, description: match_log });
@@ -116,10 +114,12 @@ module.exports = class PointAllocationManager {
                             kills: player.statistics.kills + kills,
                             deaths: player.statistics.deaths + deaths,
                             wins: player.statistics.wins + 1,
+                            loses: player.statistics.loses,
                             matches: player.statistics.matches + 1
                         },
                         logs: {
-                            matches: player.logs.matches
+                            matches: player.logs.matches,
+                            penalties: player.logs.penalties
                         },
                         previous_players: player.previous_players,
                         achievements: this.bot.utils.checkAchievements(player, points),
@@ -129,6 +129,10 @@ module.exports = class PointAllocationManager {
                         new: true
                     }
                 );
+
+                member ? member.setNickname(`[${player.points.current}] ${player.name}`).catch(() => null) : null;
+
+                member = await this.bot.users.fetch(id);
 
                 const AddedPointsAuditLogEmbed = new EmbedBuilder()
                     .setAuthor({ name: 'Added Points', iconURL: member.displayAvatarURL() })
@@ -216,8 +220,6 @@ module.exports = class PointAllocationManager {
                     };
                 };
 
-                member = await this.bot.users.fetch(id);
-
                 const match_log = await this.pointsUpdateChannel.send({ content: `***${player.name}** has lost ${-points} points, bringing their total to **${updated_points} points!**${existing_role.id !== role.id ? ` You now have **${player.rank.substring(player.rank.indexOf('|') + 1)}** rank` : ''}*` });
 
                 player.logs.matches.push({ id: this.match_id, kills, deaths, map: match.map, description: match_log });
@@ -230,16 +232,19 @@ module.exports = class PointAllocationManager {
                     {
                         rank: player.rank,
                         points: {
-                            current: updated_points
+                            current: updated_points,
+                            total: player.points.total
                         },
                         statistics: {
                             kills: player.statistics.kills + kills,
                             deaths: player.statistics.deaths + deaths,
+                            wins: player.statistics.wins,
                             loses: player.statistics.loses + 1,
                             matches: player.statistics.matches + 1
                         },
                         logs: {
-                            matches: player.logs.matches
+                            matches: player.logs.matches,
+                            penalties: player.logs.penalties
                         },
                         previous_players: player.previous_players,
                         achievements: this.bot.utils.checkAchievements(player, points),
@@ -249,6 +254,10 @@ module.exports = class PointAllocationManager {
                         new: true
                     }
                 );
+
+                member ? member.setNickname(`[${player.points.current}] ${player.name}`).catch(() => null) : null;
+
+                member = await this.bot.users.fetch(id);
 
                 const RemovedPointsAuditLogEmbed = new EmbedBuilder()
                     .setAuthor({ name: 'Removed Points', iconURL: member.displayAvatarURL() })

@@ -36,26 +36,26 @@ module.exports = class Ban extends Command {
 
             await interaction.deferReply();
 
-            for (const value of users) {
+            for (const id of users) {
                 try {
-                    const ban = interaction.guild.bans.cache.get(value);
+                    const ban = interaction.guild.bans.cache.get(id);
                     if (ban) {
-                        await interaction.followUp({ content: `*User ${userMention(value)} is already Banned!*` });
+                        await interaction.followUp({ content: `*User ${userMention(id)} is already Banned!*` });
                         continue;
                     };
 
-                    const user = interaction.guild.members.cache.get(value);
-                    if (user && !user.bannable) throw ({ code: 'unknown', message: `*Couldn\'t Ban User - *${userMention(value)}* from ${interaction.guild.name}!*` });
+                    const user = interaction.guild.members.cache.get(id);
+                    if (user && !user.bannable) throw ({ code: 'unknown', message: `*Couldn\'t Ban User - *${userMention(id)}* from ${interaction.guild.name}!*` });
 
-                    await this.bot.rest.put(Routes.guildBan(interaction.guildId, value), {
+                    await this.bot.rest.put(Routes.guildBan(interaction.guildId, id), {
                         body: { delete_message_days: 0 },
                         reason
                     });
-                    banned_users.push(userMention(value));
+                    banned_users.push(userMention(id));
 
-                    await Players.findOneAndDelete({ id: value });
+                    await Players.findOneAndDelete({ id });
                 } catch (error) {
-                    await interaction.followUp({ content: error.code !== 'unknown' ? `*Couldn\'t Ban User - *${value}* from ${interaction.guild.name}!*` : error.message });
+                    await interaction.followUp({ content: error.code !== 'unknown' ? `*Couldn\'t Ban User - *${id}* from ${interaction.guild.name}!*` : error.message });
                 };
             };
 

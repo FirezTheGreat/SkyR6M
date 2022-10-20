@@ -76,8 +76,6 @@ module.exports = class Register extends Command {
                 statistics: {
                     kills: 0,
                     deaths: 0,
-                    total_kills: 0,
-                    total_deaths: 0,
                     wins: 0,
                     loses: 0,
                     matches: 0
@@ -104,6 +102,8 @@ module.exports = class Register extends Command {
                     matches: [],
                     penalties: []
                 },
+                previous_players: [],
+                achievements: [],
                 _roles: [Roles.RegisteredId]
             });
 

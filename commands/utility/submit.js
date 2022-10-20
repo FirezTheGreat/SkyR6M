@@ -1,6 +1,6 @@
 const { ApplicationCommandOptionType, ChatInputCommandInteraction, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
 const Command = require('../../structures/Command.js');
-const MatchStats = require('../../structures/models/MatchStats');
+const MatchStats = require('../../structures/models/MatchStats.js');
 const Players = require('../../structures/models/Players.js');
 const { GameSides, GameTheme, Roles, Channels } = require('../../config.json');
 
@@ -105,7 +105,7 @@ module.exports = class Submit extends Command {
                 const winner_verification_collector = await winner_verification_message.awaitMessageComponent({ filter: winner_verification_filter, componentType: ComponentType.Button });
 
                 let winning_team;
-                winner_verification_collector.customId === `${interaction.id}_${GameSides[GameTheme][0]}` ? winning_team = 'coalition' : winning_team = 'breach';
+                winner_verification_collector.customId === `${interaction.id}_${GameSides[GameTheme][0]}` ? winning_team = 'breach' : winning_team = 'coalition';
 
                 const score_verification_embed = new EmbedBuilder()
                     .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
@@ -120,6 +120,13 @@ module.exports = class Submit extends Command {
                 const score_verification_collector = score_verification_message.channel.createMessageCollector({ filter: (message) => /^(0|[1-9]\d*)-(0|[1-9]\d*)$/.test(message.content.trim()) && message.author.id === winner_verification_collector.member.id, max: 1 });
 
                 score_verification_collector.on('collect', async (message) => {
+                    submit_embed
+                        .setColor('Green')
+                        .setFooter({ text: 'Senior Moderators have verified the screenshot!', iconURL: interaction.guild.iconURL() })
+
+                    const new_message = await this.bot.utils.auditSend(Channels.SubmitScreenshotId, { embeds: [submit_embed] });
+                    message.deletable ? await message.delete() : null;
+
                     await MatchStats.updateOne(
                         { id: code },
                         {
@@ -132,16 +139,10 @@ module.exports = class Submit extends Command {
                                 status: winning_team === 'breach' ? 'winner' : 'loser'
                             },
                             screenshot,
+                            message_id: new_message.id,
                             score: message.content.trim()
                         }
                     );
-
-                    submit_embed
-                        .setColor('Green')
-                        .setFooter({ text: 'Senior Moderators have verified the screenshot!', iconURL: interaction.guild.iconURL() })
-
-                    await this.bot.utils.auditSend(Channels.SubmitScreenshotId, { embeds: [submit_embed] });
-                    message.deletable ? await message.delete() : null;
 
                     return submit_message.deletable ? await submit_message.delete() : null;
                 });
