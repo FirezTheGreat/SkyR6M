@@ -63,7 +63,7 @@ module.exports = class Force extends Command {
             category: 'Moderation',
             usage: '[register | rename | fix]',
             client_permissions: [PermissionFlagsBits.ManageRoles, PermissionFlagsBits.ManageNicknames],
-            user_permissions: [PermissionFlagsBits.Administrator],
+            user_permissions: [PermissionFlagsBits.BanMembers],
             sub_commands,
             options: sub_commands.map(({ name, type, description, required, options }) => ({ name, type, description, required, options }))
         });
