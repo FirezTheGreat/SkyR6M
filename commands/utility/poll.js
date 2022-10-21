@@ -110,7 +110,8 @@ module.exports = class Poll extends Command {
                             : await button.followUp({ content: `*You have successfully abstained from voting **${this.bot.utils.capitalizeFirstLetter(button.customId)}**!*`, ephemeral: true });
                     };
                 } catch (error) {
-                    return this.bot.utils.error(error);
+                    console.error(error);
+                    return await this.bot.utils.error(error);
                 };
             });
 
@@ -175,8 +176,8 @@ module.exports = class Poll extends Command {
                         return this.bot.polls.delete(interaction.member?.voice.channelId);
                     };
                 } catch (error) {
-                    return this.bot.utils.error(error);
-
+                    console.error(error);
+                    return await this.bot.utils.error(error);
                 };
             });
         } catch (error) {

@@ -27,6 +27,8 @@ module.exports = class Leaderboard extends Command {
         try {
             const channel = interaction.options.getChannel('channel') || interaction.channel;
 
+            await interaction.deferReply({ ephemeral: true });
+
             async function leaderboard() {
                 const leaderboard_points_data = await Players.find({}).sort({ 'points.current': -1 }).limit(25);
                 const leaderboard_kills_data = await Players.find({}).sort({ 'statistics.kills': -1 }).limit(25);
@@ -35,8 +37,6 @@ module.exports = class Leaderboard extends Command {
                 const points_description = [];
                 const kills_description = [];
                 const wins_description = [];
-
-                await interaction.deferReply({ ephemeral: true });
 
                 for (let [index, { name, points: { current } }] of leaderboard_points_data.entries()) {
                     points_description.push(`${++index}. **${name}** - *${current}*`);
