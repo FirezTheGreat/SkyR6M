@@ -125,7 +125,7 @@ module.exports = class Submit extends Command {
                         .setFooter({ text: 'Senior Moderators have verified the screenshot!', iconURL: interaction.guild.iconURL() })
 
                     const new_message = await this.bot.utils.auditSend(Channels.VerifiedScreenshotId, { embeds: [submit_embed] });
-                    message.deletable ? await message.delete() : null;
+                    message.deletable ? message.delete().catch(() => null) : null;
 
                     await MatchStats.updateOne(
                         { id: code },
@@ -144,10 +144,10 @@ module.exports = class Submit extends Command {
                         }
                     );
 
-                    return submit_message.deletable ? await submit_message.delete() : null;
+                    return submit_message.deletable ? submit_message.delete().catch(() => null) : null;
                 });
             } else {
-                return submit_message.deletable ? await submit_message.delete() : null;
+                return submit_message.deletable ? submit_message.delete().catch(() => null) : null;
             };
         } catch (error) {
             console.error(error);

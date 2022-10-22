@@ -341,11 +341,12 @@ module.exports = class Force extends Command {
 
                 const embedMessage = await interaction.guild.channels.cache.get(Channels.ScreenshotVerificationId).messages.fetch(match.message_id);
 
-                embedMessage.embeds[0].fields = [
-                    { name: GameSides[GameTheme][0], value: match.coalition.players.map((player, index) => index === 0 ? `${player.name} (C)` : player.name).join('\n'), inline: true },
-                    { name: GameSides[GameTheme][1], value: match.breach.players.map((player, index) => index === 0 ? `${player.name} (C)` : player.name).join('\n'), inline: true },
-                    { name: 'Host', value: match.host.name, inline: true }
-                ];
+                embedMessage.embeds[0] = new EmbedBuilder.from(embedMessage.embeds[0])
+                    .setFields(
+                        { name: GameSides[GameTheme][0], value: match.coalition.players.map((player, index) => index === 0 ? `${player.name} (C)` : player.name).join('\n'), inline: true },
+                        { name: GameSides[GameTheme][1], value: match.breach.players.map((player, index) => index === 0 ? `${player.name} (C)` : player.name).join('\n'), inline: true },
+                        { name: 'Host', value: match.host.name, inline: true }
+                    );
 
                 const replace_embed = new EmbedBuilder()
                     .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
@@ -359,7 +360,7 @@ module.exports = class Force extends Command {
                     .setFooter({ text: `Moderator - ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() })
                     .setTimestamp();
 
-                await embedMessage.edit({ embeds: [embedMessage] });
+                await embedMessage.edit({ embeds: [embedMessage.embeds[0]] });
                 return await interaction.editReply({ embeds: [replace_embed] });
             } else if (sub_command === 'team') {
 
