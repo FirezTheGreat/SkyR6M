@@ -28,7 +28,7 @@ module.exports = class messageUpdate extends Event {
                     .addFields([
                         { name: 'Sent By', value: `${newMessage.author} (${newMessage.author.id})`, inline: true },
                         { name: 'Sent On', value: `<t:${Math.floor(newMessage.createdTimestamp / 1000)}>`, inline: true },
-                        { name: 'Message Id', value: newMessage.id, inline: true },
+                        { name: 'Message Id', value: `${newMessage?.id ?? 'Unknown'}`, inline: true },
                         { name: 'Original Message', value: oldMessage.content.slice(0, 1024) },
                         { name: 'Edited Message', value: newMessage.content.slice(0, 1024) }
                     ])

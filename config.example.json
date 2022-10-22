@@ -56,7 +56,8 @@
         "PointsUpdateId": "",
         "PlayRulesId": "",
         "SubmitScreenshotId": "",
-        "ScreenshotVerificationId": ""
+        "ScreenshotVerificationId": "",
+        "VerifiedScreenshotId": ""
     },
     "Roles": {
         "DefaultRoleName": "",

@@ -81,7 +81,7 @@ module.exports = class voiceStateUpdate extends Event {
                     .setAuthor({ name: 'Left Voice Channel', iconURL: 'attachment://voice_left.png' })
                     .setColor('Red')
                     .addFields([
-                        { name: 'Player', value: `${oldState.member.displayName}`, inline: true },
+                        { name: 'Player', value: `${oldState.member?.displayName ?? newState.member?.displayName}`, inline: true },
                         { name: 'Status', value: ':red_circle: Left', inline: true },
                         { name: 'Channel', value: `${oldState.channel.name}`, inline: true }
                     ])

@@ -124,7 +124,7 @@ module.exports = class Submit extends Command {
                         .setColor('Green')
                         .setFooter({ text: 'Senior Moderators have verified the screenshot!', iconURL: interaction.guild.iconURL() })
 
-                    const new_message = await this.bot.utils.auditSend(Channels.SubmitScreenshotId, { embeds: [submit_embed] });
+                    const new_message = await this.bot.utils.auditSend(Channels.VerifiedScreenshotId, { embeds: [submit_embed] });
                     message.deletable ? await message.delete() : null;
 
                     await MatchStats.updateOne(

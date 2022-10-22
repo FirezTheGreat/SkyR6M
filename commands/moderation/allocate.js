@@ -70,7 +70,7 @@ module.exports = class Allocate extends Command {
                         const winner_stat_embed = new EmbedBuilder()
                             .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                             .setColor('Blue')
-                            .setThumbnail(interaction.guild.members.cache.get(id).displayAvatarURL())
+                            .setThumbnail(interaction.guild.members.cache.get(id)?.displayAvatarURL() ?? null)
                             .setDescription(`*Please the enter the amount of **kills** by (${++index}) ${name} of ${winner_team}.*`)
                             .setFooter({ text: `1/2`, iconURL: interaction.guild.iconURL() })
                             .setTimestamp();
@@ -97,7 +97,7 @@ module.exports = class Allocate extends Command {
                         const loser_stat_embed = new EmbedBuilder()
                             .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                             .setColor('Blue')
-                            .setThumbnail(interaction.guild.members.cache.get(id).displayAvatarURL())
+                            .setThumbnail(interaction.guild.members.cache.get(id)?.displayAvatarURL() ?? null)
                             .setDescription(`*Please the enter the amount of **kills** by (${++index}) ${name} of ${loser_team}.*`)
                             .setFooter({ text: `1/2`, iconURL: interaction.guild.iconURL() })
                             .setTimestamp();
@@ -145,7 +145,7 @@ module.exports = class Allocate extends Command {
                         }
                     );
 
-                    interaction.guild.channels.cache.get(Channels.SubmitScreenshotId).messages.delete(match.message_id).catch(() => null);
+                    interaction.guild.channels.cache.get(Channels.VerifiedScreenshotId).messages.delete(match.message_id).catch(() => null);
                     await interaction.editReply({ content: `*Points have been allocated successfully by ${interaction.member}*`, embeds: [] });
                 case 'R6M':
                 // later

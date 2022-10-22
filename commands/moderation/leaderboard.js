@@ -1,5 +1,5 @@
 const Command = require('../../structures/Command.js');
-const { PermissionFlagsBits, ApplicationCommandOptionType, ChatInputCommandInteraction, ActionRowBuilder, EmbedBuilder, AttachmentBuilder, SelectMenuBuilder, ComponentType } = require('discord.js');
+const { PermissionFlagsBits, ApplicationCommandOptionType, ChatInputCommandInteraction, ActionRowBuilder, EmbedBuilder, AttachmentBuilder, SelectMenuBuilder, ComponentType, ButtonBuilder, ButtonStyle } = require('discord.js');
 const Players = require('../../structures/models/Players.js');
 const path = require('path');
 
@@ -50,24 +50,16 @@ module.exports = class Leaderboard extends Command {
                     wins_description.push(`${++index}. **${name}** - *${wins}*`);
                 };
 
-                const components = new ActionRowBuilder()
+                const components = new ActionRowBuilder() // make buttons instead
                     .addComponents(
-                        new SelectMenuBuilder()
-                            .setCustomId(`${interaction.guildId}_leaderboard`)
-                            .setMaxValues(1)
-                            .setPlaceholder('Select Other Rankings')
-                            .addOptions(
-                                {
-                                    label: 'Top Kill Leaders',
-                                    description: 'Players with most Kills',
-                                    value: 'kills'
-                                },
-                                {
-                                    label: 'Top Win Leaders',
-                                    description: 'Players with most Wins',
-                                    value: 'wins'
-                                }
-                            )
+                        new ButtonBuilder()
+                            .setCustomId('kills')
+                            .setLabel('Top Kills')
+                            .setStyle(ButtonStyle.Primary),
+                        new ButtonBuilder()
+                            .setCustomId('wins')
+                            .setLabel('Top Wins')
+                            .setStyle(ButtonStyle.Primary)
                     );
 
                 const leaderboard_image = new EmbedBuilder()
@@ -85,10 +77,10 @@ module.exports = class Leaderboard extends Command {
                     .setTimestamp();
 
                 const leaderboard_message = await channel.send({ embeds: [leaderboard_image, leaderboard_points_embed], components: [components], files: [new AttachmentBuilder(path.join(__dirname, '..', '..', 'assets', 'banners', 'leaderboard.png'), 'leaderboard.png')] });
-                const leaderboard_collector = leaderboard_message.createMessageComponentCollector({ filter: ({ customId }) => customId === `${interaction.guildId}_leaderboard`, time: 3600000, componentType: ComponentType.SelectMenu });
+                const leaderboard_collector = leaderboard_message.createMessageComponentCollector({ filter: ({ customId }) => ['kills', 'wins'].includes(customId), time: 3600000, componentType: ComponentType.Button });
 
-                leaderboard_collector.on('collect', async (component) => {
-                    switch (component.values[0]) {
+                leaderboard_collector.on('collect', async (button) => {
+                    switch (button.customId) {
                         case 'kills':
                             const leaderboard_kills_embed = new EmbedBuilder()
                                 .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
@@ -99,7 +91,7 @@ module.exports = class Leaderboard extends Command {
                                 .setFooter({ text: `Rankings are updated after every one hour. Click on the buttons below to check live-time rankings!`, iconURL: interaction.guild.iconURL() })
                                 .setTimestamp();
 
-                            await component.reply({ embeds: [leaderboard_kills_embed], ephemeral: true });
+                            await button.reply({ embeds: [leaderboard_kills_embed], ephemeral: true });
 
                             break;
                         case 'wins':
@@ -112,19 +104,25 @@ module.exports = class Leaderboard extends Command {
                                 .setFooter({ text: `Rankings are updated after every one hour. Click on the buttons below to check live-time rankings!`, iconURL: interaction.guild.iconURL() })
                                 .setTimestamp();
 
-                            await component.reply({ embeds: [leaderboard_wins_embed], ephemeral: true });
+                            await button.reply({ embeds: [leaderboard_wins_embed], ephemeral: true });
 
                             break;
                         default:
                             break;
                     };
                 });
+
+                return setTimeout(() => leaderboard_message.delete().catch((error) => console.error(error)), 3605000);
             };
 
             await leaderboard();
 
             setInterval(async () => {
-                await leaderboard()
+                try {
+                    await leaderboard();
+                } catch (error) {
+                    return console.error(error);
+                };
             }, 3610000);
 
             return await interaction.editReply({ content: `*Leaderboard successfully synced in **${channel}**!*` });

@@ -111,7 +111,7 @@ module.exports = class Poll extends Command {
                     };
                 } catch (error) {
                     console.error(error);
-                    return await this.bot.utils.error(error);
+                    return await this.bot.utils.error(interaction, error);;
                 };
             });
 
@@ -126,6 +126,19 @@ module.exports = class Poll extends Command {
                                 [map]: acc[map] ? [...acc[map], { id }] : [{ id }]
                             }), {});
 
+                            if (!selected_votes.length) {
+                                const pollResultEmbed = new EmbedBuilder()
+                                    .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
+                                    .setTitle('Poll Results')
+                                    .setColor('Red')
+                                    .setThumbnail(interaction.guild.iconURL())
+                                    .setDescription('*Failed to select a map.*')
+                                    .setFooter({ text: `Failed to choose a map.`, iconURL: interaction.guild.iconURL() })
+                                    .setTimestamp();
+
+                                await interaction.editReply({ embeds: [pollResultEmbed], components: [] });
+                                return this.bot.polls.delete(interaction.member?.voice.channelId);
+                            };
 
                             for (const [map, votes] of Object.entries(selected_votes)) {
                                 vote.maps_selected.push({ map, votes: votes.length, voters: votes.map(({ id }) => id) });
@@ -177,7 +190,7 @@ module.exports = class Poll extends Command {
                     };
                 } catch (error) {
                     console.error(error);
-                    return await this.bot.utils.error(error);
+                    return await this.bot.utils.error(interaction, error);;
                 };
             });
         } catch (error) {
