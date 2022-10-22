@@ -44,6 +44,7 @@
         }
     ],
     "Channels": {
+        "SupportId": "",
         "RegisterId": "",
         "RegisterLogId": "",
         "AuditLogId": "",
@@ -58,7 +59,8 @@
         "SubmitScreenshotId": "",
         "ScreenshotVerificationId": "",
         "VerifiedScreenshotId": "",
-        "SearchPlayersId": ""
+        "SearchPlayersId": "",
+        "RanksId": ""
     },
     "Roles": {
         "DefaultRoleName": "",

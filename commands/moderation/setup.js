@@ -9,6 +9,11 @@ const sub_commands = [
         ]
     },
     {
+        name: 'role', type: ApplicationCommandOptionType.Subcommand, description: 'Setup Role System', options: [
+            { name: 'channel', type: ApplicationCommandOptionType.Channel, description: 'Channel to Setup', required: false }
+        ]
+    },
+    {
         name: 'support', type: ApplicationCommandOptionType.Subcommand, description: 'Setup Support System', options: [
             { name: 'channel', type: ApplicationCommandOptionType.Channel, description: 'Channel to Setup', required: false }
         ]
@@ -21,7 +26,7 @@ module.exports = class Setup extends Command {
             name: 'setup',
             description: 'Setup Commands',
             category: 'Moderation',
-            usage: '[ping | support]',
+            usage: '[ping | role | support]',
             client_permissions: [PermissionFlagsBits.ManageRoles],
             user_permissions: [PermissionFlagsBits.Administrator],
             sub_commands,
@@ -41,12 +46,12 @@ module.exports = class Setup extends Command {
             const channel = interaction.options.getChannel('channel') || interaction.channel;
 
             if (sub_command === 'ping') {
-                const attachment_embed = new EmbedBuilder()
+                const ping_attachment_embed = new EmbedBuilder()
                     .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                     .setColor('Aqua')
                     .setImage('attachment://search.png')
 
-                const ping_setup_embed = new EmbedBuilder()
+                const ping_embed = new EmbedBuilder()
                     .setColor('Aqua')
                     .setDescription(`
 *Use the **/search players** or **/search substitutes** slash commands while mentioning the queue you are currently in to broadcast a notification out.*
@@ -59,8 +64,34 @@ module.exports = class Setup extends Command {
                     .setFooter({ text: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                     .setTimestamp();
 
-                await channel.send({ embeds: [attachment_embed, ping_setup_embed], files: [new AttachmentBuilder(path.join(__dirname, '..', '..', 'assets', 'banners', 'search.png'), 'search.png')] });
+                await channel.send({ embeds: [ping_attachment_embed, ping_embed], files: [new AttachmentBuilder(path.join(__dirname, '..', '..', 'assets', 'banners', 'search.png'), 'search.png')] });
                 return await interaction.reply({ content: `*Ping System successfully synced in **${channel}**!*`, ephemeral: true });
+            } else if (sub_command === 'role') {
+                const role_components = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId(`${interaction.guildId}_match_ping`)
+                            .setLabel('Match Ping')
+                            .setStyle(ButtonStyle.Success),
+                        new ButtonBuilder()
+                            .setCustomId(`${interaction.guildId}_substitute_ping`)
+                            .setLabel('Substitute Ping')
+                            .setStyle(ButtonStyle.Success)
+                    );
+
+                const role_attachment_embed = new EmbedBuilder()
+                    .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
+                    .setColor('Aqua')
+                    .setImage('attachment://role-setup.png')
+
+                const role_embed = new EmbedBuilder()
+                    .setColor('Aqua')
+                    .setDescription(`*You may click a button below to receive either the ${roleMention(Roles.PingMatchId)} role or the ${roleMention(Roles.PingSubstituteId)} role. These roles may be pinged by everybody once every **10 minutes** through the command **/search**. The misuse of this command will lead to a timeout.\n\nUsers may **remove** the role by once again clicking on the button below.*`)
+                    .setFooter({ text: interaction.guild.name, iconURL: interaction.guild.iconURL() })
+                    .setTimestamp();
+
+                await channel.send({ embeds: [role_attachment_embed, role_embed], components: [role_components], files: [new AttachmentBuilder(path.join(__dirname, '..', '..', 'assets', 'images', 'role-setup.png'), 'role-setup.png')] });
+                return await interaction.reply({ content: `*Role System successfully synced in **${channel}**!*`, ephemeral: true });
             } else {
                 const faq_attachment_embed = new EmbedBuilder()
                     .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
@@ -74,7 +105,7 @@ module.exports = class Setup extends Command {
                 const faq_components = new ActionRowBuilder()
                     .addComponents(
                         new SelectMenuBuilder()
-                            .setCustomId('faq')
+                            .setCustomId(`${interaction.guildId}_faq`)
                             .setPlaceholder('Select An Option')
                             .setMaxValues(1)
                             .addOptions(
@@ -115,7 +146,7 @@ module.exports = class Setup extends Command {
                 const support_components = new ActionRowBuilder()
                     .addComponents(
                         new ButtonBuilder()
-                            .setCustomId('support')
+                            .setCustomId(`${interaction.guildId}_support`)
                             .setLabel('Contact Us!')
                             .setStyle(ButtonStyle.Success)
                     );
