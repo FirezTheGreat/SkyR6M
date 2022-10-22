@@ -90,7 +90,7 @@ module.exports = class Setup extends Command {
                     .setFooter({ text: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                     .setTimestamp();
 
-                await channel.send({ embeds: [role_attachment_embed, role_embed], components: [role_components], files: [new AttachmentBuilder(path.join(__dirname, '..', '..', 'assets', 'images', 'role-setup.png'), 'role-setup.png')] });
+                await channel.send({ embeds: [role_attachment_embed, role_embed], components: [role_components], files: [new AttachmentBuilder(path.join(__dirname, '..', '..', 'assets', 'banners', 'role-setup.png'), 'role-setup.png')] });
                 return await interaction.reply({ content: `*Role System successfully synced in **${channel}**!*`, ephemeral: true });
             } else {
                 const faq_attachment_embed = new EmbedBuilder()
