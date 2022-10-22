@@ -39,7 +39,7 @@ module.exports = class Penalty extends Command {
             category: 'Moderation',
             usage: '[register | rename | fix]',
             client_permissions: [PermissionFlagsBits.ModerateMembers, PermissionFlagsBits.ManageNicknames],
-            user_permissions: [PermissionFlagsBits.Administrator],
+            user_permissions: [PermissionFlagsBits.BanMembers],
             sub_commands,
             options: sub_commands.map(({ name, type, description, required, options }) => ({ name, type, description, required, options }))
         });

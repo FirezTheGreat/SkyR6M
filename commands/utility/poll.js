@@ -126,7 +126,7 @@ module.exports = class Poll extends Command {
                                 [map]: acc[map] ? [...acc[map], { id }] : [{ id }]
                             }), {});
 
-                            if (!selected_votes.length) {
+                            if (!Object.keys(selected_votes).length) {
                                 const pollResultEmbed = new EmbedBuilder()
                                     .setAuthor({ name: interaction.guild.name, iconURL: interaction.guild.iconURL() })
                                     .setTitle('Poll Results')

@@ -57,14 +57,17 @@
         "PlayRulesId": "",
         "SubmitScreenshotId": "",
         "ScreenshotVerificationId": "",
-        "VerifiedScreenshotId": ""
+        "VerifiedScreenshotId": "",
+        "SearchPlayersId": ""
     },
     "Roles": {
         "DefaultRoleName": "",
         "SeniorModeratorRoleId": "",
         "ModeratorRoleId": "",
         "RegisteredId": "",
-        "MuteRoleId": ""
+        "MuteRoleId": "",
+        "PingMatchId": "",
+        "PingSubstituteId": ""
     },
     "Flags": {
         "Partner": "",
