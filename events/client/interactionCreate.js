@@ -142,7 +142,7 @@ module.exports = class interactionCreate extends Event {
                         .setColor('Green')
                         .setThumbnail(interaction.member?.displayAvatarURL())
                         .setDescription(`*Please ask your queries here ${interaction.member}.*`)
-                        .setFooter({ name: `Created by ${interaction.user.tag}` })
+                        .setFooter({ text: `Created by ${interaction.user.tag}` })
                         .setTimestamp();
 
                     const ticket_components = new ActionRowBuilder()
