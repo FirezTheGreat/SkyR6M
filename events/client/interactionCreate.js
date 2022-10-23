@@ -177,7 +177,7 @@ module.exports = class interactionCreate extends Event {
                     if (interaction.member.permissions.has(PermissionFlagsBits.BanMembers) || interaction.member.id === player.id) {
                         await interaction.deferReply();
 
-                        const ticket_index = player.tickets.findIndex(({ id }) => id === player.id);
+                        const ticket_index = player.tickets.findIndex(({ channel_id }) => channel_id === interaction.channelId);
 
                         player.tickets[ticket_index].active = false;
                         player.tickets[ticket_index].ended_timestamp = Date.now();
@@ -196,6 +196,8 @@ module.exports = class interactionCreate extends Event {
                         );
 
                         await interaction.editReply({ content: `*${interaction.channel} will be deleted in 5 seconds..*` });
+
+                        setTimeout(() => interaction.channel.delete().catch(() => null), 5000);
                     } else {
                         await interaction.reply({ content: '*You do not have permission to close this ticket.*', ephemeral: true });
                     };
