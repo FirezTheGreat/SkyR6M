@@ -195,7 +195,39 @@ const PlayersSchema = new Schema(
             _id: false
         },
         tickets: {
-            type: [Object], // decide on this later and make it like all other objects
+            type: [{
+                id: {
+                    type: String,
+                    required: true,
+                    index: {
+                        unique: true
+                    }
+                },
+                transcript: {
+                    type: String,
+                    required: true,
+                    default: 'Unavailable'
+                },
+                channel_id: {
+                    type: String,
+                    required: true
+                },
+                active: {
+                    type: Boolean,
+                    required: true,
+                    default: false
+                },
+                created_timestamp: {
+                    type: Number,
+                    required: true,
+                    default: Date.now()
+                },
+                ended_timestamp: {
+                    type: Number,
+                    required: true,
+                    default: 0
+                }
+            }],
             required: true,
             default: []
         },

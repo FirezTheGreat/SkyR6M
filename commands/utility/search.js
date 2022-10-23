@@ -44,7 +44,11 @@ module.exports = class Search extends Command {
 
             let player = await Players.findOne({ id: interaction.member.id });
 
-            if (!player.pings.daily_pings) {
+            if (player.pings.ping_interval > Date.now()) {
+                const time = this.bot.utils.convertMSToDate(player.pings.ping_interval - Date.now());
+
+                return await interaction.reply({ content: `*You need to wait for ${time.minutes} minutes ${time.seconds} seconds before using this command*`, ephemeral: true });
+            } else {
                 player = await Players.findOneAndUpdate(
                     {
                         id: interaction.member.id
@@ -53,37 +57,14 @@ module.exports = class Search extends Command {
                         pings: {
                             total_pings: ++player.pings.total_pings,
                             ping_interval: Date.now() + 600000,
-                            daily_pings: sub_command === 'substitutes' ? 1 : 0,
-                            daily_substitute_cooldown: 0
+                            daily_pings: sub_command === 'substitutes' ? ++player.pings.daily_pings : player.pings.daily_pings,
+                            daily_substitute_cooldown: player.pings.daily_pings === 2 ? Date.now() + 86400000 : 0
                         }
                     },
                     {
                         new: true
                     }
                 );
-            } else {
-                if (player.pings.ping_interval > Date.now()) {
-                    const time = this.bot.utils.convertMSToDate(player.pings.ping_interval - Date.now());
-
-                    return await interaction.reply({ content: `*You need to wait for ${time.minutes} minutes ${time.seconds} seconds before using this command*`, ephemeral: true });
-                } else {
-                    player = await Players.findOneAndUpdate(
-                        {
-                            id: interaction.member.id
-                        },
-                        {
-                            pings: {
-                                total_pings: ++player.pings.total_pings,
-                                ping_interval: Date.now() + 600000,
-                                daily_pings: sub_command === 'substitutes' ? ++player.pings.daily_pings : player.pings.daily_pings,
-                                daily_substitute_cooldown: player.pings.daily_pings === 2 ? Date.now() + 86400000 : 0
-                            }
-                        },
-                        {
-                            new: true
-                        }
-                    );
-                };
             };
 
             if (sub_command === 'players') {
