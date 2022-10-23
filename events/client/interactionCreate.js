@@ -148,7 +148,7 @@ module.exports = class interactionCreate extends Event {
                     const ticket_components = new ActionRowBuilder()
                         .addComponents(
                             new ButtonBuilder()
-                                .setCustomId(`${interaction.channelId}_lock`)
+                                .setCustomId(`${channel.id}_lock`)
                                 .setEmoji('🔒')
                                 .setStyle(ButtonStyle.Danger)
                         );
