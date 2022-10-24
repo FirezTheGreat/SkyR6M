@@ -116,6 +116,8 @@ module.exports = class interactionCreate extends Event {
                     const category = interaction.guild.channels.cache.get(Categories.TicketId);
                     const player = await Players.findOne({ id: interaction.member.id });
 
+                    if (!player) return await interaction.reply({ content: `*You are not registered at ${interaction.guild.name}*`, ephemeral: true });
+
                     if (player.tickets.some(({ active }) => active)) return await interaction.editReply({ content: '*You already have an existing ticket.*' });
 
                     const ticket = this.bot.utils.generateRandomHex(5);

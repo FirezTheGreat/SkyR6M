@@ -43,6 +43,7 @@ module.exports = class Search extends Command {
             const channel = interaction.options.getChannel('channel');
 
             let player = await Players.findOne({ id: interaction.member.id });
+            if (!player) return await interaction.reply({ content: `*You are not registered at ${interaction.guild.name}*`, ephemeral: true });
 
             if (player.pings.ping_interval > Date.now()) {
                 const time = this.bot.utils.convertMSToDate(player.pings.ping_interval - Date.now());

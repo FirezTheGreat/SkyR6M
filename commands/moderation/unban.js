@@ -11,7 +11,7 @@ module.exports = class Unban extends Command {
             client_permissions: [PermissionFlagsBits.BanMembers],
             user_permissions: [PermissionFlagsBits.BanMembers],
             options: [
-                { name: 'id', type: ApplicationCommandOptionType.String, description: 'ID to Unban', required: false },
+                { name: 'id', type: ApplicationCommandOptionType.String, description: 'ID to Unban', required: true }
             ]
         });
     };
@@ -24,30 +24,15 @@ module.exports = class Unban extends Command {
 
     async InteractionRun(interaction) {
         try {
-            const users = interaction.options._hoistedOptions.map(({ value }) => value);
-            const banned_users = [];
+            const user_id = interaction.options.getString('id');
 
-            if (!users.length) return await interaction.reply({ content: '*Please Enter an User ID or User*', ephemeral: true });
-
-            await interaction.deferReply();
-
-            for (const value of users) {
-                try {
-                    try {
-                        await interaction.guild.bans.fetch(value);
-                    } catch {
-                        interaction.followUp({ content: `*User ${userMention(value)} is not Banned!*` });
-                        continue;
-                    };
-                    await interaction.guild.bans.remove(value);
-
-                    banned_users.push(userMention(value));
-                } catch (error) {
-                    interaction.followUp({ content: `*Couldn\'t Unban User - ${value} from ${interaction.guild.name}!*` });
-                };
+            try {
+                await interaction.guild.bans.remove(user_id);
+            } catch (error) {
+                interaction.followUp({ content: `*Couldn\'t Unban User - ${userMention(user_id)} from ${interaction.guild.name}!*` });
             };
 
-            if (banned_users.length) return await interaction.editReply({ content: `*Unbanned ${banned_users.join(', ')} from ${interaction.guild.name}!*` });
+            return await interaction.editReply({ content: `*Unbanned ${banned_users.join(', ')} from ${interaction.guild.name}!*` });
         } catch (error) {
             console.error(error);
             return await this.bot.utils.error(interaction, error);
