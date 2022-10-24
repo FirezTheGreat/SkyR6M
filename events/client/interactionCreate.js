@@ -132,6 +132,10 @@ module.exports = class interactionCreate extends Event {
                                     PermissionFlagsBits.ReadMessageHistory, PermissionFlagsBits.AddReactions
                                 ],
                                 type: OverwriteType.Member
+                            },
+                            {
+                                id: interaction.guild.id,
+                                deny: [PermissionFlagsBits.ViewChannel]
                             }
                         ]
                     });
