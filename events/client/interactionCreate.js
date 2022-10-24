@@ -134,8 +134,28 @@ module.exports = class interactionCreate extends Event {
                                 type: OverwriteType.Member
                             },
                             {
+                                id: Roles.ModeratorRoleId,
+                                allow: [
+                                    PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages,
+                                    PermissionFlagsBits.EmbedLinks, PermissionFlagsBits.AttachFiles,
+                                    PermissionFlagsBits.ReadMessageHistory, PermissionFlagsBits.AddReactions
+                                ],
+                                type: OverwriteType.Role
+                            },
+                            {
+                                id: Roles.SeniorModeratorRoleId,
+                                allow: [
+                                    PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages,
+                                    PermissionFlagsBits.EmbedLinks, PermissionFlagsBits.AttachFiles,
+                                    PermissionFlagsBits.ReadMessageHistory, PermissionFlagsBits.AddReactions,
+                                    PermissionFlagsBits.ManageMessages, PermissionFlagsBits.MentionEveryone
+                                ],
+                                type: OverwriteType.Role
+                            },
+                            {
                                 id: interaction.guild.id,
-                                deny: [PermissionFlagsBits.ViewChannel]
+                                deny: [PermissionFlagsBits.ViewChannel],
+                                type: OverwriteType.Role
                             }
                         ]
                     });
@@ -186,8 +206,8 @@ module.exports = class interactionCreate extends Event {
                         player.tickets[ticket_index].active = false;
                         player.tickets[ticket_index].ended_timestamp = Date.now();
 
-                        player.tickets[ticket_index].transcript = (await interaction.channel.messages.fetch({ cache: false })).filter((_, index) => index !== 0).mapValues((message) =>
-                            `${time(message.createdTimestamp, TimestampStyles.ShortTime)} —— ${message.cleanContent ? `Content — ${message.cleanContent}\n\n` : ''}${message.attachments.size ? `Attachments — ${message.attachments.mapValues(({ url }) => url).join('\n')}` : ''}`
+                        player.tickets[ticket_index].transcript = (await interaction.channel.messages.fetch({ cache: false })).filter((_, index) => index !== 0).map((message) =>
+                            `${time(message.createdTimestamp, TimestampStyles.ShortTime)} —— ${message.cleanContent ? `Content — ${message.cleanContent}\n\n` : ''}${message.attachments.size ? `Attachments — ${message.attachments.map(({ url }) => url).join('\n')}` : ''}`
                         );
 
                         await Players.findOneAndUpdate(
