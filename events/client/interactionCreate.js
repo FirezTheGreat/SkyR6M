@@ -198,36 +198,36 @@ module.exports = class interactionCreate extends Event {
                 if (interaction.customId === `${interaction.channelId}_lock`) {
                     const player = await Players.findOne({ 'tickets.channel_id': interaction.channelId });
 
-                    if (!player) {
-                        await interaction.reply({ content: `*${interaction.channel} will be deleted in 5 seconds..*` });
+                    if (interaction.member.permissions.has(PermissionFlagsBits.BanMembers) || interaction.member.id === player?.id) {
+                        if (!player) {
+                            await interaction.reply({ content: `*${interaction.channel} will be deleted in 5 seconds..*` });
 
-                        setTimeout(() => interaction.channel.delete().catch(() => null), 5000);
-                    };
-                    
-                    if (interaction.member.permissions.has(PermissionFlagsBits.BanMembers) || interaction.member.id === player.id) {
-                        await interaction.deferReply();
+                            setTimeout(() => interaction.channel.delete().catch(() => null), 5000);
+                        } else {
+                            await interaction.deferReply();
 
-                        const ticket_index = player.tickets.findIndex(({ channel_id }) => channel_id === interaction.channelId);
+                            const ticket_index = player.tickets.findIndex(({ channel_id }) => channel_id === interaction.channelId);
 
-                        player.tickets[ticket_index].active = false;
-                        player.tickets[ticket_index].ended_timestamp = Date.now();
+                            player.tickets[ticket_index].active = false;
+                            player.tickets[ticket_index].ended_timestamp = Date.now();
 
-                        player.tickets[ticket_index].transcript = (await interaction.channel.messages.fetch({ cache: false })).filter((_, index) => index !== 0).map((message) =>
-                            `${time(message.createdTimestamp, TimestampStyles.ShortTime)} —— ${message.cleanContent ? `Content — ${message.cleanContent}\n\n` : ''}${message.attachments.size ? `Attachments — ${message.attachments.map(({ url }) => url).join('\n')}` : ''}`
-                        );
+                            player.tickets[ticket_index].transcript = (await interaction.channel.messages.fetch({ cache: false })).filter((_, index) => index !== 0).map((message) =>
+                                `${time(message.createdTimestamp, TimestampStyles.ShortTime)} —— ${message.cleanContent ? `Content — ${message.cleanContent}\n\n` : ''}${message.attachments.size ? `Attachments — ${message.attachments.map(({ url }) => url).join('\n')}` : ''}`
+                            );
 
-                        await Players.findOneAndUpdate(
-                            {
-                                id: interaction.member.id
-                            },
-                            {
-                                tickets: player.tickets
-                            }
-                        );
+                            await Players.findOneAndUpdate(
+                                {
+                                    id: interaction.member.id
+                                },
+                                {
+                                    tickets: player.tickets
+                                }
+                            );
 
-                        await interaction.editReply({ content: `*${interaction.channel} will be deleted in 5 seconds..*` });
+                            await interaction.editReply({ content: `*${interaction.channel} will be deleted in 5 seconds..*` });
 
-                        setTimeout(() => interaction.channel.delete().catch(() => null), 5000);
+                            setTimeout(() => interaction.channel.delete().catch(() => null), 5000);
+                        };
                     } else {
                         await interaction.reply({ content: '*You do not have permission to close this ticket.*', ephemeral: true });
                     };
