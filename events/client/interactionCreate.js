@@ -198,6 +198,12 @@ module.exports = class interactionCreate extends Event {
                 if (interaction.customId === `${interaction.channelId}_lock`) {
                     const player = await Players.findOne({ 'tickets.channel_id': interaction.channelId });
 
+                    if (!player) {
+                        await interaction.reply({ content: `*${interaction.channel} will be deleted in 5 seconds..*` });
+
+                        setTimeout(() => interaction.channel.delete().catch(() => null), 5000);
+                    };
+                    
                     if (interaction.member.permissions.has(PermissionFlagsBits.BanMembers) || interaction.member.id === player.id) {
                         await interaction.deferReply();
 

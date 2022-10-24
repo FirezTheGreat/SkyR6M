@@ -34,10 +34,12 @@ module.exports = class channelPinsUpdate extends Event {
                             { name: 'Unpinned By', value: `${executor}`, inline: true },
                             { name: 'Unpinned On', value: `<t:${Math.floor(Date.now() / 1000)}>`, inline: true },
                             { name: 'Message Id', value: message.id, inline: true },
-                            { name: 'Unpinned Message', value: message.content.slice(0, 1024) },
                         ])
                         .setFooter({ text: message.guild.name, iconURL: message.guild.iconURL() })
                         .setTimestamp();
+
+                    if (message.content) AuditLogEmbed.addFields({ name: 'Unpinned Message', value: message.cleanContent.slice(0, 1024) });
+                    if (message.attachments.size) AuditLogEmbed.setImage(message.attachments.first().url);
 
                     return await this.bot.utils.auditSend(Channels.MessageLogId, { embeds: [AuditLogEmbed] });
                 };
@@ -50,11 +52,13 @@ module.exports = class channelPinsUpdate extends Event {
                         .addFields([
                             { name: 'Pinned By', value: `${executor}`, inline: true },
                             { name: 'Pinned On', value: `<t:${Math.floor(timestamp / 1000)}>`, inline: true },
-                            { name: 'Message Id', value: message.id, inline: true },
-                            { name: 'Pinned Message', value: message.content.slice(0, 1024) },
+                            { name: 'Message Id', value: message.id, inline: true }
                         ])
                         .setFooter({ text: message.guild.name, iconURL: message.guild.iconURL() })
                         .setTimestamp();
+
+                    if (message.content) AuditLogEmbed.addFields({ name: 'Pinned Message', value: message.cleanContent.slice(0, 1024) });
+                    if (message.attachments.size) AuditLogEmbed.setImage(message.attachments.first().url);
 
                     return await this.bot.utils.auditSend(Channels.AuditLogId, { embeds: [AuditLogEmbed] });
                 };
